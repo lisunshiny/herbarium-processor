@@ -3,27 +3,36 @@
 fka the Lichen Digital Analysis & Data Delivery sYstem
 
 ### Summary
-Given a picture of a specimen label, this library will return formatted data of that label, e.g.
+Given an image of a specimen label, this library will use computer vision and AI to return the formatted data of that label, e.g.
 
-```json
-{
-  "Catalog #": "245081",
-  "Occurrence ID": null,
-  "Taxon": "Acarospora strigata (Nyl.) Jatta",
-  "Family": null,
-  "Determiner": null,
-  "Date Determined": null,
-  "Collector": "H. E. HASSE",
-  "Number": "1327",
-  "Date": null,
-  "Verbatim Date": null,
-  "Locality": "Palm Springs (Type locality) Riverside Co. Cal",
-  "Latitude/Longitude": null,
-  "Elevation": null,
-  "Verbatim Elevation": null,
-  "Habitat": null
-}
-```
+<table>
+  <tr>
+    <td>Input</td>
+    <td>Output</td></tr>
+  <tr>
+    <td><img src="https://raw.githubusercontent.com/lisunshiny/herbarium-processor/refs/heads/main/img/IMG_2709.jpg" /></td>
+    <td>
+      <pre>
+        {
+          "Catalog #": "245081",
+          "Occurrence ID": null,
+          "Taxon": "Acarospora strigata (Nyl.) Jatta",
+          "Family": null,
+          "Determiner": null,
+          "Date Determined": null,
+          "Collector": "H. E. HASSE",
+          "Number": "1327",
+          "Date": null,
+          "Verbatim Date": null,
+          "Locality": "Palm Springs (Type locality) Riverside Co. Cal",
+          "Latitude/Longitude": null,
+          "Elevation": null,
+          "Verbatim Elevation": null,
+          "Habitat": null
+        }
+    </pre>
+  </tr>
+</table>
 
 ### Quick setup
 1) `git clone` the repo
