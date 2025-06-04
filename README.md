@@ -45,6 +45,12 @@ Given an image of a specimen label, this library will use computer vision and AI
 5) Run the Jupyter notebook. The first cell contains the image that is being processed, if you want to test a different image update the value of that variable.
 6) Check out the json response at the end of the notebook, or in the tmp/ directory.
 
+## Installation
+To install the necessary dependencies, run the following command in your terminal:
+```bash
+pip install -r requirements.txt
+```
+
 ### How it works
 This is currently being developed. Given an image of a specimen label, it:
 
