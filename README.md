@@ -36,20 +36,15 @@ Given an image of a specimen label, this library will use computer vision and AI
 
 ### Quick setup
 1) `git clone` the repo
-2) Obtain a Google API key (note that https://aistudio.google.com/ is an easy way to obtain one)
+2) Obtain a Google API key
 4) In the cloned repo, add a .env file with the following content:
 
    ```
    GOOGLE_API_KEY=your_key_here
    ```
-5) Run the Jupyter notebook. The first cell contains the image that is being processed, if you want to test a different image update the value of that variable.
-6) Check out the json response at the end of the notebook, or in the tmp/ directory.
-
-## Installation
-To install the necessary dependencies, run the following command in your terminal:
-```bash
-pip install -r requirements.txt
-```
+5) Run `pip install -r requirements.txt` in the terminal
+6) Run the Jupyter notebook. The first cell contains the image that is being processed, if you want to test a different image update the value of that variable.
+7) Check out the json response at the end of the notebook, or in the tmp/ directory.
 
 ### How it works
 This is currently being developed. Given an image of a specimen label, it:
