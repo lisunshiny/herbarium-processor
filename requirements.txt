@@ -6,4 +6,3 @@ requests
 beautifulsoup4
 matplotlib
 seaborn
-papermill
