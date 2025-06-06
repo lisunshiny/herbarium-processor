@@ -6,3 +6,4 @@ requests
 beautifulsoup4
 matplotlib
 seaborn
+numpy  # required for advanced evaluation metrics
