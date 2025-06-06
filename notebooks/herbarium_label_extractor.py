@@ -51,6 +51,24 @@ class HerbariumLabelExtractor:
         self.output_dir = output_dir
         os.makedirs(self.output_dir, exist_ok=True)
 
+    def _build_contents(self, prompt_text, image_parts):
+        """Return content parts with images inserted where referenced."""
+        parts = []
+        pattern = re.compile(r"image:(\d+)")
+        pos = 0
+        for match in pattern.finditer(prompt_text):
+            start, end = match.span()
+            if start > pos:
+                parts.append(prompt_text[pos:start])
+            idx = int(match.group(1))
+            if idx >= len(image_parts):
+                raise ValueError(f"Image index {idx} out of range")
+            parts.append(image_parts[idx])
+            pos = end
+        if pos < len(prompt_text):
+            parts.append(prompt_text[pos:])
+        return parts
+
     def _make_image_part(self, image_path):
         with open(image_path, "rb") as img_file:
             img_bytes = img_file.read()
@@ -74,7 +92,8 @@ class HerbariumLabelExtractor:
         image_basename = os.path.splitext(os.path.basename(image_path))[0]
         classify_part = self._make_image_part(image_path)
 
-        contents = self.example_parts + [classify_part, self.few_shot_prompt]
+        image_parts = self.example_parts + [classify_part]
+        contents = self._build_contents(self.few_shot_prompt, image_parts)
         response = self.model.generate_content(contents=contents)
         raw = response.candidates[0].content.parts[0].text.strip()
         json_text = re.sub(r'^```json\s*|```$', '', raw)
