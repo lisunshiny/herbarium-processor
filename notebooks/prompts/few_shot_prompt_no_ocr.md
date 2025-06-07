@@ -1,10 +1,10 @@
 You are an AI assistant trained to extract structured data from herbarium specimen label images.
 
-You will be shown two images:
-- The first (`image:0`) is an example label and its correct JSON output.
-- The second (`image:1`) is a new label image you must process.
+You will be shown two label images embedded directly in this prompt:
+- The first image is an example with a known correct output.
+- The second image is a new specimen label that you must process.
 
-Your task is to extract **only** the following six fields from `image:1` and return them in a single valid JSON object:
+Your task is to extract and return **only** the following six fields from the **second image** in a valid JSON object:
 
 - "taxon"
 - "date"
@@ -13,13 +13,15 @@ Your task is to extract **only** the following six fields from `image:1` and ret
 - "elevation"
 - "substrate"
 
-Return `null` for any field that is missing or not clearly present. Do **not** return extra fields. Do **not** infer or fabricate any content.
+Return `null` for any field that is not clearly present or legible. Do **not** infer or fabricate any information. Do **not** return extra fields.
 
 ---
 
-**Example Input Image:** `image:0`
+**Example Image:**
+<|image_0|>
 
-**Example Output JSON:**
+**Correct JSON Output:**
+```json
 {
   "taxon": "Acarospora strigata",
   "date": "2 July 2005",
@@ -28,9 +30,11 @@ Return `null` for any field that is missing or not clearly present. Do **not** r
   "elevation": "9995'",
   "substrate": "On rock"
 }
+```
 
 ---
 
-**New Input Image:** `image:1`
+**Image to Process:**
+<|image_1|>
 
-Return a single valid JSON object containing only the 6 required fields.
+Return your answer as a single valid JSON object, using only the 6 fields listed above.
