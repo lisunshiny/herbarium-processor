@@ -52,9 +52,9 @@ class HerbariumLabelExtractor:
         os.makedirs(self.output_dir, exist_ok=True)
 
     def _build_contents(self, prompt_text, image_parts):
-        """Return content parts with images inserted where referenced."""
+        """Return content parts with images inserted where <|image_N|> is referenced."""
         parts = []
-        pattern = re.compile(r"image:(\d+)")
+        pattern = re.compile(r"<\|image_(\d+)\|>")
         pos = 0
         for match in pattern.finditer(prompt_text):
             start, end = match.span()
