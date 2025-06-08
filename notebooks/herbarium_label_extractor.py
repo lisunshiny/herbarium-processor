@@ -60,33 +60,43 @@ class HerbariumLabelExtractor:
         }
 
     def classify(self, image_path):
-        """
-        Extract structured data from a new herbarium label image using Gemini.
+        """Convenience wrapper around :meth:`classify_batch` for a single image."""
+        return self.classify_batch([image_path])[0]
 
-        This method is reusable and safe to call multiple times after initializing the extractor.
+    def classify_batch(self, image_paths):
+        """Extract structured data from multiple label images in one request."""
+        basenames = [os.path.splitext(os.path.basename(p))[0] for p in image_paths]
+        classify_parts = [self._make_image_part(p) for p in image_paths]
 
-        Args:
-            image_path (str): Full path to the image file (e.g. '../img/IMG_2712.jpg')
-
-        Returns:
-            dict: JSON result with extracted fields.
-        """
-        image_basename = os.path.splitext(os.path.basename(image_path))[0]
-        classify_part = self._make_image_part(image_path)
-
-        contents = self.example_parts + [classify_part, self.few_shot_prompt]
+        batch_prompt = (
+            self.few_shot_prompt
+            + "\nReturn a JSON list where each element corresponds to the provided images in order."
+        )
+        contents = self.example_parts + classify_parts + [batch_prompt]
         response = self.model.generate_content(contents=contents)
         raw = response.candidates[0].content.parts[0].text.strip()
         json_text = re.sub(r'^```json\s*|```$', '', raw)
 
         try:
-            result = json.loads(json_text)
+            results = json.loads(json_text)
         except json.JSONDecodeError:
             raise ValueError("Failed to parse model output as JSON:\n" + json_text)
 
-        output_path = os.path.join(self.output_dir, f"herbarium_processed_output_{self.session_timestamp}_{image_basename}.json")
-        with open(output_path, "w") as f:
-            json.dump(result, f, indent=2)
+        if not isinstance(results, list):
+            raise ValueError("Model output was not a JSON list:\n" + json_text)
 
-        print(f"Saved output to {output_path}")
-        return result
+        if len(results) != len(image_paths):
+            raise ValueError(
+                f"Expected {len(image_paths)} results, got {len(results)}"
+            )
+
+        for res, basename in zip(results, basenames):
+            output_path = os.path.join(
+                self.output_dir,
+                f"herbarium_processed_output_{self.session_timestamp}_{basename}.json",
+            )
+            with open(output_path, "w") as f:
+                json.dump(res, f, indent=2)
+            print(f"Saved output to {output_path}")
+
+        return results
