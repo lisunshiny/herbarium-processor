@@ -55,14 +55,16 @@ class HerbariumLabelExtractor:
         """Return content parts with images inserted where <|image_N|> is referenced."""
         parts = []
         pattern = re.compile(r"<\|image_(\d+)\|>")
+        
+        if image_parts != len(list(pattern.finditer(prompt_text))):
+            raise ValueError(f"Expected {len(image_parts)} image parts, but found {len(list(pattern.finditer(prompt_text)))} references in prompt text.")
+
         pos = 0
         for match in pattern.finditer(prompt_text):
             start, end = match.span()
             if start > pos:
                 parts.append(prompt_text[pos:start])
             idx = int(match.group(1))
-            if idx >= len(image_parts):
-                raise ValueError(f"Image index {idx} out of range")
             parts.append(image_parts[idx])
             pos = end
         if pos < len(prompt_text):
