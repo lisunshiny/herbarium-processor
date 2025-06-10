@@ -2,7 +2,7 @@ import os
 import csv
 import random
 import importlib
-from herbarium_label_extractor import HerbariumLabelExtractor
+from notebooks.herbarium_label_extractor import HerbariumLabelExtractor
 
 
 class GeminiBatchRunner:
