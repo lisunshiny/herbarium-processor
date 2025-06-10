@@ -2,7 +2,7 @@ import os
 import csv
 import random
 import importlib
-from notebooks.herbarium_label_extractor import HerbariumLabelExtractor
+from herbarium_label_extractor import HerbariumLabelExtractor
 
 
 class GeminiBatchRunner:
@@ -44,7 +44,6 @@ class GeminiBatchRunner:
             self.few_shot = f.read()
 
     def run_extraction(self):
-        importlib.reload(HerbariumLabelExtractor)
         extractor = HerbariumLabelExtractor(
             system_instructions=self.sys_instr,
             few_shot_prompt=self.few_shot,
