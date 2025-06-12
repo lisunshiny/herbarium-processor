@@ -32,6 +32,7 @@ class CsvComparator:
         self.row_correct_counts = [0] * len(self.test_csv)
         self.accuracy_report = {}
         self.total_correct = 0
+        self.summary_df = None
 
     def normalize(self, val):
         if pd.isna(val):
@@ -43,7 +44,7 @@ class CsvComparator:
     def compare_fields(self, val1, val2):
         return self.normalize(val1) == self.normalize(val2)
 
-    def evaluate(self):
+    def evaluate(self, verbose: bool = True):
         total_rows = len(self.test_csv)
         for column in self.comparison_columns:
             correct = 0
@@ -70,23 +71,25 @@ class CsvComparator:
             }
         total_fields = total_rows * len(self.comparison_columns)
         self.total_accuracy = round(self.total_correct / total_fields, 3)
-        print(f"\n🧠 Model Accuracy Summary")
-        print(f"✅ Total Accuracy Across All Fields: {self.total_accuracy * 100:.1f}%\n")
-        summary_df = pd.DataFrame.from_dict(
+        self.summary_df = pd.DataFrame.from_dict(
             {col: {"accuracy": v["accuracy"]} for col, v in self.accuracy_report.items()},
             orient="index"
         )
-        print("📊 Per-Field Accuracy:")
-        display(summary_df)
+        if verbose:
+            print(f"\n🧠 Model Accuracy Summary")
+            print(f"✅ Total Accuracy Across All Fields: {self.total_accuracy * 100:.1f}%\n")
+            print("📊 Per-Field Accuracy:")
+            display(self.summary_df)
+        return self.summary_df
 
-    def visualize(self):
+    def visualize(self, show: bool = True):
       summary_df = pd.DataFrame.from_dict(
         {col: {"accuracy": v["accuracy"]} for col, v in self.accuracy_report.items()},
         orient="index"
       )
 
       # Per-column accuracy
-      plt.figure(figsize=(6, 4))  # Reduced width
+      fig1 = plt.figure(figsize=(6, 4))  # Reduced width
       sns.barplot(x=summary_df.index, y=summary_df["accuracy"])
       plt.title("Model Accuracy by Field")
       plt.ylabel("Accuracy")
@@ -94,7 +97,8 @@ class CsvComparator:
       plt.ylim(0, 1)
       plt.xticks(rotation=45)
       plt.tight_layout()
-      plt.show()
+      if show:
+        plt.show()
 
       # Row-wise accuracy
       row_accuracy = pd.DataFrame({
@@ -102,20 +106,29 @@ class CsvComparator:
         "correct_fields": self.row_correct_counts,
         "row_accuracy": [round(c / len(self.comparison_columns), 3) for c in self.row_correct_counts]
       })
-      plt.figure(figsize=(6, 4))  # Reduced width
+      fig2 = plt.figure(figsize=(6, 4))  # Reduced width
       sns.histplot(row_accuracy["row_accuracy"], bins=10, kde=True)
       plt.title("Distribution of Accuracy per Record")
       plt.xlabel("Row Accuracy")
       plt.ylabel("Number of Records")
       plt.xlim(0, 1)
       plt.tight_layout()
-      plt.show()
+      if show:
+        plt.show()
+      return fig1, fig2
 
-    def display_sample_diffs(self):
+    def display_sample_diffs(self, display_inline: bool = True):
+        html_parts = []
         for col, data in self.accuracy_report.items():
             if data["examples"]:
-                print(f"\n❌ Sample Mismatches in Column: {col}")
-                display(pd.DataFrame(data["examples"]))
+                if display_inline:
+                    print(f"\n❌ Sample Mismatches in Column: {col}")
+                    display(pd.DataFrame(data["examples"]))
+                else:
+                    html_parts.append(f"<h3>{col}</h3>")
+                    html_parts.append(pd.DataFrame(data["examples"]).to_html(index=False))
+        if not display_inline:
+            return "\n".join(html_parts)
 
     def similarity(self, a, b):
         return SequenceMatcher(None, self.normalize(a), self.normalize(b)).ratio()
@@ -156,7 +169,7 @@ class CsvComparator:
             styled.append(f'<td style="{style}">{display_val}</td>')
         return f'<tr><td style="padding: 4px;"><b>{row["id"]}</b></td>' + ''.join(styled) + '</tr>'
 
-    def display_diff_view(self):
+    def display_diff_view(self, return_html: bool = False):
         html = '''<button onclick="toggleDiffView()">Toggle Diff View</button>
 <script>
 function toggleDiffView() {
@@ -178,4 +191,35 @@ function toggleDiffView() {
         html += '<tr><th style="padding: 6px;">ID</th>' + ''.join([f'<th style="padding: 6px;">{col}</th>' for col in self.comparison_columns]) + '</tr>'
         html += '\n'.join(self.test_csv.apply(self.highlight_diffs, axis=1))
         html += '</table>'
+        if return_html:
+            return html
         display(HTML(html))
+
+    def export_html_report(self, output_path: str):
+        """Generate an HTML report summarizing the evaluation."""
+        self.evaluate(verbose=False)
+        html_parts = [
+            f"<h2>Model Accuracy Summary</h2>",
+            f"<p>Total Accuracy Across All Fields: {self.total_accuracy * 100:.1f}%</p>",
+            "<h3>Per-Field Accuracy</h3>",
+            self.summary_df.to_html(border=1),
+        ]
+        fig1, fig2 = self.visualize(show=False)
+        import io, base64
+        buf = io.BytesIO()
+        fig1.savefig(buf, format='png')
+        encoded1 = base64.b64encode(buf.getvalue()).decode()
+        buf.seek(0)
+        fig2.savefig(buf, format='png')
+        encoded2 = base64.b64encode(buf.getvalue()).decode()
+        buf.close()
+        html_parts.append(f"<img src='data:image/png;base64,{encoded1}'/>")
+        html_parts.append(f"<img src='data:image/png;base64,{encoded2}'/>")
+        sample_html = self.display_sample_diffs(display_inline=False)
+        if sample_html:
+            html_parts.append("<h3>Sample Mismatches</h3>")
+            html_parts.append(sample_html)
+        html_parts.append("<h3>Diff View</h3>")
+        html_parts.append(self.display_diff_view(return_html=True))
+        with open(output_path, "w", encoding="utf-8") as f:
+            f.write("<html><body>" + "\n".join(html_parts) + "</body></html>")
