@@ -195,7 +195,7 @@ function toggleDiffView() {
             return html
         display(HTML(html))
 
-    def export_html_report(self, output_path: str):
+    def calculate_html_parts(self):
         """Generate an HTML report summarizing the evaluation."""
         self.evaluate(verbose=False)
         html_parts = [
@@ -221,5 +221,4 @@ function toggleDiffView() {
             html_parts.append(sample_html)
         html_parts.append("<h3>Diff View</h3>")
         html_parts.append(self.display_diff_view(return_html=True))
-        with open(output_path, "w", encoding="utf-8") as f:
-            f.write("<html><body>" + "\n".join(html_parts) + "</body></html>")
+        return html_parts
