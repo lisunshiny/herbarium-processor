@@ -1,0 +1,86 @@
+"""
+HTMLReportGenerator
+==================
+
+This script defines a standalone class `HTMLReportGenerator` that compares two CSV files
+(canonical and test outputs), generates visual diffs, and writes an HTML
+report including metadata and prompt/instruction content.
+
+Usage:
+------
+from html_model_generator import HTMLReportGenerator
+
+scorer = HTMLReportGenerator(
+    canonical_csv_path="path/to/canonical.csv",
+    test_csv_path="path/to/test.csv",
+    prompt_path="path/to/prompt.md",                    # Optional
+    system_instructions_path="path/to/instructions.md", # Optional
+    html_output_path="path/to/output.html"              # Required
+)
+
+scorer.run_all()
+
+This will:
+- Compare the two CSVs
+- Display visualizations and diffs in the notebook or terminal
+- Generate an HTML report
+
+Dependencies:
+-------------
+- Assumes availability of a `CsvComparator` class in `notebooks.tools.csv_comparator`
+
+"""
+
+import os
+import sys
+import datetime
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
+from notebooks.tools.csv_comparator import CsvComparator
+
+class HTMLReportGenerator:
+    def __init__(self,
+                 canonical_csv_path,
+                 test_csv_path,
+                 html_output_path,
+                 prompt_path=None,
+                 system_instructions_path=None):
+        self.canonical_csv_path = canonical_csv_path
+        self.test_csv_path = test_csv_path
+        self.prompt_path = prompt_path
+        self.system_instructions_path = system_instructions_path
+        self.html_output_path = html_output_path
+        self.comparator = CsvComparator(
+            canonical_csv_path=canonical_csv_path,
+            test_csv_path=test_csv_path
+        )
+
+    def run_all(self):
+        self.comparator.evaluate()
+        self.comparator.visualize()
+        self.comparator.display_sample_diffs()
+        self.comparator.display_diff_view()
+        self.write_html_report()
+
+    def write_html_report(self):
+        html_parts = []
+        run_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        html_parts.append("<h2>Model Scorer Report</h2>")
+        html_parts.append(f"<b>Date run:</b> {run_date}<br>")
+        html_parts.append(f"<b>Canonical CSV:</b> {self.canonical_csv_path}<br>")
+        html_parts.append(f"<b>Test CSV:</b> {self.test_csv_path}<br><hr>")
+
+        html_parts += self.comparator.calculate_html_parts()
+
+        if self.prompt_path and os.path.exists(self.prompt_path):
+            with open(self.prompt_path, "r", encoding="utf-8") as f:
+                prompt_text = f.read()
+            html_parts.append(f"<h2>Prompt</h2><pre>{prompt_text}</pre>")
+
+        if self.system_instructions_path and os.path.exists(self.system_instructions_path):
+            with open(self.system_instructions_path, "r", encoding="utf-8") as f:
+                sys_instr_text = f.read()
+            html_parts.append(f"<h2>System Instructions</h2><pre>{sys_instr_text}</pre>")
+
+        with open(self.html_output_path, "w", encoding="utf-8") as f:
+            f.write("<html><body>" + "\n".join(html_parts) + "</body></html>")
