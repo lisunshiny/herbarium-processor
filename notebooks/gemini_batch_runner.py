@@ -1,4 +1,7 @@
+import sys
 import os
+sys.path.append(os.path.abspath(".."))
+
 import csv
 import random
 import importlib
