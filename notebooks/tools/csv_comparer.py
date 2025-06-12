@@ -80,36 +80,36 @@ class ModelOutputComparator:
         display(summary_df)
 
     def visualize(self):
-        summary_df = pd.DataFrame.from_dict(
-            {col: {"accuracy": v["accuracy"]} for col, v in self.accuracy_report.items()},
-            orient="index"
-        )
+      summary_df = pd.DataFrame.from_dict(
+        {col: {"accuracy": v["accuracy"]} for col, v in self.accuracy_report.items()},
+        orient="index"
+      )
 
-        # Per-column accuracy
-        plt.figure()
-        sns.barplot(x=summary_df.index, y=summary_df["accuracy"])
-        plt.title("Model Accuracy by Field")
-        plt.ylabel("Accuracy")
-        plt.xlabel("Field")
-        plt.ylim(0, 1)
-        plt.xticks(rotation=45)
-        plt.tight_layout()
-        plt.show()
+      # Per-column accuracy
+      plt.figure(figsize=(6, 4))  # Reduced width
+      sns.barplot(x=summary_df.index, y=summary_df["accuracy"])
+      plt.title("Model Accuracy by Field")
+      plt.ylabel("Accuracy")
+      plt.xlabel("Field")
+      plt.ylim(0, 1)
+      plt.xticks(rotation=45)
+      plt.tight_layout()
+      plt.show()
 
-        # Row-wise accuracy
-        row_accuracy = pd.DataFrame({
-            "id": self.test_csv["id"],
-            "correct_fields": self.row_correct_counts,
-            "row_accuracy": [round(c / len(self.comparison_columns), 3) for c in self.row_correct_counts]
-        })
-        plt.figure()
-        sns.histplot(row_accuracy["row_accuracy"], bins=10, kde=True)
-        plt.title("Distribution of Accuracy per Record")
-        plt.xlabel("Row Accuracy")
-        plt.ylabel("Number of Records")
-        plt.xlim(0, 1)
-        plt.tight_layout()
-        plt.show()
+      # Row-wise accuracy
+      row_accuracy = pd.DataFrame({
+        "id": self.test_csv["id"],
+        "correct_fields": self.row_correct_counts,
+        "row_accuracy": [round(c / len(self.comparison_columns), 3) for c in self.row_correct_counts]
+      })
+      plt.figure(figsize=(6, 4))  # Reduced width
+      sns.histplot(row_accuracy["row_accuracy"], bins=10, kde=True)
+      plt.title("Distribution of Accuracy per Record")
+      plt.xlabel("Row Accuracy")
+      plt.ylabel("Number of Records")
+      plt.xlim(0, 1)
+      plt.tight_layout()
+      plt.show()
 
     def display_sample_diffs(self):
         for col, data in self.accuracy_report.items():
