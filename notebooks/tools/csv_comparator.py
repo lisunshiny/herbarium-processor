@@ -7,12 +7,12 @@ import seaborn as sns
 from IPython.display import display, HTML
 
 
-class ModelOutputComparator:
+class CsvComparator:
     """
     Compare the accuracy of ML model outputs against a canonical CSV.
 
     Usage:
-        comparator = ModelOutputComparator(
+        comparator = CsvComparator(
             canonical_csv_path="path/to/canonical.csv",
             test_csv_path="path/to/test.csv"
         )
