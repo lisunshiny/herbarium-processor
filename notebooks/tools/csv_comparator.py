@@ -194,7 +194,9 @@ class CsvComparator:
                 diff_view = self.inline_diff(test_val, canon_val)
                 display_val = f"<span class='arrow-view'>{arrow_view}</span><span class='diff-view' style='display:none'>{diff_view}<br><small><i>→ {canon_val_norm}</i></small></span>"
             styled.append(f'<td style="{style}">{display_val}</td>')
-        return f'<tr><td style="padding: 4px;"><b>{row["id"]}</b></td>' + ''.join(styled) + '</tr>'
+        # Add the external link
+        link = f'<a href="https://lichenportal.org/portal/collections/individual/index.php?occid={row["id"]}" target="_blank">🔗</a>'
+        return f'<tr><td style="padding: 4px;"><b>{row["id"]}</b><br>{link}</td>' + ''.join(styled) + '</tr>'
 
     def display_diff_view(self, return_html: bool = False):
         html = '''<button onclick="toggleDiffView()">Toggle Diff View</button>
