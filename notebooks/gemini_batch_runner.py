@@ -1,4 +1,7 @@
+import sys
 import os
+sys.path.append(os.path.abspath(".."))
+
 import csv
 import random
 import importlib
@@ -10,7 +13,7 @@ class GeminiBatchRunner:
                  num_to_sample=None,
                  path_to_sample_from=None,
                  sampled_paths=None,
-                 output_csv_path="../tmp/gemini_output_test.csv",
+                 output_csv_path=None,
                  system_instructions_path='prompts/system_instructions_no_ocr.md',
                  few_shot_prompt_path='prompts/few_shot_prompt_no_ocr.md',
                  few_shot_image_paths=None,
