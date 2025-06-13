@@ -22,17 +22,49 @@ class CsvComparator:
         comparator.display_diff_view()
     """
 
+
     def __init__(self, canonical_csv_path: str, test_csv_path: str):
         self.canonical_csv_path = canonical_csv_path
         self.test_csv_path = test_csv_path
-        self.canonical_csv = pd.read_csv(canonical_csv_path).sort_values(by="id").reset_index(drop=True)
-        self.test_csv = pd.read_csv(test_csv_path).sort_values(by="id").reset_index(drop=True)
-        self.comparison_columns = [col for col in self.test_csv.columns if col != "id"]
-        self.canonical_csv = self.canonical_csv[self.test_csv.columns]  # Align columns
+
+        # Load and normalize column names
+        canon = pd.read_csv(canonical_csv_path, dtype=str)
+        test = pd.read_csv(test_csv_path, dtype=str)
+        canon.columns = canon.columns.str.strip().str.lower()
+        test.columns = test.columns.str.strip().str.lower()
+
+        if 'id' not in canon.columns or 'id' not in test.columns:
+            raise ValueError("Both CSV files must include an 'id' column.")
+
+        canon["id"] = canon["id"].astype(str).str.strip()
+        test["id"] = test["id"].astype(str).str.strip()
+
+        # Determine shared columns (excluding 'id')
+        shared_columns = [col for col in test.columns if col in canon.columns and col != "id"]
+        self.comparison_columns = shared_columns
+
+        # Subset and align both DataFrames
+        canon_sub = canon[["id"] + shared_columns].copy()
+        test_sub = test[["id"] + shared_columns].copy()
+
+        # Sort and reset index for both
+        canon_sub = canon_sub.sort_values("id").reset_index(drop=True)
+        test_sub = test_sub.sort_values("id").reset_index(drop=True)
+
+        # Merge to ensure aligned rows
+        merged = pd.merge(canon_sub, test_sub, on="id", suffixes=("_canon", "_test"))
+
+        # Store aligned data
+        self.canonical_csv = merged[[f"{col}_canon" for col in shared_columns]].rename(columns=lambda c: c.replace("_canon", ""))
+        self.test_csv = merged[[f"{col}_test" for col in shared_columns]].rename(columns=lambda c: c.replace("_test", ""))
+        self.test_csv.insert(0, "id", merged["id"])
+        self.canonical_csv.insert(0, "id", merged["id"])
+
         self.row_correct_counts = [0] * len(self.test_csv)
         self.accuracy_report = {}
         self.total_correct = 0
         self.summary_df = None
+
 
     def normalize(self, val):
         if pd.isna(val):
@@ -46,6 +78,11 @@ class CsvComparator:
 
     def evaluate(self, verbose: bool = True):
         total_rows = len(self.test_csv)
+        # Reset counters to avoid accumulation on repeated calls
+        self.row_correct_counts = [0] * total_rows
+        self.accuracy_report = {}
+        self.total_correct = 0
+
         for column in self.comparison_columns:
             correct = 0
             diffs = []
