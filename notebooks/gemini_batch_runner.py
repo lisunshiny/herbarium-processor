@@ -6,6 +6,7 @@ import csv
 import random
 import importlib
 from notebooks.herbarium_label_extractor import HerbariumLabelExtractor
+import concurrent.futures
 
 
 class GeminiBatchRunner:
@@ -53,11 +54,18 @@ class GeminiBatchRunner:
             few_shot_image_paths=self.few_shot_image_paths,
             output_dir=self.output_dir
         )
-        for img_path in self.sampled_paths:
+
+        def classify_and_tag(img_path):
             print(f"Processing image: {img_path}")
             result = extractor.classify(img_path)
+            print(f"Done classifying image: {img_path}")
             result['id'] = os.path.splitext(os.path.basename(img_path))[0]
-            self.results.append(result)
+            return result
+        # run gemini calls in parallel. note that there is a 150rpm limit.
+        print("Running classification in parallel...")
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            results = list(executor.map(classify_and_tag, self.sampled_paths))
+        self.results = results
 
     def save_csv(self):
         all_keys = set()
