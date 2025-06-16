@@ -30,7 +30,7 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
 ---
 
 **Example Image 1:**  
-<|cs_16625_23|>
+<|image_0|>
 
 **Correct JSON Output for Example Image 1:**
 ```json
@@ -56,7 +56,7 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
 ```
 
 **Example Image 2:**  
-<|cs_16625_24|>
+<|image_1|>
 
 **Correct JSON Output for Example Image 2:**
 ```json
@@ -82,8 +82,7 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
 ```
 
 **Example Image 3:**  
-<|cs_16625_25|>
-
+<|image_2|>
 
 **Correct JSON Output for Example Image 3:**
 ```json
@@ -110,7 +109,7 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
 ---
 
 **Image to Process:**  
-<|add image|>
+<|image_3|>
 
 
 Return your answer as a single valid JSON object using only the 17 fields listed above.
