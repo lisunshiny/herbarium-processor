@@ -16,6 +16,7 @@ Your task is to extract and return **only** the following 24 fields from the **s
 - `verbatim longitude`
 - `elevation`
 - `habitat information`
+- `comment`
 - `field collection date`
 - `field collector`
 - `field collection number`
@@ -44,6 +45,7 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
   "elevation":  "1000 m",
   "habitat_information": null,
   "field_collection_date": "November 17 1973",
+  "comment": null,
   "field_collector": "D. H. Norris",
   "field_collection_number": "27614",
   "exsiccatae_number": null,
@@ -58,7 +60,7 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
 ```json
 {
   #"id": null,
-  "label header": null,
+  "label_header": null,
   "scientific_name": "Grimmia incurva Schwagr.",
   "field_collection_location_verbatim": "Riesengebirge: Dreisteine",
   "county": null,
@@ -68,6 +70,7 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
   "verbatim_longitude": null,
   "elevation":  null,
   "habitat_information": null,
+  "comment": null,
   "field_collection_date": "July 19 1868",
   "field_collector": null,
   "field_collection_number": null,
@@ -84,7 +87,7 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
 ```json
 {
   #"id": null,
-  "label header": "Herbarium bryologicum Hjalmar Moller",
+  "label_header": "Herbarium bryologicum Hjalmar Moller",
   "scientific_name": "Grimmia unicolor Hook.",
   "field_collection_location_verbatim": "Dalsland, Amal pa Sodra Trehornan i Vanern.",
   "county": null,
@@ -94,6 +97,7 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
   "verbatim_longitude": null,
   "elevation":  null,
   "habitat_information": null,
+  "comment": null,
   "field_collection_date": "August 24 1919",
   "field_collector": "Larsson",
   "field_collection_number": null,
