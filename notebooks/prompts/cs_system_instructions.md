@@ -33,7 +33,6 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
 **Correct JSON Output for Example Image 1:**
 ```json
 {
-  #"id": null,
   "label_header": "BRYOPHYTES OF AUSTRALIA STATE OF TASMANIA LONGFORD MUNICIPALITY",
   "scientific_name": "Grimmia trichophylla Grev.",
   "field_collection_location_verbatim": "On fairly moist, diffusely lit boulder. In Eucalyptus coccifera forest of shores of Lake Dobson, Mt. Field Natl. Park.",
@@ -59,7 +58,6 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
 **Correct JSON Output for Example Image 2:**
 ```json
 {
-  #"id": null,
   "label_header": null,
   "scientific_name": "Grimmia incurva Schwagr.",
   "field_collection_location_verbatim": "Riesengebirge: Dreisteine",
@@ -86,7 +84,6 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
 **Correct JSON Output for Example Image 3:**
 ```json
 {
-  #"id": null,
   "label_header": "Herbarium bryologicum Hjalmar Moller",
   "scientific_name": "Grimmia unicolor Hook.",
   "field_collection_location_verbatim": "Dalsland, Amal pa Sodra Trehornan i Vanern.",
@@ -108,9 +105,7 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
 ---
 
 **Image to Process:**  
-<|cs_16625_23|>
-<|cs_16625_24|>
-<|cs_16625_25|>
+<|add image|>
 
 
 Return your answer as a single valid JSON object using only the 15 fields listed above.
