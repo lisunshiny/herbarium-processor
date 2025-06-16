@@ -26,14 +26,14 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
 
 ---
 
-**Example Image:**  
-<|image_0|>
+**Example Image 1:**  
+<|cs_16625_23|>
 
-**Correct JSON Output:**
+**Correct JSON Output for Example Image 1:**
 ```json
 {
-  "id": null,
-  "label header": "BRYOPHYTES OF AUSTRALIA STATE OF TASMANIA LONGFORD MUNICIPALITY",
+  #"id": null,
+  "label_header": "BRYOPHYTES OF AUSTRALIA STATE OF TASMANIA LONGFORD MUNICIPALITY",
   "scientific_name": "Grimmia trichophylla Grev.",
   "field_collection_location_verbatim": "On fairly moist, diffusely lit boulder. In Eucalyptus coccifera forest of shores of Lake Dobson, Mt. Field Natl. Park.",
   "county": null,
@@ -51,9 +51,62 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
 }
 ```
 
+**Example Image 2:**  
+<|cs_16625_24|>
+
+**Correct JSON Output for Example Image 2:**
+```json
+{
+  #"id": null,
+  "label header": null,
+  "scientific_name": "Grimmia incurva Schwagr.",
+  "field_collection_location_verbatim": "Riesengebirge: Dreisteine",
+  "county": null,
+  "state": null,
+  "country": "Poland",
+  "verbatim_latitude": null,
+  "verbatim_longitude": null,
+  "elevation":  null,
+  "habitat_information": null,
+  "field_collection_date": "July 19 1868",
+  "field_collector": null,
+  "field_collection_number": null,
+  "exsiccatae_number": null,
+  "associated_taxa": null
+}
+```
+
+**Example Image 3:**  
+<|cs_16625_25|>
+
+
+**Correct JSON Output for Example Image 3:**
+```json
+{
+  #"id": null,
+  "label header": "Herbarium bryologicum Hjalmar Moller",
+  "scientific_name": "Grimmia unicolor Hook.",
+  "field_collection_location_verbatim": "Dalsland, Amal pa Sodra Trehornan i Vanern.",
+  "county": null,
+  "state": "Dalsland",
+  "country": "Sweden",
+  "verbatim_latitude": null,
+  "verbatim_longitude": null,
+  "elevation":  null,
+  "habitat_information": null,
+  "field_collection_date": "August 24 1919",
+  "field_collector": "Larsson",
+  "field_collection_number": null,
+  "exsiccatae_number": null,
+  "associated_taxa": null
+}
+```
 ---
 
 **Image to Process:**  
-<|image_1|>
+<|cs_16625_23|>
+<|cs_16625_24|>
+<|cs_16625_25|>
+
 
 Return your answer as a single valid JSON object using only the 15 fields listed above.
