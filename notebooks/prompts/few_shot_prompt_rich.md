@@ -38,7 +38,7 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
 {
   "label_header": "BRYOPHYTES OF AUSTRALIA STATE OF TASMANIA LONGFORD MUNICIPALITY",
   "scientific_name": "Grimmia trichophylla Grev.",
-  "field_collection_location_verbatim": "On fairly moist, diffusely lit boulder. In Eucalyptus coccifera forest of shores of Lake Dobson, Mt. Field Natl. Park.",
+  "field_collection_location_verbatim": "On fairly moist, diffusely lit boulder. In Eucalyptus coccifera forest of shores of Lake Dobson, Mt. Field Natl. Park",
   "county": null,
   "state": null,
   "country": "Australia",
@@ -63,7 +63,7 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
 **Correct JSON Output for Example Image 2:**
 ```json
 {
-  "label_header": null,
+  "label_header": "Fay A. MacFadden",
   "scientific_name": "Aerobryopsis scariosa Bratram",
   "field_collection_location_verbatim": "Hawaiian Islands, Oahu, Tho Pali. On ground under brush by roadway, near crest.",
   "county": null,
@@ -73,7 +73,7 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
   "verbatim_longitude": null,
   "elevation":  null,
   "habitat_information": null,
-  "comment": "Ferg A. MacFayden (Previously known only from Luzon, P. I.)",
+  "comment": "(Previously known only from Luzon, P. I.)",
   "field_collection_date": "December 27, 1958",
   "field_collectors": ["Gail Savage"],
   "field_collection_number": "22915",
