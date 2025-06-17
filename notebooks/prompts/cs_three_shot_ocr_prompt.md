@@ -36,18 +36,200 @@ Cite your sources: include a `sources` key mapping each extracted field to a lis
 
 ```json
 [
-  {"id": "1.1.1", "text": "BRYOPHYTES OF AUSTRALIA STATE OF TASMANIA LONGFORD MUNICIPALITY"},
-  {"id": "1.1.2", "text": "Grimmia trichophylla Grev."},
-  {"id": "1.1.3", "text": "On fairly moist, diffusely lit boulder."},
-  {"id": "1.1.4", "text": "In Eucalyptus coccifera forest..."},
-  {"id": "1.1.5", "text": "Australia"},
-  {"id": "1.1.6", "text": "146 36 E"},
-  {"id": "1.1.7", "text": "42 42 S"},
-  {"id": "1.1.8", "text": "1000 m"},
-  {"id": "1.1.9", "text": "November 17 1973"},
-  {"id": "1.1.10", "text": "D. H. Norris"},
-  {"id": "1.1.11", "text": "27614"}
+  {
+    "id": "1.1.1",
+    "text": "BRYOPHYTES OF AUSTRALIA",
+    "bounding_box": [
+      {
+        "x": 217,
+        "y": 308
+      },
+      {
+        "x": 332,
+        "y": 308
+      },
+      {
+        "x": 332,
+        "y": 315
+      },
+      {
+        "x": 217,
+        "y": 315
+      }
+    ],
+    "average_confidence": 0.9393793666666665,
+    "block_type": "TEXT"
+  },
+  {
+    "id": "1.1.2",
+    "text": "Grinnia trichophylla HAMILTON STATE OF Grev MUNICIPALITY TASMANIA .",
+    "bounding_box": [
+      {
+        "x": 173,
+        "y": 316
+      },
+      {
+        "x": 332,
+        "y": 316
+      },
+      {
+        "x": 332,
+        "y": 349
+      },
+      {
+        "x": 173,
+        "y": 349
+      }
+    ],
+    "average_confidence": 0.8553493722222223,
+    "block_type": "TEXT"
+  },
+  {
+    "id": "1.1.3",
+    "text": "On In shores fairly Eucalyptus of moist Lake , coccifers diffusely Dobson , Mt. lit forest Field boulder of Natl .",
+    "bounding_box": [
+      {
+        "x": 190,
+        "y": 354
+      },
+      {
+        "x": 386,
+        "y": 354
+      },
+      {
+        "x": 386,
+        "y": 380
+      },
+      {
+        "x": 190,
+        "y": 380
+      }
+    ],
+    "average_confidence": 0.9025044852380952,
+    "block_type": "TEXT"
+  },
+  {
+    "id": "1.1.4",
+    "text": "Park 42 \u00b0 42'8 . El . . ca. 1000 M. 146 \u00b0 36 ' x",
+    "bounding_box": [
+      {
+        "x": 195,
+        "y": 380
+      },
+      {
+        "x": 367,
+        "y": 380
+      },
+      {
+        "x": 367,
+        "y": 396
+      },
+      {
+        "x": 195,
+        "y": 396
+      }
+    ],
+    "average_confidence": 0.8112164681249999,
+    "block_type": "TEXT"
+  },
+  {
+    "id": "1.1.5",
+    "text": "Coll . D. H. Norris # 17 27614 November 1973",
+    "bounding_box": [
+      {
+        "x": 178,
+        "y": 415
+      },
+      {
+        "x": 361,
+        "y": 415
+      },
+      {
+        "x": 361,
+        "y": 436
+      },
+      {
+        "x": 178,
+        "y": 436
+      }
+    ],
+    "average_confidence": 0.8855009879999999,
+    "block_type": "TEXT"
+  },
+  {
+    "id": "1.1.6",
+    "text": "UC",
+    "bounding_box": [
+      {
+        "x": 337,
+        "y": 496
+      },
+      {
+        "x": 357,
+        "y": 496
+      },
+      {
+        "x": 357,
+        "y": 507
+      },
+      {
+        "x": 337,
+        "y": 507
+      }
+    ],
+    "average_confidence": 0.9159893,
+    "block_type": "TEXT"
+  },
+  {
+    "id": "1.1.7",
+    "text": "01 2 3 4 5 6 7 8 9 10",
+    "bounding_box": [
+      {
+        "x": 378,
+        "y": 965
+      },
+      {
+        "x": 600,
+        "y": 965
+      },
+      {
+        "x": 600,
+        "y": 973
+      },
+      {
+        "x": 378,
+        "y": 973
+      }
+    ],
+    "average_confidence": 0.9640660349999999,
+    "block_type": "TEXT"
+  },
+  {
+    "id": "1.1.8",
+    "text": "cm copyright reserved",
+    "bounding_box": [
+      {
+        "x": 378,
+        "y": 978
+      },
+      {
+        "x": 597,
+        "y": 978
+      },
+      {
+        "x": 597,
+        "y": 987
+      },
+      {
+        "x": 378,
+        "y": 987
+      }
+    ],
+    "average_confidence": 0.9101358833333334,
+    "block_type": "TEXT"
+  }
 ]
+
 ```
 
 **Correct JSON Output for Example Image 1:**
@@ -56,7 +238,7 @@ Cite your sources: include a `sources` key mapping each extracted field to a lis
 {
   "label_header": "BRYOPHYTES OF AUSTRALIA STATE OF TASMANIA LONGFORD MUNICIPALITY",
   "scientific_name": "Grimmia trichophylla Grev.",
-  "field_collection_location_verbatim": "On fairly moist, diffusely lit boulder. In Eucalyptus coccifera forest...",
+  "field_collection_location_verbatim": "On fairly moist, diffusely lit boulder. In Eucalyptus coccifera forest of shores of Lake Dobson, Mt. Field Natl. Park.",
   "county": null,
   "state": null,
   "country": "Australia",
@@ -73,16 +255,16 @@ Cite your sources: include a `sources` key mapping each extracted field to a lis
   "exsiccatae_number": null,
   "associated_taxa": null,
   "sources": {
-    "label_header": ["1.1.1"],
+    "label_header": ["1.1.1", "1.1.2"],
     "scientific_name": ["1.1.2"],
     "field_collection_location_verbatim": ["1.1.3", "1.1.4"],
-    "country": ["1.1.5"],
-    "verbatim_latitude": ["1.1.6"],
-    "verbatim_longitude": ["1.1.7"],
-    "elevation": ["1.1.8"],
-    "field_collection_date": ["1.1.9"],
-    "field_collectors": ["1.1.10"],
-    "field_collection_number": ["1.1.11"]
+    "country": ["1.1.1"],
+    "verbatim_latitude": ["1.1.4"],
+    "verbatim_longitude": ["1.1.4"],
+    "elevation": ["1.1.4"],
+    "field_collection_date": ["1.1.5"],
+    "field_collectors": ["1.1.5"],
+    "field_collection_number": ["1.1.5"]
   }
 }
 ```

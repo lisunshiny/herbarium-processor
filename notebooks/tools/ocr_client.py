@@ -3,7 +3,7 @@ import io
 import os
 from google.protobuf.json_format import MessageToDict
 from collections import defaultdict
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.expanduser("~/.secrets/vision-key.json")
 
@@ -89,7 +89,7 @@ class OcrClient:
                 "text": text,
                 "bounding_box": merged_box,
                 "average_confidence": avg_confidence,
-                "block_type": block_type
+                "block_type": block_type,
             })
         return result
 
@@ -97,10 +97,18 @@ class OcrClient:
         image = Image.open(image_path).convert("RGB")
         draw = ImageDraw.Draw(image)
 
+        try:
+            font = ImageFont.truetype("arial.ttf", 12)
+        except:
+            font = ImageFont.load_default()
+
         for word in words:
             bbox = word.get("bounding_box", [])
+            source = word.get("id", "")
             if len(bbox) == 4:
-                draw.line([tuple((v.get("x", 0), v.get("y", 0))) for v in bbox] + [tuple((bbox[0].get("x", 0), bbox[0].get("y", 0)))], fill="red", width=2)
+                points = [tuple((v.get("x", 0), v.get("y", 0))) for v in bbox]
+                draw.line(points + [points[0]], fill="red", width=2)
+                draw.text(points[0], source, fill="blue", font=font)
 
         image.save(output_path)
-        print(f"Saved visualized image with bounding boxes to {output_path}")
+        print(f"Saved visualized image with bounding boxes and sources to {output_path}")
