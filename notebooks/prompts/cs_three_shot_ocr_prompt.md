@@ -238,14 +238,14 @@ Cite your sources: include a `sources` key mapping each extracted field to a lis
 {
   "label_header": "BRYOPHYTES OF AUSTRALIA STATE OF TASMANIA LONGFORD MUNICIPALITY",
   "scientific_name": "Grimmia trichophylla Grev.",
-  "field_collection_location_verbatim": "On fairly moist, diffusely lit boulder. In Eucalyptus coccifera forest of shores of Lake Dobson, Mt. Field Natl. Park.",
+  "field_collection_location_verbatim": "In Eucalyptus coccifera forest of shores of Lake Dobson, Mt. Field Natl. Park.",
   "county": null,
   "state": null,
   "country": "Australia",
   "verbatim_latitude": "146 36 E",
   "verbatim_longitude": "42 42 S",
   "elevation": "1000 m",
-  "habitat_information": null,
+  "habitat_information": "On fairly moist, diffusely lit boulder.",
   "field_collection_date": "November 17 1973",
   "comment": null,
   "field_collectors": ["D. H. Norris"],
@@ -262,6 +262,7 @@ Cite your sources: include a `sources` key mapping each extracted field to a lis
     "verbatim_latitude": ["1.1.4"],
     "verbatim_longitude": ["1.1.4"],
     "elevation": ["1.1.4"],
+    "habitat_information": ["1.1.3"],
     "field_collection_date": ["1.1.5"],
     "field_collectors": ["1.1.5"],
     "field_collection_number": ["1.1.5"]
@@ -278,10 +279,174 @@ Cite your sources: include a `sources` key mapping each extracted field to a lis
 
 ```json
 [
-  {"id": "1.1.1", "text": "Grimmia incurva Schwagr."},
-  {"id": "1.1.2", "text": "Riesengebirge: Dreisteine"},
-  {"id": "1.1.3", "text": "Poland"},
-  {"id": "1.1.4", "text": "July 19 1868"}
+  {
+    "id": "1.1.1",
+    "text": "IMAGED",
+    "bounding_box": [
+      {
+        "x": 557,
+        "y": 56
+      },
+      {
+        "x": 608,
+        "y": 56
+      },
+      {
+        "x": 608,
+        "y": 67
+      },
+      {
+        "x": 557,
+        "y": 67
+      }
+    ],
+    "average_confidence": 0.9891382,
+    "block_type": "TEXT"
+  },
+  {
+    "id": "1.1.2",
+    "text": "Jaza . Mac Inddene",
+    "bounding_box": [
+      {
+        "x": 392,
+        "y": 269
+      },
+      {
+        "x": 495,
+        "y": 269
+      },
+      {
+        "x": 495,
+        "y": 294
+      },
+      {
+        "x": 392,
+        "y": 294
+      }
+    ],
+    "average_confidence": 0.5416027075,
+    "block_type": "TEXT"
+  },
+  {
+    "id": "1.1.3",
+    "text": "Aerobryopsis Hawaiian scariosa Islands , Bartram Oahu , The Pali . , near crest The . no- 22915",
+    "bounding_box": [
+      {
+        "x": 179,
+        "y": 288
+      },
+      {
+        "x": 491,
+        "y": 288
+      },
+      {
+        "x": 491,
+        "y": 324
+      },
+      {
+        "x": 179,
+        "y": 324
+      }
+    ],
+    "average_confidence": 0.7896102883333332,
+    "block_type": "TEXT"
+  },
+  {
+    "id": "1.1.4",
+    "text": "On Coll ground . Gail under Savage Bartran brush , December by roadway 27 , 1958",
+    "bounding_box": [
+      {
+        "x": 198,
+        "y": 315
+      },
+      {
+        "x": 362,
+        "y": 315
+      },
+      {
+        "x": 362,
+        "y": 352
+      },
+      {
+        "x": 198,
+        "y": 352
+      }
+    ],
+    "average_confidence": 0.9360346375,
+    "block_type": "TEXT"
+  },
+  {
+    "id": "1.1.5",
+    "text": "( Det Ex Previously . . Herb E. B. . P. known M. Patterson only from # Luzon 2869 , P. I. )",
+    "bounding_box": [
+      {
+        "x": 195,
+        "y": 345
+      },
+      {
+        "x": 381,
+        "y": 345
+      },
+      {
+        "x": 381,
+        "y": 373
+      },
+      {
+        "x": 195,
+        "y": 373
+      }
+    ],
+    "average_confidence": 0.8827427626086957,
+    "block_type": "TEXT"
+  },
+  {
+    "id": "1.1.6",
+    "text": "U",
+    "bounding_box": [
+      {
+        "x": 608,
+        "y": 943
+      },
+      {
+        "x": 627,
+        "y": 943
+      },
+      {
+        "x": 627,
+        "y": 959
+      },
+      {
+        "x": 608,
+        "y": 959
+      }
+    ],
+    "average_confidence": 0.71506804,
+    "block_type": "TEXT"
+  },
+  {
+    "id": "1.1.7",
+    "text": "0 cm 1 2 3 4 5 6 copyright 7 8 reserved 9 10",
+    "bounding_box": [
+      {
+        "x": 374,
+        "y": 954
+      },
+      {
+        "x": 598,
+        "y": 954
+      },
+      {
+        "x": 598,
+        "y": 976
+      },
+      {
+        "x": 374,
+        "y": 976
+      }
+    ],
+    "average_confidence": 0.9444656371428571,
+    "block_type": "TEXT"
+  }
 ]
 ```
 
@@ -289,29 +454,34 @@ Cite your sources: include a `sources` key mapping each extracted field to a lis
 
 ```json
 {
-  "label_header": null,
-  "scientific_name": "Grimmia incurva Schwagr.",
-  "field_collection_location_verbatim": "Riesengebirge: Dreisteine",
+  "label_header": "Fay A. MacFadden",
+  "scientific_name": "Aerobryopsis scariosa Bratram",
+  "field_collection_location_verbatim": "Hawaiian Islands, Oahu, Tho Pali. On ground under brush by roadway, near crest.",
   "county": null,
   "state": null,
-  "country": "Poland",
+  "country": null,
   "verbatim_latitude": null,
   "verbatim_longitude": null,
-  "elevation": null,
+  "elevation":  null,
   "habitat_information": null,
-  "field_collection_date": "July 19 1868",
-  "comment": null,
-  "field_collectors": null,
-  "identifier": null,
-  "field_collection_number": null,
+  "comment": "(Previously known only from Luzon, P. I.)",
+  "field_collection_date": "December 27, 1958",
+  "field_collectors": ["Gail Savage"],
+  "field_collection_number": "22915",
+  "identifier": "E. B. Bartram",
   "identification_date": null,
-  "exsiccatae_number": null,
-  "associated_taxa": null,
+  "exsiccatae_number": "P. M. Patterson #2869",
+  "associated_taxa": null
   "sources": {
-    "scientific_name": ["1.1.1"],
+    "label_header": ["1.1.2"],
+    "scientific_name": ["1.1.3"],
     "field_collection_location_verbatim": ["1.1.2"],
-    "country": ["1.1.3"],
-    "field_collection_date": ["1.1.4"]
+    "comment": ["1.1.5"],
+    "field_collection_date": ["1.1.4"],
+    "field_collectors": ["1.1.4"],
+    "field_collection_number": ["1.1.3"],
+    "identifier": ["1.1.3"],
+    "exsiccatae_number": ["1.1.5"],
   }
 }
 ```

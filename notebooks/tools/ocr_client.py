@@ -3,7 +3,7 @@ import io
 import os
 from google.protobuf.json_format import MessageToDict
 from collections import defaultdict
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ExifTags
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.expanduser("~/.secrets/vision-key.json")
 
@@ -12,6 +12,7 @@ class OcrClient:
         self.client = vision.ImageAnnotatorClient()
 
     def extract_text_json(self, image_path):
+        self.apply_exif_orientation(image_path)
         with io.open(image_path, 'rb') as image_file:
             content = image_file.read()
 
@@ -112,3 +113,27 @@ class OcrClient:
 
         image.save(output_path)
         print(f"Saved visualized image with bounding boxes and sources to {output_path}")
+
+    def apply_exif_orientation(self, image_path):
+        image = Image.open(image_path)
+        try:
+            exif = image._getexif()
+            if exif:
+                orientation_key = next(k for k, v in ExifTags.TAGS.items() if v == "Orientation")
+                orientation = exif.get(orientation_key, 1)
+
+                rotate_map = {
+                    3: 180,
+                    6: 270,  # 90 CW
+                    8: 90    # 270 CW
+                }
+
+                if orientation in rotate_map:
+                    image = image.rotate(rotate_map[orientation], expand=True)
+                    print(f"Rotated image by {rotate_map[orientation]} degrees due to EXIF")
+
+                # Remove EXIF orientation metadata to prevent future misreading
+                image.info.pop("exif", None)
+                image.save(image_path, quality=95)
+        except Exception as e:
+            print(f"No EXIF orientation or failed to apply: {e}")
