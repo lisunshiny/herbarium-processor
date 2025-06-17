@@ -31,21 +31,21 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
 ---
 
 **Example Image 1:**  
-<|cs_16625_23|>
+<|image_0|>
 
 **Correct JSON Output for Example Image 1:**
 ```json
 {
   "label_header": "BRYOPHYTES OF AUSTRALIA STATE OF TASMANIA LONGFORD MUNICIPALITY",
   "scientific_name": "Grimmia trichophylla Grev.",
-  "field_collection_location_verbatim": "On fairly moist, diffusely lit boulder. In Eucalyptus coccifera forest of shores of Lake Dobson, Mt. Field Natl. Park",
+  "field_collection_location_verbatim": "In Eucalyptus coccifera forest of shores of Lake Dobson, Mt. Field Natl. Park",
   "county": null,
   "state": null,
   "country": "Australia",
   "verbatim_latitude": "146 36 E",
   "verbatim_longitude": "42 42 S",
   "elevation":  "1000 m",
-  "habitat_information": null,
+  "habitat_information": "On fairly moist, diffusely lit boulder.",
   "field_collection_date": "November 17 1973",
   "comment": null,
   "field_collectors": ["D. H. Norris"],
@@ -58,7 +58,7 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
 ```
 
 **Example Image 2:**  
-<|cs_16625_18|>
+<|image_1|>
 
 **Correct JSON Output for Example Image 2:**
 ```json
@@ -85,7 +85,7 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
 ```
 
 **Example Image 3:**  
-<|cs_16625_25|>
+<|image_2|>
 
 
 **Correct JSON Output for Example Image 3:**
@@ -114,7 +114,7 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
 ---
 
 **Image to Process:**  
-<|add image|>
+<|image_3|>
 
 
 Return your answer as a single valid JSON object using only the 18 fields listed above.

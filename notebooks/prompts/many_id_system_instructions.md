@@ -28,3 +28,6 @@ You will be given one input per specimen:
 4. **Label Focus:**  
    - Only extract from the original collector's label. Ignore annotations, re-identifications, determination slips, or updates.  
    - If multiple layers of information are present, use the content from the **oldest or original printed portion** of the label.
+
+5. **Field-Specific Guidance:**
+   - **`comment`**: This field often contains a block of pre-printed text, frequently found as a paragraph at the bottom of the label. It typically provides general context about the expedition or project. This text is often identical across all labels from the same collection event or expedition.
