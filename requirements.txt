@@ -9,3 +9,4 @@ seaborn
 pytest
 pytesseract
 pillow-heif
+google-cloud-vision
