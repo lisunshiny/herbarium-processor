@@ -4,7 +4,7 @@ You will be shown three label images embedded directly in this prompt:
 - The first, second, and third images are examples with a known correct output.
 - The fourth image is a new specimen label that you must process.
 
-Your task is to extract and return **only** the following 17 fields from the **final image** in a valid JSON object using `snake_case` keys:
+Your task is to extract and return **only** the following 18 fields from the **final image** in a valid JSON object using `snake_case` keys:
 
 - `label_header`
 - `scientific_name`
@@ -21,6 +21,7 @@ Your task is to extract and return **only** the following 17 fields from the **f
 - `field_collectors`
 - `identifier`
 - `field_collection_number`
+- `identification_date`
 - `exsiccatae_number`
 - `associated_taxa`
 
@@ -30,7 +31,7 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
 ---
 
 **Example Image 1:**  
-<|cs_16625_23|>
+<|image_0|>
 
 **Correct JSON Output for Example Image 1:**
 ```json
@@ -50,13 +51,14 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
   "field_collectors": ["D. H. Norris"],
   "field_collection_number": "27614",
   "identifier": null,
+  "identification_date": null,
   "exsiccatae_number": null,
   "associated_taxa": null
 }
 ```
 
 **Example Image 2:**  
-<|cs_16625_24|>
+<|image_1|>
 
 **Correct JSON Output for Example Image 2:**
 ```json
@@ -76,14 +78,14 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
   "field_collectors": null,
   "field_collection_number": null,
   "identifier": null,
+  "identification_date": null,
   "exsiccatae_number": null,
   "associated_taxa": null
 }
 ```
 
 **Example Image 3:**  
-<|cs_16625_25|>
-
+<|image_2|>
 
 **Correct JSON Output for Example Image 3:**
 ```json
@@ -103,6 +105,7 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
   "field_collectors": ["Larsson"],
   "field_collection_number": null,
   "identifier": null,
+  "identification_date": null,
   "exsiccatae_number": null,
   "associated_taxa": null
 }
@@ -110,7 +113,7 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
 ---
 
 **Image to Process:**  
-<|add image|>
+<|image_3|>
 
 
-Return your answer as a single valid JSON object using only the 17 fields listed above.
+Return your answer as a single valid JSON object using only the 18 fields listed above.

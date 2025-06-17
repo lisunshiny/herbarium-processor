@@ -62,15 +62,20 @@ class CsvComparator:
         self.total_correct = 0
         self.summary_df = None
 
-    def normalize(self, val):
+    def normalize(self, val, normalize_more = False):
         if pd.isna(val):
             return ""
         val = str(val).strip()
         val = re.sub(r'\bfeet\b', 'ft', val)
+
+        if normalize_more:
+            val = val.lower()
+            val = re.sub(r'[\s\W_]+', '', val)
+
         return val
 
     def compare_fields(self, val1, val2):
-        return self.normalize(val1) == self.normalize(val2)
+        return self.normalize(val1, True) == self.normalize(val2, True)
 
     def evaluate(self, verbose: bool = True):
         total_rows = len(self.merged)

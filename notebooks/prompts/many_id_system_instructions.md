@@ -20,7 +20,7 @@ You will be given one input per specimen:
     The keys in the JSON object MUST **exactly** match `snake_case` names. Return `null` if the field is not clearly present or legible.
 
 3. **Strict Output Rules:**  
-   - Extract field values **verbatim** as they appear on the original label. Do not clean, normalize, or format them beyond what is visible.  
+   - Extract field values verbatim as they appear on the original label. This includes preserving the exact original case (e.g., USA vs. usa), punctuation, and spacing. Do not clean, normalize, or reformat the text in any way.
    - If a field is not explicitly present on the label, return its value as `null`.  
    - Do not fabricate or infer missing information.  
    - Do not insert placeholder text or variable names. Every field must contain actual label text or `null`.
