@@ -10,3 +10,4 @@ pytest
 pytesseract
 pillow-heif
 google-cloud-vision
+opencv-python
