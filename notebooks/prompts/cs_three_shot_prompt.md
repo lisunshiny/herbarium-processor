@@ -20,8 +20,8 @@ Your task is to extract and return **only** the following 18 fields from the **f
 - `comment`
 - `field_collectors`
 - `identifier`
-- `field_collection_number`
 - `identification_date`
+- `field_collection_number`
 - `exsiccatae_number`
 - `associated_taxa`
 
@@ -31,7 +31,7 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
 ---
 
 **Example Image 1:**  
-<|image_0|>
+<|cs_16625_23|>
 
 **Correct JSON Output for Example Image 1:**
 ```json
@@ -58,7 +58,7 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
 ```
 
 **Example Image 2:**  
-<|image_1|>
+<|cs_16625_24|>
 
 **Correct JSON Output for Example Image 2:**
 ```json
@@ -85,7 +85,8 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
 ```
 
 **Example Image 3:**  
-<|image_2|>
+<|cs_16625_25|>
+
 
 **Correct JSON Output for Example Image 3:**
 ```json
@@ -113,7 +114,7 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
 ---
 
 **Image to Process:**  
-<|image_3|>
+<|add image|>
 
 
 Return your answer as a single valid JSON object using only the 18 fields listed above.
