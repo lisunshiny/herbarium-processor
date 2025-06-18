@@ -11,3 +11,4 @@ pytesseract
 pillow-heif
 google-cloud-vision
 opencv-python
+jinja2
