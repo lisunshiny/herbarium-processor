@@ -3,6 +3,7 @@ PromptBuilder
 
 This module defines a PromptBuilder class that loads example data and a Jinja2 template,
 then renders a few-shot prompt for use with a language model (e.g., Gemini).
+It also provides methods to generate prompt content parts with embedded images for multimodal models.
 
 Usage Example:
 --------------
@@ -19,14 +20,18 @@ builder = PromptBuilder(
     csv_path="data/labels.csv",
     field_list=["scientific_name", "field_collectors", "sources"],
     shot_data=labels,
-    target_data=target_example,
     template_path="templates/prompt_template.j2"
 )
 
-prompt, image_paths = builder.generate()
+# Generate a prompt string and list of image paths for the target example
+prompt_str, image_paths = builder.generate(target_example)
 
-# `prompt` is a string containing the rendered prompt
+# Generate a list of content parts (text and images) for multimodal model input
+contents = builder.generate_contents(target_example)
+
+# `prompt_str` is a string containing the rendered prompt
 # `image_paths` is a list of image file paths referenced in the prompt
+# `contents` is a list of text and image parts suitable for Gemini's API
 """
 
 import pandas as pd
