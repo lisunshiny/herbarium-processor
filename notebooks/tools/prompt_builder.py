@@ -35,6 +35,7 @@ import os
 from jinja2 import Environment, FileSystemLoader
 from typing import List, Dict, Tuple
 from dataclasses import dataclass
+import re
 
 
 @dataclass
@@ -50,13 +51,11 @@ class PromptBuilder:
         csv_path: str,
         field_list: List[str],
         shot_data: List[SpecimenLabel],
-        target_data: SpecimenLabel,
         template_path: str
     ):
         self.csv_path = csv_path
         self.field_list = field_list
         self.shot_data = shot_data
-        self.target_data = target_data
         self.template_path = template_path
 
         self.df = pd.read_csv(self.csv_path, dtype={"id": str})
@@ -78,7 +77,7 @@ class PromptBuilder:
                 output[key] = row.get(key, None)
         return output
 
-    def generate(self) -> Tuple[str, List[str]]:
+    def generate_prompt(self, target_data) -> Tuple[str, List[str]]:
         shots = [
             {
                 "image_path": shot.img_path,
@@ -89,13 +88,48 @@ class PromptBuilder:
         ]
 
         target = {
-            "image_path": self.target_data.img_path,
-            "ocr_json": self._load_ocr_json(self.target_data.ocr_path),
+            "image_path": target_data.img_path,
+            "ocr_json": self._load_ocr_json(target_data.ocr_path),
         }
 
         prompt = self.template.render(field_list=self.field_list, shots=shots, target=target)
 
-        image_paths = [shot.img_path for shot in self.shot_data]
-        image_paths.append(self.target_data.img_path)
+        return prompt
 
-        return prompt, image_paths
+    def generate(self, target_data) -> Tuple[str, List[str]]:
+        image_paths = [shot.img_path for shot in self.shot_data]
+        image_paths.append(target_data.img_path)
+
+        return self.generate_prompt(target_data), image_paths
+
+    def generate_contents(self, target_data):
+        """Return content parts with images inserted where <|image_N|> is referenced."""
+        prompt_text, image_paths = self.generate(target_data)
+        image_parts = [self._make_image_part(p) for p in image_paths]
+        parts = []
+        pattern = re.compile(r"<\|image_(\d+)\|>")
+
+        pos = 0
+        for match in pattern.finditer(prompt_text):
+            start, end = match.span()
+            if start > pos:
+                parts.append(prompt_text[pos:start])
+            idx = int(match.group(1))
+            if idx >= len(image_parts):
+                raise ValueError(
+                    f"Image index {idx} out of range for {len(image_parts)} image parts"
+                )
+            parts.append(image_parts[idx])
+            pos = end
+        if pos < len(prompt_text):
+            parts.append(prompt_text[pos:])
+        return parts
+
+    def _make_image_part(self, image_path):
+        with open(image_path, "rb") as img_file:
+            img_bytes = img_file.read()
+        return {
+            "mime_type": "image/jpeg",
+            "data": img_bytes,
+        }
+
