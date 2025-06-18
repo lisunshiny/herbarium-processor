@@ -6,16 +6,16 @@ from collections import defaultdict
 from PIL import Image, ImageDraw, ImageFont, ExifTags
 import cv2
 import numpy as np
+import json
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.expanduser(
     "~/.secrets/vision-key.json"
 )
 
-
 class OcrClient:
     def __init__(self):
         self.client = vision.ImageAnnotatorClient()
-        self.preprocessor = ImagePreprocessor(correct_perspective=True)
+        self.preprocessor = ImagePreprocessor()
 
     def extract_text_json(self, image_path):
         # Get the base name of the file without extension
@@ -38,9 +38,12 @@ class OcrClient:
         lines = self.parse_google_ocr_response(response)
         merged_lines = self.merge_to_lines(lines)
         self.visualize_bounding_boxes(
-            merged_lines, preprocessed_path, preprocessed_path
+            merged_lines, image_path, f"../../tmp/ocr_bounding_{base_name}.jpg"
         )
-
+        ai_input_path = f"../../tmp/ocr_ai_input_{base_name}.json"
+        ai_input_path = os.path.normpath(ai_input_path)
+        with open(ai_input_path, "w", encoding="utf-8") as f:
+            json.dump(merged_lines, f, ensure_ascii=False, indent=2)
         return merged_lines
 
     def parse_google_ocr_response(self, response):
@@ -88,20 +91,31 @@ class OcrClient:
             sorted_words = sorted(word_list, key=lambda w: w["bounding_box"][0]["x"])
             text = " ".join(w["text"] for w in sorted_words)
 
-            # Merge all points into one bounding box (min-x, min-y) to (max-x, max-y)
-            all_x = [
-                pt["x"] for w in sorted_words for pt in w["bounding_box"] if "x" in pt
+            # Extract all bounding box points from OCR response
+            all_pts = [
+                (pt["x"], pt["y"])
+                for w in sorted_words
+                for pt in w["bounding_box"]
+                if "x" in pt and "y" in pt
             ]
-            all_y = [
-                pt["y"] for w in sorted_words for pt in w["bounding_box"] if "y" in pt
-            ]
-            if all_x and all_y:
+
+            # Proceed if we have points
+            if all_pts:
+                # Merge into one rectangle
+                all_x = [pt[0] for pt in all_pts]
+                all_y = [pt[1] for pt in all_pts]
                 merged_box = [
-                    {"x": min(all_x), "y": min(all_y)},
-                    {"x": max(all_x), "y": min(all_y)},
-                    {"x": max(all_x), "y": max(all_y)},
-                    {"x": min(all_x), "y": max(all_y)},
+                    (min(all_x), min(all_y)),
+                    (max(all_x), min(all_y)),
+                    (max(all_x), max(all_y)),
+                    (min(all_x), max(all_y)),
                 ]
+
+                # Map merged bounding box back to original image coordinates
+                mapped_box = self.preprocessor.map_bbox_to_original(merged_box)
+
+                # Format as list of dicts for output
+                merged_box = [{"x": int(x), "y": int(y)} for (x, y) in mapped_box]
             else:
                 merged_box = []
 
@@ -143,25 +157,30 @@ class OcrClient:
             f"Saved visualized image with bounding boxes and sources to {output_path}"
         )
 
-
 class ImagePreprocessor:
     """
     Preprocess images for improved OCR accuracy using grayscale conversion,
-    sharpening, resizing, contrast stretching, denoising, and optional
-    perspective correction.
+    perspective correction, sharpening, resizing, contrast stretching,
+    denoising, and bounding box remapping support.
 
     Usage:
-        pre = ImagePreprocessor(correct_perspective=True)
+        pre = ImagePreprocessor()
 
         # To get a processed image as an OpenCV array:
         processed = pre.preprocess_for_ocr("input.jpg")
 
         # To save the processed image to disk:
         pre.preprocess_and_save("input.jpg", "output.jpg")
+
+        # To map OCR bounding boxes (from processed image) back to original image:
+        original_pts = pre.map_bbox_to_original([(x1, y1), (x2, y2), (x3, y3), (x4, y4)])
     """
 
-    def __init__(self, correct_perspective=True):
-        self.correct_perspective = correct_perspective
+    def __init__(self):
+        self.last_perspective_transform = None
+        self.last_inverse_transform = None
+        self.last_resize_fx = 1.0
+        self.last_resize_fy = 1.0
 
     def preprocess_for_ocr(self, image_path):
         if not os.path.exists(image_path):
@@ -171,22 +190,21 @@ class ImagePreprocessor:
         if img is None:
             raise ValueError(f"Unable to load image: {image_path}")
 
-        if self.correct_perspective:
-            img = self._apply_perspective_correction(img)
+        img = self._apply_perspective_correction(img)
 
         # Step 1: Convert to grayscale
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
         # Step 2: Sharpen image to improve text clarity
-        kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
+        kernel = np.array([[0, -1, 0], [-1, 5,-1], [0, -1, 0]])
         sharpened = cv2.filter2D(gray, -1, kernel)
 
         # Step 3: Resize if resolution is low
         height, width = sharpened.shape
+        self.last_resize_fx = self.last_resize_fy = 1.0
         if height < 1000:
-            sharpened = cv2.resize(
-                sharpened, None, fx=1.5, fy=1.5, interpolation=cv2.INTER_CUBIC
-            )
+            self.last_resize_fx = self.last_resize_fy = 1.5
+            sharpened = cv2.resize(sharpened, None, fx=1.5, fy=1.5, interpolation=cv2.INTER_CUBIC)
 
         # Step 4: Light contrast stretch
         processed = cv2.convertScaleAbs(sharpened, alpha=1.2, beta=10)
@@ -201,9 +219,7 @@ class ImagePreprocessor:
         blur = cv2.GaussianBlur(gray, (5, 5), 0)
         edged = cv2.Canny(blur, 50, 200)
 
-        contours, _ = cv2.findContours(
-            edged.copy(), cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE
-        )
+        contours, _ = cv2.findContours(edged.copy(), cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
         contours = sorted(contours, key=cv2.contourArea, reverse=True)[:5]
 
         for c in contours:
@@ -213,7 +229,10 @@ class ImagePreprocessor:
                 screen_cnt = approx
                 break
         else:
-            return img  # No correction if no 4-point contour found
+            # No correction; set identity transforms
+            self.last_perspective_transform = np.eye(3, dtype=np.float32)
+            self.last_inverse_transform = np.eye(3, dtype=np.float32)
+            return img
 
         pts = screen_cnt.reshape(4, 2)
         rect = np.zeros((4, 2), dtype="float32")
@@ -235,19 +254,34 @@ class ImagePreprocessor:
         height_b = np.linalg.norm(tl - bl)
         max_height = max(int(height_a), int(height_b))
 
-        dst = np.array(
-            [
-                [0, 0],
-                [max_width - 1, 0],
-                [max_width - 1, max_height - 1],
-                [0, max_height - 1],
-            ],
-            dtype="float32",
-        )
+        dst = np.array([
+            [0, 0],
+            [max_width - 1, 0],
+            [max_width - 1, max_height - 1],
+            [0, max_height - 1]
+        ], dtype="float32")
 
         M = cv2.getPerspectiveTransform(rect, dst)
+        self.last_perspective_transform = M
+        self.last_inverse_transform = cv2.invert(M)[1]
+
         warped = cv2.warpPerspective(img, M, (max_width, max_height))
         return warped
+
+    def map_bbox_to_original(self, bbox_points):
+        if self.last_inverse_transform is None:
+            raise ValueError("No perspective transform available. Set correct_perspective=True and run preprocessing first.")
+
+        # 1. Unscale the coordinates back to warped image size
+        unscaled = np.array(bbox_points, dtype=np.float32).reshape(-1, 2)
+        unscaled[:, 0] /= self.last_resize_fx
+        unscaled[:, 1] /= self.last_resize_fy
+
+        # 2. Apply inverse perspective transform
+        pts = unscaled.reshape(-1, 1, 2)
+        mapped = cv2.perspectiveTransform(pts, self.last_inverse_transform)
+
+        return mapped.reshape(-1, 2)
 
     def save_preprocessed_image(self, image, save_path):
         cv2.imwrite(save_path, image)
