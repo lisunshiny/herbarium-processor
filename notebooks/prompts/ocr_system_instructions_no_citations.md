@@ -35,7 +35,7 @@ Use both the image and the OCR output to locate, validate, and support your extr
 3. **Strict Output Rules**
 
    * Extract field values verbatim from the label text. Do not clean, rephrase, or normalize the content.
-   * Although the model is capable of reading the label directly, it sometimes hallucinates or rewrites longer passages in unintended ways. Use the OCR output to help anchor your response and avoid these hallucinations.
+   * Although you are capable of reading the label directly, you sometimes hallucinate or rewrite longer passages in unintended ways. Use the OCR output to help anchor your response and avoid these hallucinations.
    * Do **not** fabricate, infer, or guess missing information.
    * Do **not** insert placeholders, template strings, or variable names.
 

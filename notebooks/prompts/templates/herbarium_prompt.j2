@@ -14,7 +14,7 @@ Return `null` for any field that is not clearly present or legible. Do **not** i
 **Example {{ loop.index }}**
 
 Image:
-<|{{ shot.image_path }}|>
+<|image_{{ loop.index - 1 }}|>
 
 OCR Output:
 ```json
@@ -32,7 +32,7 @@ Correct Output:
 **Now classify this image:**
 
 Image:
-<|{{ target.image_path }}|>
+<|image_{{ shots | length }}|>
 
 OCR Output:
 ```json
