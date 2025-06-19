@@ -16,18 +16,19 @@ class GeminiBatchRunner:
                  sampled_paths=None,
                  output_csv_path=None,
                  system_instructions_path='prompts/system_instructions_no_ocr.md',
-                 few_shot_prompt_path='prompts/few_shot_prompt_no_ocr.md',
-                 few_shot_image_paths=None,
-                 output_dir='../tmp'):
+                 output_dir='../tmp',
+                 prompt_builder=None,
+                 targets=[]):
 
+        # todo deprecate num_to_sample and path_to_sample_from
         self.num_to_sample = num_to_sample
         self.path_to_sample_from = path_to_sample_from
         self.sampled_paths = sampled_paths or []
         self.output_csv_path = output_csv_path
         self.system_instructions_path = system_instructions_path
-        self.few_shot_prompt_path = few_shot_prompt_path
-        self.few_shot_image_paths = few_shot_image_paths or ['../img/IMG_2708.jpg']
         self.output_dir = output_dir
+        self.prompt_builder = prompt_builder
+        self.targets = targets
         self.results = []
 
     def sample_images(self):
@@ -44,27 +45,24 @@ class GeminiBatchRunner:
     def load_prompts(self):
         with open(self.system_instructions_path) as f:
             self.sys_instr = f.read()
-        with open(self.few_shot_prompt_path) as f:
-            self.few_shot = f.read()
 
     def run_extraction(self):
         extractor = HerbariumLabelExtractor(
             system_instructions=self.sys_instr,
-            few_shot_prompt=self.few_shot,
-            few_shot_image_paths=self.few_shot_image_paths,
+            prompt_builder=self.prompt_builder,
             output_dir=self.output_dir
         )
 
-        def classify_and_tag(img_path):
-            print(f"Processing image: {img_path}")
-            result = extractor.classify(img_path)
-            print(f"Done classifying image: {img_path}")
-            result['id'] = os.path.splitext(os.path.basename(img_path))[0]
+        def classify_and_tag(target):
+            print(f"Processing image: {target.img_path}")
+            result = extractor.classify(target)
+            print(f"Done classifying image: {target.img_path}")
+            result['id'] = os.path.splitext(os.path.basename(target.img_path))[0]
             return result
         # run gemini calls in parallel. note that there is a 150rpm limit.
         print("Running classification in parallel...")
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            results = list(executor.map(classify_and_tag, self.sampled_paths))
+            results = list(executor.map(classify_and_tag, self.targets))
         self.results = results
 
     def save_csv(self):

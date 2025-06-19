@@ -59,7 +59,6 @@ class OcrClient:
 
         for page_idx, page in enumerate(pages):
             for block_idx, block in enumerate(page.get("blocks", [])):
-                block_type = block.get("blockType", "UNKNOWN")
 
                 for para_idx, para in enumerate(block.get("paragraphs", [])):
                     for word_idx, word in enumerate(para.get("words", [])):
@@ -74,7 +73,6 @@ class OcrClient:
                                 "text": word_text,
                                 "bounding_box": bbox,
                                 "confidence": word.get("confidence", 1.0),
-                                "block_type": block_type,
                             }
                         )
         return lines
@@ -122,7 +120,6 @@ class OcrClient:
             avg_confidence = sum(w["confidence"] for w in sorted_words) / len(
                 sorted_words
             )
-            block_type = sorted_words[0].get("block_type", "UNKNOWN")
 
             result.append(
                 {
@@ -130,7 +127,6 @@ class OcrClient:
                     "text": text,
                     "bounding_box": merged_box,
                     "average_confidence": avg_confidence,
-                    "block_type": block_type,
                 }
             )
         return result
