@@ -33,17 +33,15 @@ This will:
 
 Dependencies:
 -------------
-- Assumes availability of a `CsvComparator` class in `notebooks.tools.csv_comparator`
+- Assumes availability of a `CsvComparator` class in `herbarium.tools.csv_comparator`
 - Optionally uses a `PromptBuilder` for generating prompts
 """
 
 import os
-import sys
 import datetime
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
-from notebooks.tools.csv_comparator import CsvComparator
-from notebooks.tools.prompt_builder import SpecimenLabel
+from .csv_comparator import CsvComparator
+from .prompt_builder import SpecimenLabel
 
 
 class HTMLReportGenerator:

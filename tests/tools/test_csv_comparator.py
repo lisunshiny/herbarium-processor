@@ -1,7 +1,7 @@
 import pandas as pd
 import tempfile
 import os
-from notebooks.tools.csv_comparator import CsvComparator
+from herbarium.tools.csv_comparator import CsvComparator
 
 def make_csv(path, rows):
     pd.DataFrame(rows).to_csv(path, index=False)
