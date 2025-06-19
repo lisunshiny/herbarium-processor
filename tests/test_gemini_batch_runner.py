@@ -1,7 +1,10 @@
 import os
 import csv
 import random
+from types import SimpleNamespace
+import pytest
 from notebooks.gemini_batch_runner import GeminiBatchRunner
+from notebooks.tools.prompt_builder import SpecimenLabel
 
 
 def create_images(directory, names):
@@ -42,45 +45,41 @@ def test_sample_images_uses_provided_paths(tmp_path):
 
 def test_load_prompts(tmp_path):
     sys_path = tmp_path / "sys.txt"
-    few_path = tmp_path / "few.txt"
     sys_path.write_text("SYS")
-    few_path.write_text("FEW")
     runner = GeminiBatchRunner(
         num_to_sample=1,
         path_to_sample_from=str(tmp_path),
         system_instructions_path=str(sys_path),
-        few_shot_prompt_path=str(few_path),
     )
     runner.load_prompts()
     assert runner.sys_instr == "SYS"
-    assert runner.few_shot == "FEW"
 
 
 def test_run_extraction(monkeypatch, tmp_path):
     calls = []
 
     class FakeExtractor:
-        def __init__(self, system_instructions, few_shot_prompt, few_shot_image_paths, output_dir):
+        def __init__(self, system_instructions, prompt_builder, output_dir):
             self.system_instructions = system_instructions
-            self.few_shot_prompt = few_shot_prompt
-            self.few_shot_image_paths = few_shot_image_paths
+            self.prompt_builder = prompt_builder
             self.output_dir = output_dir
 
-        def classify(self, path):
-            calls.append(path)
-            return {"value": path}
+        def classify(self, target):
+            calls.append(target)
+            return {"value": target.img_path}
 
     monkeypatch.setattr("notebooks.gemini_batch_runner.HerbariumLabelExtractor", FakeExtractor)
     monkeypatch.setattr("importlib.reload", lambda mod: mod)
 
-    runner = GeminiBatchRunner(num_to_sample=1, path_to_sample_from=str(tmp_path), output_dir=str(tmp_path))
-    runner.sampled_paths = [str(tmp_path / "a.jpg"), str(tmp_path / "b.jpg")]
+    runner = GeminiBatchRunner(num_to_sample=1, path_to_sample_from=str(tmp_path), output_dir=str(tmp_path), prompt_builder="PB")
+    t1 = SpecimenLabel(id="a", img_path=str(tmp_path/"a.jpg"), ocr_path="x")
+    t2 = SpecimenLabel(id="b", img_path=str(tmp_path/"b.jpg"), ocr_path="y")
+    runner.targets = [t1, t2]
     runner.sys_instr = "SYS"
-    runner.few_shot = "FEW"
     runner.run_extraction()
 
-    assert calls == runner.sampled_paths
-    assert [r["value"] for r in runner.results] == runner.sampled_paths
+    assert calls == [t1, t2]
+    assert [r["value"] for r in runner.results] == [t1.img_path, t2.img_path]
     assert [r["id"] for r in runner.results] == ["a", "b"]
 
 
