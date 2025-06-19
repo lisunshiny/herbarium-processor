@@ -126,6 +126,7 @@ class PromptBuilder:
 
         prompt = self.template.render(field_list=self.field_list, shots=shots, target=target)
         return prompt
+
     def generate(self, target_data) -> Tuple[str, List[str]]:
         image_paths = [shot.img_path for shot in self.shot_data]
         image_paths.append(target_data.img_path)
