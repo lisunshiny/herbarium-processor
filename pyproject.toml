@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "herbarium-processor"
+version = "0.1.0"
+description = "Tools for processing herbarium specimen labels"
+readme = "README.md"
+authors = ["Liann Sun <lisunshiny@gmail.com>"]
+package-mode = false  # 👈 disables attempting to install your package
+
+[tool.poetry.dependencies]
+python = ">=3.11"
+ipython = "*"
+google-generativeai = "*"
+python-dotenv = "*"
+pandas = "*"
+requests = "*"
+beautifulsoup4 = "*"
+matplotlib = "*"
+seaborn = "*"
+pytesseract = "*"
+pillow-heif = "*"
+google-cloud-vision = "*"
+opencv-python = "*"
+jinja2 = "*"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
