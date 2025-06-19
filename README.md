@@ -42,12 +42,12 @@ Given an image of a specimen label, this library will use computer vision and AI
    ```
    GOOGLE_API_KEY=your_key_here
    ```
-5) Run `pip install -r requirements.txt` in the terminal
+5) Run `pip install .` in the terminal to install the project dependencies
 6) Run the Jupyter notebook. The first cell contains the image that is being processed, if you want to test a different image update the value of that variable.
 7) Check out the json response at the end of the notebook, or in the tmp/ directory.
 
 ### Running tests
-After installing dependencies, run `pytest -q` from the repository root to execute the unit tests.
+After installing the development dependencies, e.g. with `pip install .[dev]`, run `pytest -q` from the repository root to execute the unit tests.
 
 ### How it works
 This is currently being developed. Given an image of a specimen label, it:
