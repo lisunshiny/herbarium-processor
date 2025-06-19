@@ -1,7 +1,8 @@
 import os
 import csv
 import random
-from notebooks.gemini_batch_runner import GeminiBatchRunner
+from types import SimpleNamespace
+from herbarium.gemini_batch_runner import GeminiBatchRunner
 
 
 def create_images(directory, names):
@@ -42,45 +43,40 @@ def test_sample_images_uses_provided_paths(tmp_path):
 
 def test_load_prompts(tmp_path):
     sys_path = tmp_path / "sys.txt"
-    few_path = tmp_path / "few.txt"
     sys_path.write_text("SYS")
-    few_path.write_text("FEW")
     runner = GeminiBatchRunner(
         num_to_sample=1,
         path_to_sample_from=str(tmp_path),
         system_instructions_path=str(sys_path),
-        few_shot_prompt_path=str(few_path),
     )
     runner.load_prompts()
     assert runner.sys_instr == "SYS"
-    assert runner.few_shot == "FEW"
 
 
 def test_run_extraction(monkeypatch, tmp_path):
     calls = []
 
     class FakeExtractor:
-        def __init__(self, system_instructions, few_shot_prompt, few_shot_image_paths, output_dir):
+        def __init__(self, system_instructions, prompt_builder, output_dir):
             self.system_instructions = system_instructions
-            self.few_shot_prompt = few_shot_prompt
-            self.few_shot_image_paths = few_shot_image_paths
+            self.prompt_builder = prompt_builder
             self.output_dir = output_dir
 
         def classify(self, path):
-            calls.append(path)
-            return {"value": path}
+            calls.append(path.img_path)
+            return {"value": path.img_path}
 
-    monkeypatch.setattr("notebooks.gemini_batch_runner.HerbariumLabelExtractor", FakeExtractor)
+    monkeypatch.setattr("herbarium.gemini_batch_runner.HerbariumLabelExtractor", FakeExtractor)
     monkeypatch.setattr("importlib.reload", lambda mod: mod)
 
     runner = GeminiBatchRunner(num_to_sample=1, path_to_sample_from=str(tmp_path), output_dir=str(tmp_path))
-    runner.sampled_paths = [str(tmp_path / "a.jpg"), str(tmp_path / "b.jpg")]
+    runner.targets = [SimpleNamespace(img_path=str(tmp_path / "a.jpg")), SimpleNamespace(img_path=str(tmp_path / "b.jpg"))]
     runner.sys_instr = "SYS"
-    runner.few_shot = "FEW"
     runner.run_extraction()
 
-    assert calls == runner.sampled_paths
-    assert [r["value"] for r in runner.results] == runner.sampled_paths
+    expected_paths = [t.img_path for t in runner.targets]
+    assert calls == expected_paths
+    assert [r["value"] for r in runner.results] == expected_paths
     assert [r["id"] for r in runner.results] == ["a", "b"]
 
 

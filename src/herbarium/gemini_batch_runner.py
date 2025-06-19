@@ -1,11 +1,8 @@
-import sys
-import os
-sys.path.append(os.path.abspath(".."))
-
 import csv
+import os
 import random
 import importlib
-from notebooks.herbarium_label_extractor import HerbariumLabelExtractor
+from .herbarium_label_extractor import HerbariumLabelExtractor
 import concurrent.futures
 
 
