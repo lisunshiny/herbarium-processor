@@ -13,7 +13,7 @@ You will be provided with two inputs per specimen:
 
   * an `id` (e.g., `"1.1.4"`)
   * the detected `text`
-  * additional metadata such as the bounding box, confidence score, and block type.
+  * additional metadata such as the bounding box and confidence score.
 
 Use both the image and the OCR output to locate, validate, and support your extractions.
 
