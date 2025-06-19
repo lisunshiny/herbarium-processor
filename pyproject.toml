@@ -1,33 +1,30 @@
-[build-system]
-requires = ["setuptools>=61"]
-build-backend = "setuptools.build_meta"
-
-[project]
+[tool.poetry]
 name = "herbarium-processor"
 version = "0.1.0"
 description = "Tools for processing herbarium specimen labels"
 readme = "README.md"
-requires-python = ">=3.11"
-dependencies = [
-    "ipython",
-    "google-generativeai",
-    "python-dotenv",
-    "pandas",
-    "requests",
-    "beautifulsoup4",
-    "matplotlib",
-    "seaborn",
-    "pytesseract",
-    "pillow-heif",
-    "google-cloud-vision",
-    "opencv-python",
-    "jinja2",
-]
+authors = ["Liann Sun <lisunshiny@gmail.com>"]
+package-mode = false  # 👈 disables attempting to install your package
 
-[project.optional-dependencies]
-dev = [
-    "pytest",
-]
+[tool.poetry.dependencies]
+python = ">=3.11"
+ipython = "*"
+google-generativeai = "*"
+python-dotenv = "*"
+pandas = "*"
+requests = "*"
+beautifulsoup4 = "*"
+matplotlib = "*"
+seaborn = "*"
+pytesseract = "*"
+pillow-heif = "*"
+google-cloud-vision = "*"
+opencv-python = "*"
+jinja2 = "*"
 
-[tool.setuptools]
-packages = []
+[tool.poetry.group.dev.dependencies]
+pytest = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

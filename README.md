@@ -37,23 +37,22 @@ Given an image of a specimen label, this library will use computer vision and AI
 ### Quick setup
 1) `git clone` the repo
 2) Obtain a Google API key
-4) In the cloned repo, add a .env file with the following content:
+4) In the cloned repo, add a .env file in the root directory with the following content:
 
    ```
    GOOGLE_API_KEY=your_key_here
    ```
-5) Run `pip install .` in the terminal to install the project dependencies
+5) Run `poetry install` in the terminal to install the project dependencies
 6) Run the Jupyter notebook. The first cell contains the image that is being processed, if you want to test a different image update the value of that variable.
 7) Check out the json response at the end of the notebook, or in the tmp/ directory.
 
 ### Running tests
-After installing the development dependencies, e.g. with `pip install .[dev]`, run `pytest -q` from the repository root to execute the unit tests.
+Run `pytest -q` from the repository root to execute the unit tests.
 
 ### How it works
 This is currently being developed. Given an image of a specimen label, it:
 
 1) Uses an image-to-text i.e. OCR service to extract the text from the label
-** note**: Calling the OCR is not yet implemeneted, I just hardcoded the json responses from [Google Cloud Vision API](https://cloud.google.com/vision/docs/drag-and-drop) into /json/ to shim this step.
 2) Cleans up the OCR response to be much smaller in order to prep it for passing it to the model (in this case, Gemini 2.5 Pro)
 3) Drafts up system instructions
  TODO: Fine-tune this prompt if needed
