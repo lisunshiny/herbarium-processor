@@ -152,15 +152,64 @@ class CsvComparator:
 
     def display_sample_diffs(self, display_inline: bool = True):
         html_parts = []
+        # Only render the toggle button/script once
+        toggle_script = '''
+<button onclick="toggleSampleDiffView()">Toggle Diff View</button>
+<script>
+function toggleSampleDiffView() {
+    const origTables = document.querySelectorAll('.sample-orig-table');
+    const diffTables = document.querySelectorAll('.sample-diff-table');
+    for (let i = 0; i < origTables.length; i++) {
+        if (origTables[i].style.display === 'none') {
+            origTables[i].style.display = '';
+            diffTables[i].style.display = 'none';
+        } else {
+            origTables[i].style.display = 'none';
+            diffTables[i].style.display = '';
+        }
+    }
+}
+</script>
+'''
+        tables_html = []
         for col, data in self.accuracy_report.items():
             if data["examples"]:
-                if display_inline:
-                    print(f"\n❌ Sample Mismatches in Column: {col}")
-                    display(pd.DataFrame(data["examples"]))
-                else:
-                    html_parts.append(f"<h3>{col}</h3>")
-                    html_parts.append(pd.DataFrame(data["examples"]).to_html(index=False))
-        if not display_inline:
+                orig_rows = []
+                diff_rows = []
+                for ex in data["examples"]:
+                    arrow_view = f"{ex['test']}<br><small><i>→ {ex['original']}</i></small>"
+                    diff_view = self.inline_diff(ex["test"], ex["original"])
+                    orig_rows.append(
+                        f"<tr><td style='padding:4px;'>{ex['id']}</td>"
+                        f"<td style='padding:4px;'>{ex['test']}</td>"
+                        f"<td style='padding:4px;'>{ex['original']}</td></tr>"
+                    )
+                    diff_rows.append(
+                        f"<tr><td style='padding:4px;'>{ex['id']}</td>"
+                        f"<td style='padding:4px;' colspan='2'>"
+                        f"<span class='arrow-view' style='display:none'>{arrow_view}</span>"
+                        f"<span class='diff-view'>{diff_view}<br><small><i>→ {ex['original']}</i></small></span>"
+                        f"</td></tr>"
+                    )
+                table_html = ""
+                table_html += f"<h4>❌ Sample Mismatches in Column: {col}</h4>"
+                table_html += "<table class='sample-orig-table' border='1' style='border-collapse:collapse;font-family:sans-serif;font-size:14px;'>"
+                table_html += "<tr><th style='padding:4px;'>ID</th><th style='padding:4px;'>Test Value</th><th style='padding:4px;'>Canonical Value</th></tr>"
+                table_html += "".join(orig_rows)
+                table_html += "</table>"
+                table_html += "<table class='sample-diff-table' border='1' style='border-collapse:collapse;font-family:sans-serif;font-size:14px; display:none;'>"
+                table_html += "<tr><th style='padding:4px;'>ID</th><th style='padding:4px;' colspan='2'>Diff (test vs canonical)</th></tr>"
+                table_html += "".join(diff_rows)
+                table_html += "</table>"
+                tables_html.append(table_html)
+        if display_inline:
+            if tables_html:
+                html = toggle_script + "".join(tables_html)
+                display(HTML(html))
+        else:
+            if tables_html:
+                html_parts.append(toggle_script)
+                html_parts.extend(tables_html)
             return "\n".join(html_parts)
 
     def similarity(self, a, b):
@@ -248,6 +297,13 @@ function toggleDiffView() {
         buf.close()
         html_parts.append(f"<img src='data:image/png;base64,{encoded1}'/>")
         html_parts.append(f"<img src='data:image/png;base64,{encoded2}'/>")
+        sample_html = self.display_sample_diffs(display_inline=False)
+        if sample_html:
+            html_parts.append("<h3>Sample Mismatches</h3>")
+            html_parts.append(sample_html)
+        html_parts.append("<h3>Diff View</h3>")
+        html_parts.append(self.display_diff_view(return_html=True))
+        return html_parts
         sample_html = self.display_sample_diffs(display_inline=False)
         if sample_html:
             html_parts.append("<h3>Sample Mismatches</h3>")
