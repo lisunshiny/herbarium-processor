@@ -101,6 +101,31 @@ class PromptBuilder:
 
         return prompt
 
+    def generate_debug_prompt(self) -> str:
+        """
+        Generate a prompt using only the few-shot examples, without inserting a target sample.
+        Useful for debugging or printing the base prompt template.
+
+        Returns:
+            str: The rendered prompt string with only the few-shot examples.
+        """
+        shots = [
+            {
+                "image_path": shot.img_path,
+                "ocr_json": self._load_ocr_json(shot.ocr_path),
+                "output_json": self._load_output_json(shot.id),
+            }
+            for shot in self.shot_data
+        ]
+
+        # Provide an empty or dummy target
+        target = {
+            "image_path": "",
+            "ocr_json": {},
+        }
+
+        prompt = self.template.render(field_list=self.field_list, shots=shots, target=target)
+        return prompt
     def generate(self, target_data) -> Tuple[str, List[str]]:
         image_paths = [shot.img_path for shot in self.shot_data]
         image_paths.append(target_data.img_path)

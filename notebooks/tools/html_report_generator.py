@@ -2,20 +2,26 @@
 HTMLReportGenerator
 ==================
 
-This script defines a standalone class `HTMLReportGenerator` that compares two CSV files
-(canonical and test outputs), generates visual diffs, and writes an HTML
-report including metadata and prompt/instruction content.
+This script defines the `HTMLReportGenerator` class, which compares two CSV files
+(canonical and test outputs), generates visual diffs, and writes a comprehensive HTML
+report. The report includes:
+
+- Run metadata (date, CSV paths)
+- Model accuracy summary and visualizations
+- Sample mismatches with GitHub-style highlighting
+- Full diff views
+- Optionally, the prompt and system instructions used for the model run
 
 Usage:
 ------
-from html_model_generator import HTMLReportGenerator
+from html_report_generator import HTMLReportGenerator
 
 scorer = HTMLReportGenerator(
     canonical_csv_path="path/to/canonical.csv",
     test_csv_path="path/to/test.csv",
-    prompt_path="path/to/prompt.md",                    # Optional
-    system_instructions_path="path/to/instructions.md", # Optional
-    html_output_path="path/to/output.html"              # Required
+    html_output_path="path/to/output.html",              # Required
+    prompt_builder=your_prompt_builder,                  # Optional: to render the prompt for the report
+    system_instructions_path="path/to/instructions.md"   # Optional: to include system instructions in the report
 )
 
 scorer.run_all()
@@ -23,12 +29,12 @@ scorer.run_all()
 This will:
 - Compare the two CSVs
 - Display visualizations and diffs in the notebook or terminal
-- Generate an HTML report
+- Generate an HTML report with all relevant metadata, prompt, and instructions
 
 Dependencies:
 -------------
 - Assumes availability of a `CsvComparator` class in `notebooks.tools.csv_comparator`
-
+- Optionally uses a `PromptBuilder` for generating prompts
 """
 
 import os
@@ -37,22 +43,25 @@ import datetime
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
 from notebooks.tools.csv_comparator import CsvComparator
+from notebooks.tools.prompt_builder import SpecimenLabel
+
 
 class HTMLReportGenerator:
-    def __init__(self,
-                 canonical_csv_path,
-                 test_csv_path,
-                 html_output_path,
-                 prompt_path=None,
-                 system_instructions_path=None):
+    def __init__(
+        self,
+        canonical_csv_path,
+        test_csv_path,
+        html_output_path,
+        prompt_builder=None,
+        system_instructions_path=None,
+    ):
         self.canonical_csv_path = canonical_csv_path
         self.test_csv_path = test_csv_path
-        self.prompt_path = prompt_path
+        self.prompt_builder = prompt_builder
         self.system_instructions_path = system_instructions_path
         self.html_output_path = html_output_path
         self.comparator = CsvComparator(
-            canonical_csv_path=canonical_csv_path,
-            test_csv_path=test_csv_path
+            canonical_csv_path=canonical_csv_path, test_csv_path=test_csv_path
         )
 
     def run_all(self):
@@ -72,15 +81,17 @@ class HTMLReportGenerator:
 
         html_parts += self.comparator.calculate_html_parts()
 
-        if self.prompt_path and os.path.exists(self.prompt_path):
-            with open(self.prompt_path, "r", encoding="utf-8") as f:
-                prompt_text = f.read()
+        if self.prompt_builder:
+            prompt_text = self.prompt_builder.generate_debug_prompt()
             html_parts.append(f"<h2>Prompt</h2><pre>{prompt_text}</pre>")
-
-        if self.system_instructions_path and os.path.exists(self.system_instructions_path):
+        if self.system_instructions_path and os.path.exists(
+            self.system_instructions_path
+        ):
             with open(self.system_instructions_path, "r", encoding="utf-8") as f:
                 sys_instr_text = f.read()
-            html_parts.append(f"<h2>System Instructions</h2><pre>{sys_instr_text}</pre>")
+            html_parts.append(
+                f"<h2>System Instructions</h2><pre>{sys_instr_text}</pre>"
+            )
 
         with open(self.html_output_path, "w", encoding="utf-8") as f:
             f.write("<html><body>" + "\n".join(html_parts) + "</body></html>")
