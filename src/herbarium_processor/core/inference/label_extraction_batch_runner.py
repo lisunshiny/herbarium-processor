@@ -1,7 +1,7 @@
 import csv
 import random
 import os
-from herbarium_processor.core.llm.gemini_label_extractor import GeminiLabelExtractor
+from herbarium_processor.core.inference.gemini_label_extractor import GeminiLabelExtractor
 from herbarium_processor.config import ROOT_DIR, TMP_DIR
 import concurrent.futures
 
@@ -59,18 +59,11 @@ class LabelExtractionBatchRunner:
         ```
     """
     def __init__(self,
-                 num_to_sample=None,
-                 path_to_sample_from=None,
-                sampled_paths=None,
                  output_csv_path=None,
                  system_instructions_path='prompts/system_instructions_no_ocr.md',
                  output_dir=None,
                  prompt_builder=None,
                  targets=[]):
-
-        self.num_to_sample = num_to_sample
-        self.path_to_sample_from = ROOT_DIR / path_to_sample_from
-        self.sampled_paths = sampled_paths or []
         self.output_csv_path = ROOT_DIR / output_csv_path
         self.system_instructions_path = ROOT_DIR / system_instructions_path
         self.output_dir = ROOT_DIR / output_dir if output_dir else TMP_DIR
@@ -78,17 +71,6 @@ class LabelExtractionBatchRunner:
         self.prompt_builder = prompt_builder
         self.targets = targets
         self.results = []
-
-    def sample_images(self):
-        if not self.sampled_paths and self.path_to_sample_from:
-            all_files = [
-                f for f in os.listdir(self.path_to_sample_from)
-                if f.lower().endswith(('.jpg', '.jpeg'))
-            ]
-            sampled_files = random.sample(all_files, min(self.num_to_sample, len(all_files)))
-            self.sampled_paths = [os.path.join(self.path_to_sample_from, f) for f in sampled_files]
-        print("Will generate CSV based on sampled files:")
-        print(self.sampled_paths)
 
     def load_prompts(self):
         with open(self.system_instructions_path) as f:
@@ -127,7 +109,6 @@ class LabelExtractionBatchRunner:
         print(f"Saved CSV to {self.output_csv_path}")
 
     def run(self):
-        self.sample_images()
         self.load_prompts()
         self.run_extraction()
         self.save_csv()
