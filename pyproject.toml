@@ -24,6 +24,7 @@ google_cloud_vision = "*"
 fastapi = "*"
 uvicorn = "*"
 python-multipart = "*"
+pyyaml = "*"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "*"

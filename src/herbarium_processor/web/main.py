@@ -7,11 +7,10 @@ from typing import List
 
 from herbarium_processor.config import ROOT_DIR, TMP_DIR
 from herbarium_processor.core.ocr.ocr_client import OcrClient
-from herbarium_processor.core.inference.prompt_builder import PromptBuilder
+from herbarium_processor.core.inference import create_prompt_builder_from_yaml
 from herbarium_processor.core.inference.label_extraction_batch_runner import LabelExtractionBatchRunner
 from herbarium_processor.core.types.specimen_label import SpecimenLabel
 
-FIELD_LIST = ["taxon", "locality", "coordinates", "date", "elevation", "id", "substrate"]
 
 app = FastAPI(title="Herbarium Processor Web")
 
@@ -47,12 +46,7 @@ async def upload(files: List[UploadFile] = File(...)):
             SpecimenLabel(id=dest.stem, img_path=str(rel_path), ocr_path=str(ocr_json.relative_to(ROOT_DIR)))
         )
 
-    builder = PromptBuilder(
-        csv_path="data/csv/fake_canonical.csv",
-        field_list=FIELD_LIST,
-        shot_data=[],
-        template_path="prompts/templates/herbarium_prompt.j2",
-    )
+    builder = create_prompt_builder_from_yaml("prompts/configs/web_prompt.yaml")
 
     csv_rel = (job_dir / "results.csv").relative_to(ROOT_DIR)
     runner = LabelExtractionBatchRunner(
