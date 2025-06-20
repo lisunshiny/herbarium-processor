@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Herbarium Processor</title>
+</head>
+<body>
+<h1>Herbarium Processor</h1>
+<form id="upload-form">
+    <input type="file" id="file-input" name="files" multiple accept="image/*">
+    <button type="submit">Upload</button>
+</form>
+<div id="status"></div>
+<script>
+document.getElementById('upload-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const files = document.getElementById('file-input').files;
+    if (!files.length) {
+        alert('Please select at least one image.');
+        return;
+    }
+    const formData = new FormData();
+    for (const file of files) {
+        formData.append('files', file);
+    }
+    const status = document.getElementById('status');
+    status.textContent = 'Processing...';
+    const resp = await fetch('/upload', { method: 'POST', body: formData });
+    if (!resp.ok) {
+        status.textContent = 'Upload failed';
+        return;
+    }
+    const data = await resp.json();
+    const link = document.createElement('a');
+    link.href = `/download/${data.job_id}`;
+    link.textContent = 'Download CSV';
+    link.download = 'results.csv';
+    status.innerHTML = '';
+    status.appendChild(link);
+});
+</script>
+</body>
+</html>

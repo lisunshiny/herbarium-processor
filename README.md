@@ -47,7 +47,16 @@ Given an image of a specimen label, this library will use computer vision and AI
 7) Check out the json response at the end of the notebook, or in the tmp/ directory.
 
 ### Running tests
-Run `pytest -q` from the repository root to execute the unit tests.
+Run `poetry run pytest -q` from the repository root to execute the unit tests.
+
+### Web app
+1. Install dependencies with `poetry install`
+2. Start the server with `poetry run uvicorn herbarium_processor.web.main:app --reload`
+3. POST up to 10 images to `/upload`. The endpoint returns a `job_id` when processing finishes.
+4. Download the resulting CSV from `/download/{job_id}`.
+5. Visit `http://localhost:8000/` to use the simple web UI for uploading images and downloading the CSV.
+   
+The processing currently runs synchronously when images are uploaded. **TODO**: move the heavy work to a background task queue.
 
 ### How it works
 This is currently being developed. Given an image of a specimen label, it:
