@@ -11,6 +11,8 @@
     <button type="submit">Upload</button>
 </form>
 <div id="status"></div>
+<pre id="logs" style="background:#f0f0f0;padding:1em;
+    white-space:pre-wrap;border:1px solid #ccc;max-height:300px;overflow:auto"></pre>
 <script>
 document.getElementById('upload-form').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -24,19 +26,37 @@ document.getElementById('upload-form').addEventListener('submit', async (e) => {
         formData.append('files', file);
     }
     const status = document.getElementById('status');
+    const logEl = document.getElementById('logs');
     status.textContent = 'Processing...';
+    logEl.textContent = '';
     const resp = await fetch('/upload', { method: 'POST', body: formData });
     if (!resp.ok) {
         status.textContent = 'Upload failed';
         return;
     }
     const data = await resp.json();
-    const link = document.createElement('a');
-    link.href = `/download/${data.job_id}`;
-    link.textContent = 'Download CSV';
-    link.download = 'results.csv';
-    status.innerHTML = '';
-    status.appendChild(link);
+
+    async function fetchLogs() {
+        const r = await fetch(`/logs/${data.job_id}`);
+        if (!r.ok) return;
+        const j = await r.json();
+        logEl.textContent = j.logs;
+        if (j.status === 'complete') {
+            clearInterval(timer);
+            const link = document.createElement('a');
+            link.href = `/download/${data.job_id}`;
+            link.textContent = 'Download CSV';
+            link.download = 'results.csv';
+            status.innerHTML = '';
+            status.appendChild(link);
+        } else if (j.status === 'error') {
+            clearInterval(timer);
+            status.textContent = 'Job failed';
+        }
+    }
+
+    const timer = setInterval(fetchLogs, 1000);
+    fetchLogs();
 });
 </script>
 </body>
