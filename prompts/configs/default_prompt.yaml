@@ -1,0 +1,31 @@
+csv_path: data/cs_canonical.csv
+field_list:
+  - label_header
+  - scientific_name
+  - field_collection_location_verbatim
+  - county
+  - state
+  - country
+  - verbatim_latitude
+  - verbatim_longitude
+  - elevation
+  - habitat_information
+  - field_collection_date
+  - comment
+  - field_collectors
+  - identifier
+  - field_collection_number
+  - identification_date
+  - exsiccatae_number
+  - associated_taxa
+shot_data:
+  - id: cs_16625_23
+    img_path: data/img/cs/cs_16625_23.jpg
+    ocr_path: tmp/ocr_ai_input_cs_16625_23.json
+  - id: cs_16625_24
+    img_path: data/img/cs/cs_16625_24.jpg
+    ocr_path: tmp/ocr_ai_input_cs_16625_24.json
+  - id: cs_16625_25
+    img_path: data/img/cs/cs_16625_25.jpg
+    ocr_path: tmp/ocr_ai_input_cs_16625_25.json
+template_path: prompts/templates/herbarium_prompt.j2
