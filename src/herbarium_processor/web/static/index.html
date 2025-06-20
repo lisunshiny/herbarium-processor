@@ -3,41 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <title>Herbarium Processor</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <style>
+        img { max-width: 300px; display: block; margin-bottom: 8px; }
+        .record { border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; }
+        label { display: block; margin-bottom: 4px; }
+    </style>
 </head>
 <body>
-<h1>Herbarium Processor</h1>
-<form id="upload-form">
-    <input type="file" id="file-input" name="files" multiple accept="image/*">
-    <button type="submit">Upload</button>
-</form>
-<div id="status"></div>
+<div id="app">
+    <h1>Herbarium Processor</h1>
+
+    <div v-if="stage === 'upload'">
+        <form @submit.prevent="upload">
+            <input type="file" ref="files" multiple accept="image/*">
+            <button type="submit">Upload</button>
+        </form>
+    </div>
+
+    <div v-if="stage === 'edit'">
+        <div v-for="(row, idx) in rows" :key="idx" class="record">
+            <img :src="row.ocr_image" alt="Annotated image">
+            <div><strong>ID: {{ row.id }}</strong></div>
+            <div v-for="field in fieldnames">
+                <label>{{ field }}
+                    <input v-model="row[field]" />
+                </label>
+            </div>
+        </div>
+        <button @click="finalize">Finalize CSV</button>
+    </div>
+
+    <div v-if="stage === 'done'">
+        <a :href="`/download/${jobId}`" download>Download CSV</a>
+    </div>
+
+    <div>{{ status }}</div>
+</div>
+
 <script>
-document.getElementById('upload-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const files = document.getElementById('file-input').files;
-    if (!files.length) {
-        alert('Please select at least one image.');
-        return;
+const { createApp } = Vue;
+createApp({
+    data() {
+        return {
+            stage: 'upload',
+            jobId: '',
+            rows: [],
+            fieldnames: [],
+            status: ''
+        };
+    },
+    methods: {
+        async upload() {
+            const files = this.$refs.files.files;
+            if (!files.length) {
+                alert('Please select at least one image.');
+                return;
+            }
+            this.status = 'Processing...';
+            const formData = new FormData();
+            for (const f of files) {
+                formData.append('files', f);
+            }
+            const resp = await fetch('/upload', { method: 'POST', body: formData });
+            if (!resp.ok) {
+                this.status = 'Upload failed';
+                return;
+            }
+            const data = await resp.json();
+            this.jobId = data.job_id;
+            await this.fetchResults();
+        },
+        async fetchResults() {
+            const resp = await fetch(`/results/${this.jobId}`);
+            if (!resp.ok) {
+                this.status = 'Failed to fetch results';
+                return;
+            }
+            const data = await resp.json();
+            this.fieldnames = data.fieldnames.filter(f => f !== 'id');
+            this.rows = data.rows;
+            this.stage = 'edit';
+            this.status = '';
+        },
+        async finalize() {
+            const resp = await fetch(`/finalize/${this.jobId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(this.rows)
+            });
+            if (!resp.ok) {
+                this.status = 'Failed to save CSV';
+                return;
+            }
+            this.stage = 'done';
+            this.status = 'CSV ready';
+        }
     }
-    const formData = new FormData();
-    for (const file of files) {
-        formData.append('files', file);
-    }
-    const status = document.getElementById('status');
-    status.textContent = 'Processing...';
-    const resp = await fetch('/upload', { method: 'POST', body: formData });
-    if (!resp.ok) {
-        status.textContent = 'Upload failed';
-        return;
-    }
-    const data = await resp.json();
-    const link = document.createElement('a');
-    link.href = `/download/${data.job_id}`;
-    link.textContent = 'Download CSV';
-    link.download = 'results.csv';
-    status.innerHTML = '';
-    status.appendChild(link);
-});
+}).mount('#app');
 </script>
 </body>
 </html>
