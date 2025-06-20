@@ -4,7 +4,7 @@ from types import SimpleNamespace as SN
 
 import pytest
 
-from notebooks.herbarium_label_extractor import HerbariumLabelExtractor
+from herbarium_processor.core.inference.gemini_label_extractor import GeminiLabelExtractor
 
 
 class DummyBuilder:
@@ -23,10 +23,10 @@ def make_fake_response(data):
 
 def test_classify_creates_output(tmp_path):
     builder = DummyBuilder(["text part"])
-    extractor = HerbariumLabelExtractor.__new__(HerbariumLabelExtractor)
+    extractor = GeminiLabelExtractor.__new__(GeminiLabelExtractor)
     extractor.system_instructions = "sys"
     extractor.prompt_builder = builder
-    extractor.output_dir = str(tmp_path)
+    extractor.output_dir = tmp_path
     extractor.session_timestamp = 123
     extractor.model = SimpleNamespace(generate_content=lambda *args, **kwargs: make_fake_response("```json\n{\"result\": 1}\n```"))
 
@@ -36,7 +36,7 @@ def test_classify_creates_output(tmp_path):
     assert builder.called_with is target
     assert result == {"result": 1}
 
-    output_files = list(tmp_path.glob("herbarium_processed_output_123_foo.json"))
+    output_files = list(tmp_path.glob("processed_output_123_foo.json"))
     assert len(output_files) == 1
     with open(output_files[0]) as f:
         assert json.load(f) == {"result": 1}
