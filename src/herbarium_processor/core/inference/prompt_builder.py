@@ -1,56 +1,57 @@
-"""
-PromptBuilder
-
-This module defines a PromptBuilder class that loads example data and a Jinja2 template,
-then renders a few-shot prompt for use with a language model (e.g., Gemini).
-It also provides methods to generate prompt content parts with embedded images for multimodal models.
-
-Usage Example:
---------------
-from prompt_builder import PromptBuilder, SpecimenLabel
-
-labels = [
-    SpecimenLabel(id="1", img_path="/path/to/image1.jpg", ocr_path="/path/to/ocr1.json"),
-    SpecimenLabel(id="2", img_path="/path/to/image2.jpg", ocr_path="/path/to/ocr2.json")
-]
-
-target_example = SpecimenLabel(id="3", img_path="/path/to/image3.jpg", ocr_path="/path/to/ocr3.json")
-
-builder = PromptBuilder(
-    csv_path="data/labels.csv",
-    field_list=["scientific_name", "field_collectors", "sources"],
-    shot_data=labels,
-    template_path="templates/prompt_template.j2"
-)
-
-# Generate a prompt string and list of image paths for the target example
-prompt_str, image_paths = builder.generate(target_example)
-
-# Generate a list of content parts (text and images) for multimodal model input
-contents = builder.generate_contents(target_example)
-
-# `prompt_str` is a string containing the rendered prompt
-# `image_paths` is a list of image file paths referenced in the prompt
-# `contents` is a list of text and image parts suitable for Gemini's API
-"""
-
 import pandas as pd
 import json
 import os
 from jinja2 import Environment, FileSystemLoader
 from typing import List, Dict, Tuple
-from dataclasses import dataclass
 import re
 
-
-@dataclass
-class SpecimenLabel:
-    id: str
-    img_path: str
-    ocr_path: str
+from herbarium_processor.config import ROOT_DIR
+from herbarium_processor.core.types.specimen_label import SpecimenLabel
 
 
 class PromptBuilder:
+    """
+    PromptBuilder
+
+    This module defines a PromptBuilder class that loads example data from a CSV file and a Jinja2 template,
+    then renders few-shot prompts for use with a language model (e.g., Gemini).
+    It supports generating both plain prompt strings and multimodal prompt content with embedded images and OCR data.
+
+    Key Features:
+    -------------
+    - Loads specimen label data from a CSV file.
+    - Uses a Jinja2 template to render prompts with few-shot examples and a target sample.
+    - Supports multimodal prompt generation: produces content parts with images for Gemini's API.
+    - Provides methods for generating debug prompts and for extracting output fields.
+
+    Usage Example:
+    --------------
+    from prompt_builder import PromptBuilder, SpecimenLabel
+
+    labels = [
+        SpecimenLabel(id="1", img_path="/path/to/image1.jpg", ocr_path="/path/to/ocr1.json"),
+        SpecimenLabel(id="2", img_path="/path/to/image2.jpg", ocr_path="/path/to/ocr2.json")
+    ]
+
+    target_example = SpecimenLabel(id="3", img_path="/path/to/image3.jpg", ocr_path="/path/to/ocr3.json")
+
+    builder = PromptBuilder(
+        csv_path="data/labels.csv",
+        field_list=["scientific_name", "field_collectors", "sources"],
+        shot_data=labels,
+        template_path="templates/prompt_template.j2"
+    )
+
+    # Generate a prompt string and list of image paths for the target example
+    prompt_str, image_paths = builder.generate(target_example)
+
+    # Generate a list of content parts (text and images) for multimodal model input
+    contents = builder.generate_contents(target_example)
+
+    # `prompt_str` is a string containing the rendered prompt
+    # `image_paths` is a list of image file paths referenced in the prompt
+    # `contents` is a list of text and image parts suitable for Gemini's API
+    """
     def __init__(
         self,
         csv_path: str,
@@ -58,10 +59,10 @@ class PromptBuilder:
         shot_data: List[SpecimenLabel],
         template_path: str
     ):
-        self.csv_path = csv_path
+        self.csv_path = ROOT_DIR / csv_path
         self.field_list = field_list
         self.shot_data = shot_data
-        self.template_path = template_path
+        self.template_path = ROOT_DIR / template_path
 
         self.df = pd.read_csv(self.csv_path, dtype={"id": str})
         template_dir, template_file = os.path.split(self.template_path)

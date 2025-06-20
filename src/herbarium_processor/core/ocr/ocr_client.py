@@ -21,6 +21,7 @@ class OcrClient:
         self.preprocessor = ImagePreprocessor()
 
     def extract_text_json(self, image_path):
+        image_path = ROOT_DIR / image_path
         # Get the base name of the file without extension
         base_name = os.path.splitext(os.path.basename(image_path))[0]
         preprocessed_path = TMP_DIR / f"ocr_preprocessed_{base_name}.jpg"
@@ -182,6 +183,7 @@ class ImagePreprocessor:
         self.last_resize_fy = 1.0
 
     def preprocess_for_ocr(self, image_path):
+        image_path = ROOT_DIR / image_path
         if not os.path.exists(image_path):
             raise FileNotFoundError(f"Image not found: {image_path}")
 

@@ -17,6 +17,10 @@ CS_IMG_DIR = ROOT_DIR / "data" / "cs"
 # tmp paths
 TMP_DIR = ROOT_DIR / "tmp"
 
+def resolve_path(p: str | Path) -> Path:
+    p = Path(p)
+    return p if p.is_absolute() else ROOT_DIR / p
+
 
 # Create tmp dir if it doesn't exist
 TMP_DIR.mkdir(parents=True, exist_ok=True)

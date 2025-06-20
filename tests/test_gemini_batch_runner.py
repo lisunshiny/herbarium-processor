@@ -3,8 +3,10 @@ import csv
 import random
 from types import SimpleNamespace
 import pytest
-from notebooks.gemini_batch_runner import GeminiBatchRunner
+from herbarium_processor.core.llm.label_extraction_batch_runner import GeminiBatchRunner
 from notebooks.tools.prompt_builder import SpecimenLabel
+
+from herbarium_processor.config import ROOT_DIR, TMP_DIR
 
 
 def create_images(directory, names):
