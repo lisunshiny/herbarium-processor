@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Herbarium Processor</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.css">
+    <script src="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.js"></script>
     <style>
         img { max-width: 300px; display: block; margin-bottom: 8px; }
         .record { border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; }
@@ -19,6 +21,14 @@
             <input type="file" ref="files" multiple accept="image/*">
             <button type="submit">Upload</button>
         </form>
+    </div>
+
+    <div v-if="stage === 'sanitize'">
+        <h3>Adjust Image {{ cropIndex + 1 }} / {{ images.length }}</h3>
+        <img :src="images[cropIndex]" ref="cropImg">
+        <button @click="rotateLeft">Rotate Left</button>
+        <button @click="rotateRight">Rotate Right</button>
+        <button @click="nextCrop">{{ cropIndex === images.length - 1 ? 'Finish' : 'Next' }}</button>
     </div>
 
     <div v-if="stage === 'edit'">
@@ -50,7 +60,11 @@ createApp({
             jobId: '',
             rows: [],
             fieldnames: [],
-            status: ''
+            status: '',
+            images: [],
+            cropIndex: 0,
+            cropData: [],
+            cropper: null
         };
     },
     methods: {
@@ -72,7 +86,11 @@ createApp({
             }
             const data = await resp.json();
             this.jobId = data.job_id;
-            await this.fetchResults();
+            this.images = data.images;
+            this.cropIndex = 0;
+            this.cropData = [];
+            this.stage = 'sanitize';
+            this.$nextTick(this.initCropper);
         },
         async fetchResults() {
             const resp = await fetch(`/results/${this.jobId}`);
@@ -85,6 +103,47 @@ createApp({
             this.rows = data.rows;
             this.stage = 'edit';
             this.status = '';
+        },
+        initCropper() {
+            if (this.cropper) this.cropper.destroy();
+            const img = this.$refs.cropImg;
+            this.cropper = new Cropper(img, { viewMode: 1 });
+        },
+        rotateLeft() {
+            if (this.cropper) this.cropper.rotate(-90);
+        },
+        rotateRight() {
+            if (this.cropper) this.cropper.rotate(90);
+        },
+        async nextCrop() {
+            const data = this.cropper.getData(true);
+            this.cropData.push({
+                filename: this.images[this.cropIndex].split('/').pop(),
+                x: data.x,
+                y: data.y,
+                width: data.width,
+                height: data.height,
+                rotate: data.rotate
+            });
+            if (this.cropIndex < this.images.length - 1) {
+                this.cropIndex++;
+                this.$nextTick(this.initCropper);
+            } else {
+                await this.submitCrops();
+            }
+        },
+        async submitCrops() {
+            this.status = 'Processing...';
+            const resp = await fetch(`/sanitize/${this.jobId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(this.cropData)
+            });
+            if (!resp.ok) {
+                this.status = 'Image processing failed';
+                return;
+            }
+            await this.fetchResults();
         },
         async finalize() {
             const resp = await fetch(`/finalize/${this.jobId}`, {

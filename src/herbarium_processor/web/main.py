@@ -4,14 +4,22 @@ from fastapi.staticfiles import StaticFiles
 from uuid import uuid4
 from pathlib import Path
 from typing import List, Dict
+from pydantic import BaseModel
 import shutil
 import csv
 
 from herbarium_processor.config import ROOT_DIR, TMP_DIR
 from herbarium_processor.core.ocr.ocr_client import OcrClient
 from herbarium_processor.core.inference import create_prompt_builder_from_yaml
-from herbarium_processor.core.inference.label_extraction_batch_runner import LabelExtractionBatchRunner
+from herbarium_processor.core.inference.label_extraction_batch_runner import (
+    LabelExtractionBatchRunner,
+)
 from herbarium_processor.core.types.specimen_label import SpecimenLabel
+from herbarium_processor.core.image.image_utils import (
+    convert_heic_to_jpg_no_resize,
+    preprocess_image_file_no_resize,
+    crop_rotate_and_resize,
+)
 
 
 app = FastAPI(title="Herbarium Processor Web")
@@ -23,33 +31,71 @@ app.mount("/tmp", StaticFiles(directory=TMP_DIR), name="tmp")
 MAX_FILES = 10
 
 
+class CropOperation(BaseModel):
+    filename: str
+    x: float = 0.0
+    y: float = 0.0
+    width: float = 0.0
+    height: float = 0.0
+    rotate: float = 0.0
+
+
 @app.get("/", response_class=HTMLResponse)
 async def index():
     return (STATIC_DIR / "index.html").read_text()
 
+
 @app.post("/upload")
 async def upload(files: List[UploadFile] = File(...)):
     if not files or len(files) > MAX_FILES:
-        raise HTTPException(status_code=400, detail=f"Upload between 1 and {MAX_FILES} images")
+        raise HTTPException(
+            status_code=400, detail=f"Upload between 1 and {MAX_FILES} images"
+        )
 
     job_id = str(uuid4())
     job_dir = TMP_DIR / f"job_{job_id}"
     images_dir = job_dir / "images"
     images_dir.mkdir(parents=True, exist_ok=True)
 
-    ocr = OcrClient()
-    targets: List[SpecimenLabel] = []
+    images = []
     for f in files:
         dest = images_dir / f.filename
         dest.write_bytes(await f.read())
-        rel_path = dest.relative_to(ROOT_DIR)
+        if dest.suffix.lower() == ".heic":
+            new_path = convert_heic_to_jpg_no_resize(dest)
+            if new_path:
+                dest = Path(new_path)
+        preprocess_image_file_no_resize(dest)
+        images.append(f"/tmp/job_{job_id}/images/{dest.name}")
+    return {"job_id": job_id, "images": images}
+
+
+@app.post("/sanitize/{job_id}")
+async def sanitize(job_id: str, ops: List[CropOperation] = Body(...)):
+    job_dir = TMP_DIR / f"job_{job_id}"
+    images_dir = job_dir / "images"
+    if not images_dir.exists():
+        raise HTTPException(status_code=404, detail="Job not found")
+
+    ocr = OcrClient()
+    targets: List[SpecimenLabel] = []
+    for op in ops:
+        path = images_dir / op.filename
+        crop = (op.x, op.y, op.width, op.height)
+        angle = op.rotate
+        crop_rotate_and_resize(path, crop, angle)
+        rel_path = path.relative_to(ROOT_DIR)
         ocr.extract_text_json(str(rel_path))
-        bound_src = TMP_DIR / f"ocr_bounding_{dest.stem}.jpg"
+        bound_src = TMP_DIR / f"ocr_bounding_{path.stem}.jpg"
         if bound_src.exists():
             shutil.copy(bound_src, job_dir / bound_src.name)
-        ocr_json = TMP_DIR / f"ocr_ai_input_{dest.stem}.json"
+        ocr_json = TMP_DIR / f"ocr_ai_input_{path.stem}.json"
         targets.append(
-            SpecimenLabel(id=dest.stem, img_path=str(rel_path), ocr_path=str(ocr_json.relative_to(ROOT_DIR)))
+            SpecimenLabel(
+                id=path.stem,
+                img_path=str(rel_path),
+                ocr_path=str(ocr_json.relative_to(ROOT_DIR)),
+            )
         )
 
     builder = create_prompt_builder_from_yaml("prompts/configs/web_prompt.yaml")
@@ -62,10 +108,9 @@ async def upload(files: List[UploadFile] = File(...)):
         targets=targets,
     )
 
-    # TODO: Offload this work to a background task queue like Celery
     runner.run()
 
-    return {"job_id": job_id}
+    return {"status": "ok"}
 
 
 @app.get("/results/{job_id}")
@@ -98,6 +143,7 @@ async def finalize(job_id: str, rows: List[Dict[str, str]] = Body(...)):
         writer.writerows(rows)
     return {"status": "ok"}
 
+
 @app.get("/download/{job_id}")
 async def download(job_id: str):
     job_dir = TMP_DIR / f"job_{job_id}"
@@ -107,4 +153,3 @@ async def download(job_id: str):
     if not csv_path.exists():
         raise HTTPException(status_code=404, detail="Results not found")
     return FileResponse(csv_path, media_type="text/csv", filename=csv_path.name)
-
