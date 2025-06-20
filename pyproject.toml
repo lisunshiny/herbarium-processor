@@ -4,10 +4,9 @@ version = "0.1.0"
 description = "Tools for processing herbarium specimen labels"
 readme = "README.md"
 authors = ["Liann Sun <lisunshiny@gmail.com>"]
-package-mode = false  # 👈 disables attempting to install your package
 
 [tool.poetry.dependencies]
-python = ">=3.11"
+python = ">=3.10"
 ipython = "*"
 google-generativeai = "*"
 python-dotenv = "*"
@@ -21,9 +20,12 @@ pillow-heif = "*"
 google-cloud-vision = "*"
 opencv-python = "*"
 jinja2 = "*"
+google_cloud_vision = "*"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "*"
+ipykernel = "^6.29.5"
+nbstripout = "^0.8.1"
 
 [build-system]
 requires = ["poetry-core"]

@@ -1,5 +1,5 @@
 import pytest
-from notebooks.tools.prompt_builder import PromptBuilder
+from herbarium_processor.core.inference.prompt_builder import PromptBuilder
 
 
 def test_generate_contents_basic(tmp_path):

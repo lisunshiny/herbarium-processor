@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from IPython.display import display, HTML
 
-
+from herbarium_processor.config import ROOT_DIR
 class CsvComparator:
     """
     Compare the accuracy of ML model outputs against a canonical CSV.
@@ -23,8 +23,8 @@ class CsvComparator:
     """
 
     def __init__(self, canonical_csv_path: str, test_csv_path: str):
-        self.canonical_csv_path = canonical_csv_path
-        self.test_csv_path = test_csv_path
+        self.canonical_csv_path = ROOT_DIR / canonical_csv_path
+        self.test_csv_path =  ROOT_DIR / test_csv_path
 
         # Load and normalize column names
         canon = pd.read_csv(canonical_csv_path, dtype=str)

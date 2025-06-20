@@ -5,6 +5,8 @@ from PIL import Image, ExifTags
 import pytesseract
 import pillow_heif
 
+from herbarium_processor.config import ROOT_DIR, resolve_path
+
 # Configuration constants
 TARGET_MAX_DIMENSION = 1000  # Resize long edge to 1000px
 TARGET_DPI = (300, 300)
@@ -81,6 +83,8 @@ def rotate_image_if_needed(image: Image.Image, label: str = "") -> Image.Image:
     return image
 
 def auto_rotate_text_image(image_path: str, save_path: Optional[str] = None) -> None:
+    image_path = resolve_path(image_path)
+    save_path = resolve_path(save_path) if save_path else None
     """Auto-rotate and preprocess image, then save it."""
     label = os.path.basename(image_path)
     try:
@@ -95,6 +99,7 @@ def auto_rotate_text_image(image_path: str, save_path: Optional[str] = None) -> 
         print(f"[{label}] Failed to process image: {e}")
 
 def convert_heic_to_jpg(path: str) -> Optional[str]:
+    path = resolve_path(path)
     """Convert HEIC file to JPEG, delete original, and return new path."""
     try:
         heif_file = pillow_heif.read_heif(path)
@@ -115,6 +120,7 @@ def convert_heic_to_jpg(path: str) -> Optional[str]:
         return None
 
 def process_directory(directory: str) -> None:
+    directory = resolve_path(directory)
     """Process all images in the given directory."""
     for filename in os.listdir(directory):
         path = os.path.join(directory, filename)

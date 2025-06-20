@@ -38,12 +38,10 @@ Dependencies:
 """
 
 import os
-import sys
 import datetime
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
-from notebooks.tools.csv_comparator import CsvComparator
-from notebooks.tools.prompt_builder import SpecimenLabel
+from herbarium_processor.core.analysis.csv_comparator import CsvComparator
+from herbarium_processor.config import ROOT_DIR
 
 
 class HTMLReportGenerator:
@@ -55,13 +53,13 @@ class HTMLReportGenerator:
         prompt_builder=None,
         system_instructions_path=None,
     ):
-        self.canonical_csv_path = canonical_csv_path
-        self.test_csv_path = test_csv_path
+        self.canonical_csv_path = ROOT_DIR / canonical_csv_path
+        self.test_csv_path = ROOT_DIR / test_csv_path
         self.prompt_builder = prompt_builder
-        self.system_instructions_path = system_instructions_path
-        self.html_output_path = html_output_path
+        self.system_instructions_path = ROOT_DIR / system_instructions_path
+        self.html_output_path = ROOT_DIR / html_output_path
         self.comparator = CsvComparator(
-            canonical_csv_path=canonical_csv_path, test_csv_path=test_csv_path
+            canonical_csv_path=self.canonical_csv_path, test_csv_path=self.test_csv_path
         )
 
     def run_all(self):
