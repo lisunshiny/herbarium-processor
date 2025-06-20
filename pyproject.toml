@@ -21,6 +21,9 @@ google-cloud-vision = "*"
 opencv-python = "*"
 jinja2 = "*"
 google_cloud_vision = "*"
+fastapi = "*"
+uvicorn = "*"
+python-multipart = "*"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "*"
