@@ -53,8 +53,8 @@ Run `poetry run pytest -q` from the repository root to execute the unit tests.
 1. Install dependencies with `poetry install`
 2. Start the server with `poetry run uvicorn herbarium_processor.web.main:app --reload`
 3. POST up to 10 images to `/upload`. The endpoint returns a `job_id` when processing finishes.
-4. Download the resulting CSV from `/download/{job_id}`.
-5. Visit `http://localhost:8000/` to use the simple web UI for uploading images and downloading the CSV.
+4. Visit `http://localhost:8000/` to upload images. After processing, predicted fields can be edited in the browser alongside the OCR annotated image.
+5. Click **Finalize CSV** to save your edits and then download the CSV from `/download/{job_id}` (automatically serves the finalized version if it exists).
    
 The processing currently runs synchronously when images are uploaded. **TODO**: move the heavy work to a background task queue.
 
