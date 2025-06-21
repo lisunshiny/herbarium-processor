@@ -61,7 +61,7 @@ createApp({
     data() {
         return {
             stage: presetJobId ? 'edit' : 'upload',
-            jobId: '',
+            jobId: presetJobId,
             rows: [],
             fieldnames: [],
             status: '',
@@ -73,6 +73,7 @@ createApp({
     },
     created() {
         if (this.jobId) {
+            console.log("test");
             this.fetchResults();
         }
     },
