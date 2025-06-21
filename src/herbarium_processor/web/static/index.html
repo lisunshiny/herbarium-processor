@@ -98,6 +98,11 @@
                     cropper: null
                 };
             },
+            created() {
+                if (this.jobId) {
+                    this.fetchResults();
+                }
+            },
             methods: {
                 async upload() {
                     const files = this.$refs.files.files;
