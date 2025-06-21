@@ -45,17 +45,20 @@
         </div>
         <div v-if="stage === 'edit'">
             <div v-for="(row, idx) in rows" :key="idx" class="record flex border p-4 mb-6 relative">
-                <div :style="{ width: panelWidths[idx] + 'px' }"
+                <div :style="{ width: panelWidth + 'px' }"
                     class="relative flex-shrink-0 overflow-auto image-panel">
-                    <img :src="row.ocr_image" alt="Annotated image" :style="{ width: panelWidths[idx] + 'px' }"
-                        class="fixed top-0 left-0" />
+                    <img :src="row.ocr_image" alt="Annotated image" :style="{ width: panelWidth + 'px' }"
+                        class="absolute top-0 left-0" />
                 </div>
-                <div class="w-1 bg-gray-300 cursor-col-resize" @mousedown="startDrag($event, idx)"></div>
+                <div class="w-1 bg-gray-300 cursor-col-resize" @mousedown="startDrag($event)"></div>
                 <div class="flex-1 pl-4">
                     <div class="font-bold mb-2">ID: {{ row.id }}</div>
                     <div v-for="field in fieldnames" class="mb-2">
                         <label class="block text-sm font-medium mb-1">{{ field }}</label>
-                        <textarea v-model="row[field]" rows="3" class="w-full border rounded p-1 resize-y"></textarea>
+                        <textarea v-model="row[field]"
+                            :rows="Math.max(1, (row[field] || '').split('\n').length)"
+                            :style="{ width: Math.min(40, (row[field] || '').length + 2) + 'ch' }"
+                            class="border rounded p-1 resize-y w-fit"></textarea>
                     </div>
                 </div>
             </div>
@@ -88,8 +91,8 @@
                     images: [],
                     cropIndex: 0,
                     cropData: [],
-                    panelWidths: [],
-                    dragIndex: null,
+                    panelWidth: 300,
+                    dragging: false,
                     startX: 0,
                     startWidth: 0,
                     cropper: null
@@ -129,7 +132,7 @@
                     const data = await resp.json();
                     this.fieldnames = data.fieldnames.filter(f => f !== 'id');
                     this.rows = data.rows;
-                    this.panelWidths = data.rows.map(() => 300);
+                    this.panelWidth = 300;
                     this.stage = 'edit';
                     this.status = '';
                 },
@@ -187,24 +190,24 @@
                     this.stage = 'done';
                     this.status = 'CSV ready';
                 },
-                startDrag(e, idx) {
-                    this.dragIndex = idx;
+                startDrag(e) {
+                    this.dragging = true;
                     this.startX = e.clientX;
-                    this.startWidth = this.panelWidths[idx];
+                    this.startWidth = this.panelWidth;
                     this._onDrag = (ev) => this.onDrag(ev);
                     this._stopDrag = () => this.stopDrag();
                     window.addEventListener("mousemove", this._onDrag);
                     window.addEventListener("mouseup", this._stopDrag);
                 },
                 onDrag(e) {
-                    if (this.dragIndex === null) return;
+                    if (!this.dragging) return;
                     const dx = e.clientX - this.startX;
-                    this.panelWidths[this.dragIndex] = Math.max(100, this.startWidth + dx);
+                    this.panelWidth = Math.max(100, this.startWidth + dx);
                 },
                 stopDrag() {
                     window.removeEventListener("mousemove", this._onDrag);
                     window.removeEventListener("mouseup", this._stopDrag);
-                    this.dragIndex = null;
+                    this.dragging = false;
                 },
             }
         }).mount('#app');
