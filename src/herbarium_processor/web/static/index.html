@@ -73,11 +73,15 @@
 
     <script>
         const { createApp } = Vue;
+
+        const pathParts = window.location.pathname.split('/');
+        const presetJobId = pathParts.length >= 3 && pathParts[1] === 'edit' ? pathParts[2] : '';
+
         createApp({
             data() {
                 return {
-                    stage: 'upload',
-                    jobId: '',
+                    stage: presetJobId ? 'edit' : 'upload',
+                    jobId: presetJobId,
                     rows: [],
                     fieldnames: [],
                     status: '',
@@ -90,6 +94,11 @@
                     startWidth: 0,
                     cropper: null
                 };
+            },
+            created() {
+                if (this.jobId) {
+                    this.fetchResults();
+                }
             },
             methods: {
                 async upload() {
