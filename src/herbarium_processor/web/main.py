@@ -45,6 +45,11 @@ async def index():
     return (STATIC_DIR / "index.html").read_text()
 
 
+@app.get("/edit/{job_id}", response_class=HTMLResponse)
+async def edit(job_id: str):
+    return (STATIC_DIR / "index.html").read_text()
+
+
 @app.post("/upload")
 async def upload(files: List[UploadFile] = File(...)):
     if not files or len(files) > MAX_FILES:
