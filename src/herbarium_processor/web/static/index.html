@@ -39,6 +39,21 @@
             max-height: 90vh;
             overflow: scroll;
         }
+        .crop-wrap {
+            margin: 20px;
+            max-width: 800px;
+            max-height: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .crop-target {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+            border: 20px solid transparent;
+            box-sizing: content-box;
+        }
     </style>
 </head>
 
@@ -55,7 +70,9 @@
 
         <div v-if="stage === 'sanitize'">
             <h3>Adjust Image {{ cropIndex + 1 }} / {{ images.length }}</h3>
-            <img :src="images[cropIndex]" ref="cropImg">
+            <div class="crop-wrap">
+                <img :src="images[cropIndex]" ref="cropImg" class="crop-target">
+            </div>
             <div class="space-x-2 mt-2">
                 <button @click="rotateLeft" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Rotate
                     Left</button>
@@ -117,7 +134,10 @@
                     dragging: false,
                     startX: 0,
                     startWidth: 0,
-                    cropper: null
+                    cropper: null,
+                    classifyInterval: null,
+                    timeRemaining: 0,
+                    rotation: 0
                 };
             },
             created() {
@@ -161,18 +181,33 @@
                     this.rows = data.rows;
                     this.panelWidth = 700;
                     this.stage = 'edit';
+                    window.history.pushState(null, '', `/edit/${this.jobId}`);
                     this.status = '';
                 },
                 initCropper() {
                     if (this.cropper) this.cropper.destroy();
                     const img = this.$refs.cropImg;
-                    this.cropper = new Cropper(img, { viewMode: 1 });
+                    this.rotation = 0;
+                    this.cropper = new Cropper(img, {
+                        viewMode: 1,
+                        autoCropArea: 1,
+                        zoomable: false,
+                        movable: false,
+                        scalable: false,
+                        zoomOnWheel: false,
+                        zoomOnTouch: false
+                    });
+                    this.centerImage();
                 },
                 rotateLeft() {
-                    if (this.cropper) this.cropper.rotate(-90);
+                    if (!this.cropper) return;
+                    this.rotation = (this.rotation - 90 + 360) % 360;
+                    this.applyRotation();
                 },
                 rotateRight() {
-                    if (this.cropper) this.cropper.rotate(90);
+                    if (!this.cropper) return;
+                    this.rotation = (this.rotation + 90) % 360;
+                    this.applyRotation();
                 },
                 async nextCrop() {
                     const data = this.cropper.getData(true);
@@ -192,12 +227,18 @@
                     }
                 },
                 async submitCrops() {
-                    this.status = 'Processing...';
+                    this.timeRemaining = Math.ceil(this.cropData.length / 8) * 80;
+                    this.status = `Classifying... ${this.formatTime(this.timeRemaining)} remaining`;
+                    this.classifyInterval = setInterval(() => {
+                        this.timeRemaining = Math.max(0, this.timeRemaining - 10);
+                        this.status = `Classifying... ${this.formatTime(this.timeRemaining)} remaining`;
+                    }, 10000);
                     const resp = await fetch(`/sanitize/${this.jobId}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(this.cropData)
                     });
+                    clearInterval(this.classifyInterval);
                     if (!resp.ok) {
                         this.status = 'Image processing failed';
                         return;
@@ -236,6 +277,27 @@
                     window.removeEventListener("mouseup", this._stopDrag);
                     this.dragging = false;
                 },
+                applyRotation() {
+                    this.cropper.reset();
+                    this.cropper.rotateTo(this.rotation);
+                    this.centerImage();
+                },
+                centerImage() {
+                    const container = this.cropper.getContainerData();
+                    const canvas = this.cropper.getCanvasData();
+                    this.cropper.moveTo((container.width - canvas.width) / 2, (container.height - canvas.height) / 2);
+                    this.cropper.setCropBoxData({
+                        left: 0,
+                        top: 0,
+                        width: canvas.width,
+                        height: canvas.height
+                    });
+                },
+                formatTime(sec) {
+                    const m = Math.floor(sec / 60);
+                    const s = sec % 60;
+                    return `${m}:${s.toString().padStart(2, '0')}`;
+                }
             }
         }).mount('#app');
     </script>
