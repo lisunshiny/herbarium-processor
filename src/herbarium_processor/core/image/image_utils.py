@@ -56,10 +56,9 @@ def preprocess_image_no_resize(image: Image.Image, label: str = "") -> Image.Ima
     return image
 
 
-def rotate_image_if_needed(image: Image.Image, label: str = "") -> Image.Image:
-    """Detect and correct image rotation based on OCR and EXIF, and strip EXIF."""
+def apply_exif_rotation_and_strip(image: Image.Image, label: str = "") -> Image.Image:
+    """Rotate image based on EXIF orientation and strip EXIF data."""
     try:
-        # Rotate based on EXIF orientation first (if exists)
         exif = image._getexif()
         if exif and EXIF_ORIENTATION_TAG in exif:
             orientation = exif[EXIF_ORIENTATION_TAG]
@@ -70,6 +69,14 @@ def rotate_image_if_needed(image: Image.Image, label: str = "") -> Image.Image:
     except Exception as e:
         print(f"[{label}] Failed EXIF orientation check: {e}")
 
+    # Remove EXIF data to ensure external OCR gets correct orientation
+    image = image.copy()
+    image.info.pop("exif", None)
+    return image
+
+def rotate_image_if_needed(image: Image.Image, label: str = "") -> Image.Image:
+    """Detect and correct image rotation based on OCR and EXIF, and strip EXIF."""
+    image = apply_exif_rotation_and_strip(image, label)
     try:
         osd = pytesseract.image_to_osd(image)
         rotation_line = next(line for line in osd.splitlines() if "Rotate" in line)
@@ -83,7 +90,7 @@ def rotate_image_if_needed(image: Image.Image, label: str = "") -> Image.Image:
     except Exception as e:
         print(f"[{label}] OCR rotation detection failed: {e}")
 
-    # Remove EXIF data to ensure external OCR gets correct orientation
+    # Remove EXIF data again in case rotation added it back
     image = image.copy()
     image.info.pop("exif", None)
 
@@ -195,3 +202,31 @@ def process_directory(directory: str) -> None:
                 auto_rotate_text_image(new_path)
         else:
             auto_rotate_text_image(path)
+
+def process_directory_no_auto_rotate(directory: str) -> None:
+    directory = resolve_path(directory)
+    """Process all images in the given directory."""
+    for filename in os.listdir(directory):
+        path = os.path.join(directory, filename)
+
+        if filename.lower().endswith(".heic"):
+            new_path = convert_heic_to_jpg(path)
+            if new_path:
+                path = new_path
+
+        path = resolve_path(path)
+
+        """Auto-rotate and preprocess image, then save it."""
+        label = os.path.basename(path)
+        try:
+            image = Image.open(path)
+            image = apply_exif_rotation_and_strip(image, label)
+            image = preprocess_image(image, label)
+
+            image.save(path, "JPEG", dpi=TARGET_DPI)
+            print(f"[{label}] Saved corrected image to {path}")
+        except Exception as e:
+            print(f"[{label}] Failed to process image: {e}")
+
+
+        
