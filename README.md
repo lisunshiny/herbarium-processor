@@ -13,9 +13,9 @@ Given a bunch of specimen label images, it will:
 
 ## Using the tool
 
-### Step 0: Setup
+### Step 1: Setup
 1) `git clone` the repo
-2) Obtain a Google API key
+2) Obtain a Google API key and credentials
 4) In the cloned repo, add a .env file in the root directory with the following content:
 
    ```
@@ -35,5 +35,6 @@ From here you have two options to use the processor, either the **web interface*
 3. Click **Finalize CSV** to save your edits and then download the CSV.
 6. Note that the info is all stored in the /tmp folder.
 
-
-## Development
+#### Notebook
+1. Open the notebook located at notebooks/herbarium_processor.ipynb
+2. Specify a dir to process -- note that you can delete all of the items in the img/bucket directory and use that. 
