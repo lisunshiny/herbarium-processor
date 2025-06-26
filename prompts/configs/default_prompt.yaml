@@ -13,11 +13,13 @@ field_list:
   - field_collection_date
   - comment
   - field_collectors
-  - identifier
   - field_collection_number
+  - identifier
   - identification_date
-  - exsiccatae_number
+  - exsiccatae
   - associated_taxa
+  - old_identifier
+  - old_identification_date
 shot_data:
   - id: cs_16625_23
     img_path: data/img/cs/cs_16625_23.jpg
