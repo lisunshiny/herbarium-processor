@@ -160,7 +160,8 @@ def preprocess_image_file_no_resize(image_path: str) -> None:
     label = os.path.basename(image_path)
     try:
         image = Image.open(image_path)
-        image = rotate_image_if_needed(image, label)
+        # image = rotate_image_if_needed(image, label)
+        image = apply_exif_rotation_and_strip(image, label)
         image = preprocess_image_no_resize(image, label)
         image.save(image_path, "JPEG", dpi=TARGET_DPI)
     except Exception as e:

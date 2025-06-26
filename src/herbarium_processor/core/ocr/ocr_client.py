@@ -67,7 +67,9 @@ class OcrClient:
                 for para_idx, para in enumerate(block.get("paragraphs", [])):
                     for word_idx, word in enumerate(para.get("words", [])):
                         word_text = "".join([s["text"] for s in word["symbols"]])
-                        bbox = word["boundingBox"]["vertices"]
+                        bbox = word.get("boundingBox", {}).get("vertices", [])
+                        if not bbox or any("x" not in pt or "y" not in pt for pt in bbox):
+                            continue  # skip this word
                         id_str = f"{page_idx + 1}.{block_idx + 1}.{id_counter}"
                         id_counter += 1
 
