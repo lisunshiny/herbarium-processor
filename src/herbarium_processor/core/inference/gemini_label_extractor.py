@@ -46,7 +46,7 @@ class GeminiLabelExtractor:
     ```
     """
 
-    def __init__(self, system_instructions, prompt_builder, output_dir="tmp/", model_name="gemini-2.5-pro-preview-05-06"):
+    def __init__(self, system_instructions, prompt_builder, output_dir="tmp/", model_name="gemini-2.5-pro"):
         load_dotenv()
         genai.configure(api_key=os.getenv('GOOGLE_API_KEY'))
 

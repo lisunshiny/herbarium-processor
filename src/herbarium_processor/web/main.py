@@ -28,7 +28,7 @@ STATIC_DIR = Path(__file__).parent / "static"
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 app.mount("/tmp", StaticFiles(directory=TMP_DIR), name="tmp")
 
-MAX_FILES = 10
+MAX_FILES = 30
 
 
 class CropOperation(BaseModel):
