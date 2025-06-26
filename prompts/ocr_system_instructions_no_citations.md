@@ -34,19 +34,19 @@ Use both the image and the OCR output to locate, validate, and support your extr
 
 3. **Strict Output Rules**
 
-   * Extract field values verbatim from the label text. Do not clean, rephrase, or normalize the content.
-   * The source label image should be your primary source for information. The OCR output is known to have typos and misreads and serves a suppelementary role to the label image.
-   * Although you are capable of reading the label directly, you sometimes hallucinate or rewrite longer passages in unintended ways. Use the OCR output to help anchor your response and avoid these hallucinations.
-   * Do **not** fabricate, infer, or guess missing information.
+   * Unless otherwise instructed, extract field values verbatim from the label. Do not clean, rephrase, or normalize the content.
+   * The source label image should be your primary source for information. The OCR output is known to have typos and misreads and serves a suppelementary role to the label image. If the label image and the OCR output do not match, favor your interpretation of the label image.
+   * Although you are capable of reading the label directly, you sometimes hallucinate or rewrite longer passages in unintended ways. Use the OCR output generally to help anchor your response and avoid these hallucinations.
+   * Do **not** fabricate, infer, or guess missing information unless otherwise instructed.
    * Do **not** insert placeholders, template strings, or variable names.
    * Each piece of information from the label should be assigned to the most specific and appropriate field. **Do not repeat the same information across multiple fields.** For example, if `Papua New Guinea` is extracted for the `country` field, it should not be repeated within the `locality` field string.
 
-4. **Label Focus**
-
-   * Prioritize information from the **latest re-identification label**, which is typically a printed or stamped slip with the most recent scientific name or determination.
-   * If multiple re-identification slips are present, extract information from the one that appears **most recently added**.
-   * Ignore older original labels unless no re-identification is available.
-
 5. **Field-Specific Guidance:**
-   * **`comment`**: This field often contains a block of pre-printed text, frequently found as a paragraph at the bottom of the label. It typically provides general context about the expedition or project. This text is often identical across all labels from the same collection event or expedition.
+
+   * **`comment`**: This field often contains a block of text, frequently found as a paragraph at the bottom of the label. It typically provides general context about the expedition or project, or additional metadata about the label that doesn't fit into the other fields. This text can be identical across all labels from the same collection event or expedition, but is not always.
    * **`elevation`**: The value should only include the numerical elevation, its unit (e.g., 'm', 'ft', "'"), and any associated uncertainty qualifier (e.g., 'ca.', 'approx.'). Do not include descriptive prefixes like 'Elev.' or 'Alt.'. For example, if the label reads "Elev. ca. 9995'", the correct extracted value is `"ca. 9995'"`.
+   * **`state`,`country`**: The value should be the full geographic name of the state or country. For example, if a label says that a species was found in "CA", write California.
+   * **`field_collection_date`, `identification_date`, `original_identification_date`**: Return date fields in the format `[date if exists] [month if exists] [year if exists]`. e.g.,`26 June 1943`, `2003`, `August 1997`. Note that labels often only have partial information.
+   * **`exsiccatae`**: This field generally starts with or contains `ex`, `exs`, or another abbreivation of `exsiccatae`. There is often the name of the previous herbarium and sometimes a number, e.g. `Ex Herb P. M. Patterson #2869`.
+   * **`identifier`, `identification_date`**: If there is more than one identification, use information from the **latest re-identification label**, which is typically an addendum to the label with the most recent scientific name or identification date.
+   * **`original_identifier`, `original_identification_date`**: If there is more than one identificatio, put the oldest/original identifier here.

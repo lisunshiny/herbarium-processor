@@ -103,12 +103,13 @@ async def sanitize(job_id: str, ops: List[CropOperation] = Body(...)):
             )
         )
 
-    builder = create_prompt_builder_from_yaml("prompts/configs/web_prompt.yaml")
+    builder = create_prompt_builder_from_yaml("prompts/configs/default_prompt.yaml")
 
     csv_rel = (job_dir / "results.csv").relative_to(ROOT_DIR)
     runner = LabelExtractionBatchRunner(
         output_csv_path=str(csv_rel),
         output_dir=str(job_dir.relative_to(ROOT_DIR)),
+        system_instructions_path="prompts/ocr_system_instructions_no_citations.md",
         prompt_builder=builder,
         targets=targets,
     )
