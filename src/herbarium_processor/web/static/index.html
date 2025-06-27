@@ -69,6 +69,14 @@
                 <input type="file" ref="files" multiple accept="image/*" class="border p-1 rounded">
                 <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Upload</button>
             </form>
+            <div v-if="jobs.length" class="mt-4">
+                <h3 class="font-bold mb-2">Previous Jobs</h3>
+                <ul class="list-disc list-inside">
+                    <li v-for="jid in jobs" :key="jid">
+                        <a :href="`/edit/${jid}`" class="text-blue-600 underline">{{ jid }}</a>
+                    </li>
+                </ul>
+            </div>
         </div>
 
         <div v-if="stage === 'sanitize'">
@@ -141,15 +149,25 @@
                     cropper: null,
                     classifyInterval: null,
                     timeRemaining: 0,
-                    rotation: 0
+                    rotation: 0,
+                    jobs: []
                 };
             },
             created() {
                 if (this.jobId) {
                     this.fetchResults();
+                } else {
+                    this.fetchJobs();
                 }
             },
             methods: {
+                async fetchJobs() {
+                    const resp = await fetch('/jobs');
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        this.jobs = data.jobs || [];
+                    }
+                },
                 async upload() {
                     const files = this.$refs.files.files;
                     if (!files.length) {
@@ -171,6 +189,7 @@
                     this.images = data.images;
                     this.cropIndex = 0;
                     this.cropData = [];
+                    this.jobs.unshift(this.jobId);
                     this.stage = 'sanitize';
                     this.$nextTick(this.initCropper);
                 },
