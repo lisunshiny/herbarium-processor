@@ -152,7 +152,7 @@ class OcrClient:
             if len(bbox) == 4:
                 points = [tuple((v.get("x", 0), v.get("y", 0))) for v in bbox]
                 draw.line(points + [points[0]], fill="red", width=2)
-                draw.text(points[0], source, fill="blue", font=font)
+                # draw.text(points[0], source, fill="blue", font=font)
 
         image.save(output_path)
         print(
