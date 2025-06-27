@@ -22,7 +22,7 @@ Given a bunch of specimen label images, it will:
    GOOGLE_API_KEY=your_key_here
    GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/credentials.json"
    ```
-5) Run `poetry install` in the terminal to install the project dependencies.
+5) Run `poetry install` in the terminal to install the project dependencies (`pip3 install poetry` if you don't have it).
 
 
 ### Step 1: Using the tool

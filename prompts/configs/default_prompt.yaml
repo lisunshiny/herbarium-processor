@@ -18,6 +18,7 @@ field_list:
   - identification_date
   - exsiccatae
   - associated_taxa
+  - old_scientific_name
   - old_identifier
   - old_identification_date
 shot_data:
