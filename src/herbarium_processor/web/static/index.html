@@ -142,7 +142,7 @@
                     images: [],
                     cropIndex: 0,
                     cropData: [],
-                    panelWidth: 700,
+                    panelWidth: 800,
                     dragging: false,
                     startX: 0,
                     startWidth: 0,
@@ -202,7 +202,7 @@
                     const data = await resp.json();
                     this.fieldnames = data.fieldnames.filter(f => f !== 'id');
                     this.rows = data.rows;
-                    this.panelWidth = 700;
+                    this.panelWidth = 800;
                     this.stage = 'edit';
                     window.history.pushState(null, '', `/edit/${this.jobId}`);
                     this.status = '';
