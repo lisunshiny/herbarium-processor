@@ -21,13 +21,13 @@ field_list:
   - old_identifier
   - old_identification_date
 shot_data:
-  - id: cs_16625_23
-    img_path: data/img/cs/cs_16625_23.jpg
-    ocr_path: tmp/ocr_ai_input_cs_16625_23.json
-  - id: cs_16625_24
-    img_path: data/img/cs/cs_16625_24.jpg
-    ocr_path: tmp/ocr_ai_input_cs_16625_24.json
-  - id: cs_16625_25
-    img_path: data/img/cs/cs_16625_25.jpg
-    ocr_path: tmp/ocr_ai_input_cs_16625_25.json
+  - id: UC46732_2
+    img_path: prompts/few_shot_data/UC46732_2.JPG
+    ocr_path: prompts/few_shot_data/ocr_ai_input_UC46732_2.json
+  - id: UC1207518_2
+    img_path: prompts/few_shot_data/UC1207518_2.JPG
+    ocr_path: prompts/few_shot_data/ocr_ai_input_UC1207518_2.json
+  - id: UC1318628_2
+    img_path: prompts/few_shot_data/UC1318628_2.JPG
+    ocr_path: prompts/few_shot_data/ocr_ai_input_UC1318628_2.json
 template_path: prompts/templates/herbarium_prompt.j2
