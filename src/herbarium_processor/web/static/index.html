@@ -54,18 +54,29 @@
             border: 20px solid transparent;
             box-sizing: content-box;
         }
+        h1 {
+            padding: 10px;
+        }
     </style>
 </head>
 
 <body>
     <div id="app">
-        <h1>Herbarium Processor</h1>
+        <h1><a href="/">Herbarium Processor</a></h1>
 
         <div v-if="stage === 'upload'">
             <form @submit.prevent="upload" class="space-x-2">
                 <input type="file" ref="files" multiple accept="image/*" class="border p-1 rounded">
                 <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Upload</button>
             </form>
+            <div v-if="jobs.length" class="mt-4">
+                <h3 class="font-bold mb-2">Previous Jobs</h3>
+                <ul class="list-disc list-inside">
+                    <li v-for="jid in jobs" :key="jid">
+                        <a :href="`/edit/${jid}`" class="text-blue-600 underline">{{ jid }}</a>
+                    </li>
+                </ul>
+            </div>
         </div>
 
         <div v-if="stage === 'sanitize'">
@@ -81,6 +92,9 @@
                 <button @click="nextCrop" class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700">{{
                     cropIndex === images.length - 1 ? 'Finish' : 'Next' }}</button>
             </div>
+        </div>
+        <div v-if="stage === 'classifying'" class="mt-4 text-lg">
+            {{ status }}
         </div>
         <div v-if="stage === 'edit'">
             <div v-for="(row, idx) in rows" :key="idx" class="record flex border p-4 mb-6 relative">
@@ -109,8 +123,6 @@
             <a :href="`/download/${jobId}`" download
                 class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Download CSV</a>
         </div>
-
-        <div>{{ status }}</div>
     </div>
 
     <script>
@@ -137,15 +149,25 @@
                     cropper: null,
                     classifyInterval: null,
                     timeRemaining: 0,
-                    rotation: 0
+                    rotation: 0,
+                    jobs: []
                 };
             },
             created() {
                 if (this.jobId) {
                     this.fetchResults();
+                } else {
+                    this.fetchJobs();
                 }
             },
             methods: {
+                async fetchJobs() {
+                    const resp = await fetch('/jobs');
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        this.jobs = data.jobs || [];
+                    }
+                },
                 async upload() {
                     const files = this.$refs.files.files;
                     if (!files.length) {
@@ -167,6 +189,7 @@
                     this.images = data.images;
                     this.cropIndex = 0;
                     this.cropData = [];
+                    this.jobs.unshift(this.jobId);
                     this.stage = 'sanitize';
                     this.$nextTick(this.initCropper);
                 },
@@ -227,6 +250,7 @@
                     }
                 },
                 async submitCrops() {
+                    this.stage = 'classifying';
                     this.timeRemaining = Math.ceil(this.cropData.length / 8) * 80;
                     this.status = `Classifying... ${this.formatTime(this.timeRemaining)} remaining`;
                     this.classifyInterval = setInterval(() => {

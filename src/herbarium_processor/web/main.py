@@ -50,6 +50,16 @@ async def edit(job_id: str):
     return (STATIC_DIR / "index.html").read_text()
 
 
+@app.get("/jobs")
+async def list_jobs():
+    jobs = []
+    for p in TMP_DIR.glob("job_*"):
+        if p.is_dir():
+            jobs.append(p.name[len("job_"):])
+    jobs.sort(reverse=True)
+    return {"jobs": jobs}
+
+
 @app.post("/upload")
 async def upload(files: List[UploadFile] = File(...)):
     if not files or len(files) > MAX_FILES:

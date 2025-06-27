@@ -60,7 +60,10 @@ def test_run_extraction(monkeypatch, tmp_path):
 
 def test_save_csv(tmp_path):
     csv_path = tmp_path / "out.csv"
-    runner = LabelExtractionBatchRunner(output_csv_path=str(csv_path), prompt_builder=None, targets=[])
+    dummy_builder = SimpleNamespace(field_list=["a", "b"])
+    runner = LabelExtractionBatchRunner(
+        output_csv_path=str(csv_path), prompt_builder=dummy_builder, targets=[]
+    )
     runner.results = [{"id": "1", "a": "x"}, {"id": "2", "b": "y"}]
     runner.save_csv()
 
@@ -69,6 +72,7 @@ def test_save_csv(tmp_path):
     assert len(rows) == 2
     ids = {row["id"] for row in rows}
     assert ids == {"1", "2"}
+    assert list(rows[0].keys()) == ["id", "a", "b"]
 
 
 def test_run_calls_all_methods(monkeypatch):
