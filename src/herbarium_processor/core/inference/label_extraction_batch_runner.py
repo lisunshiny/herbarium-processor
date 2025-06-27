@@ -99,16 +99,7 @@ class LabelExtractionBatchRunner:
         all_keys = set()
         for r in self.results:
             all_keys.update(r.keys())
-
-        # preserve the order defined by the prompt configuration
-        ordered = ["id"]
-        if self.prompt_builder is not None:
-            ordered += [f for f in self.prompt_builder.field_list if f not in ordered]
-
-        # append any additional keys in sorted order for determinism
-        remaining = [k for k in all_keys if k not in ordered]
-        ordered += sorted(remaining)
-        fieldnames = ordered
+        fieldnames = list(all_keys)
 
         with open(self.output_csv_path, 'w', newline='') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
