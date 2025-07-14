@@ -7,26 +7,12 @@ import seaborn as sns
 from IPython.display import display, HTML
 
 from herbarium_processor.config import ROOT_DIR
+
 class CsvComparator:
-    """
-    Compare the accuracy of ML model outputs against a canonical CSV.
-
-    Usage:
-        comparator = CsvComparator(
-            canonical_csv_path="path/to/canonical.csv",
-            test_csv_path="path/to/test.csv"
-        )
-        comparator.evaluate()
-        comparator.visualize()
-        comparator.display_sample_diffs()
-        comparator.display_diff_view()
-    """
-
     def __init__(self, canonical_csv_path: str, test_csv_path: str):
         self.canonical_csv_path = ROOT_DIR / canonical_csv_path
-        self.test_csv_path =  ROOT_DIR / test_csv_path
+        self.test_csv_path = ROOT_DIR / test_csv_path
 
-        # Load and normalize column names
         canon = pd.read_csv(canonical_csv_path, dtype=str)
         test = pd.read_csv(test_csv_path, dtype=str)
         canon.columns = canon.columns.str.strip().str.lower()
@@ -38,22 +24,17 @@ class CsvComparator:
         canon["id"] = canon["id"].astype(str).str.strip()
         test["id"] = test["id"].astype(str).str.strip()
 
-        # Determine shared columns (excluding 'id')
         shared_columns = [col for col in test.columns if col in canon.columns and col != "id"]
         self.comparison_columns = shared_columns
 
-        # Subset and align both DataFrames
         canon_sub = canon[["id"] + shared_columns].copy()
         test_sub = test[["id"] + shared_columns].copy()
 
-        # Sort and reset index for both
         canon_sub = canon_sub.sort_values("id").reset_index(drop=True)
         test_sub = test_sub.sort_values("id").reset_index(drop=True)
 
-        # Merge to ensure aligned rows
         self.merged = pd.merge(canon_sub, test_sub, on="id", suffixes=("_canon", "_test"))
 
-        # Build separate test/canonical views for external inspection if needed
         self.test_csv = self.merged[["id"] + [f"{col}_test" for col in shared_columns]].rename(columns=lambda c: c.replace("_test", ""))
         self.canonical_csv = self.merged[["id"] + [f"{col}_canon" for col in shared_columns]].rename(columns=lambda c: c.replace("_canon", ""))
 
@@ -62,16 +43,14 @@ class CsvComparator:
         self.total_correct = 0
         self.summary_df = None
 
-    def normalize(self, val, normalize_more = False):
+    def normalize(self, val, normalize_more=False):
         if pd.isna(val):
             return ""
         val = str(val).strip()
         val = re.sub(r'\bfeet\b', 'ft', val)
-
         if normalize_more:
             val = val.lower()
             val = re.sub(r'[\s\W_]+', '', val)
-
         return val
 
     def compare_fields(self, val1, val2):
@@ -115,9 +94,9 @@ class CsvComparator:
         )
 
         if verbose:
-            print(f"\n🧠 Model Accuracy Summary")
-            print(f"✅ Total Accuracy Across All Fields: {self.total_accuracy * 100:.1f}%\n")
-            print("📊 Per-Field Accuracy:")
+            print(f"\n🧠 Model Similarity Summary")
+            print(f"✅ Percentage of identical fields: {self.total_accuracy * 100:.1f}%\n")
+            print("📊 Per column identical:")
             display(self.summary_df)
         return self.summary_df
 
@@ -125,34 +104,18 @@ class CsvComparator:
         summary_df = self.summary_df
         fig1 = plt.figure(figsize=(6, 4))
         sns.barplot(x=summary_df.index, y=summary_df["accuracy"])
-        plt.title("Model Accuracy by Field")
-        plt.ylabel("Accuracy")
+        plt.title("Model identical by Field")
+        plt.ylabel("Identical Percentage")
         plt.xlabel("Field")
         plt.ylim(0, 1)
         plt.xticks(rotation=45)
         plt.tight_layout()
         if show:
             plt.show()
-
-        row_accuracy = pd.DataFrame({
-            "id": self.merged["id"],
-            "correct_fields": self.row_correct_counts,
-            "row_accuracy": [round(c / len(self.comparison_columns), 3) for c in self.row_correct_counts]
-        })
-        fig2 = plt.figure(figsize=(6, 4))
-        sns.histplot(row_accuracy["row_accuracy"], bins=10, kde=True)
-        plt.title("Distribution of Accuracy per Record")
-        plt.xlabel("Row Accuracy")
-        plt.ylabel("Number of Records")
-        plt.xlim(0, 1)
-        plt.tight_layout()
-        if show:
-            plt.show()
-        return fig1, fig2
+        return fig1
 
     def display_sample_diffs(self, display_inline: bool = True):
         html_parts = []
-        # Only render the toggle button/script once
         toggle_script = '''
 <button onclick="toggleSampleDiffView()">Toggle Diff View</button>
 <script>
@@ -191,8 +154,7 @@ function toggleSampleDiffView() {
                         f"<span class='diff-view'>{diff_view}<br><small><i>→ {ex['original']}</i></small></span>"
                         f"</td></tr>"
                     )
-                table_html = ""
-                table_html += f"<h4>❌ Sample Mismatches in Column: {col}</h4>"
+                table_html = f"<h4>❌ Sample Mismatches in Column: {col}</h4>"
                 table_html += "<table class='sample-orig-table' border='1' style='border-collapse:collapse;font-family:sans-serif;font-size:14px;'>"
                 table_html += "<tr><th style='padding:4px;'>ID</th><th style='padding:4px;'>Test Value</th><th style='padding:4px;'>Canonical Value</th></tr>"
                 table_html += "".join(orig_rows)
@@ -248,7 +210,6 @@ function toggleSampleDiffView() {
                 diff_view = self.inline_diff(test_val, canon_val)
                 display_val = f"<span class='arrow-view'>{arrow_view}</span><span class='diff-view' style='display:none'>{diff_view}<br><small><i>→ {canon_val_norm}</i></small></span>"
             styled.append(f'<td style="{style}">{display_val}</td>')
-        # Add the external link
         link = f'<a href="https://lichenportal.org/portal/collections/individual/index.php?occid={row["id"]}" target="_blank">🔗</a>'
         return f'<tr><td style="padding: 4px;"><b>{row["id"]}</b><br>{link}</td>' + ''.join(styled) + '</tr>'
 
@@ -281,29 +242,19 @@ function toggleDiffView() {
     def calculate_html_parts(self):
         self.evaluate(verbose=False)
         html_parts = [
-            f"<h2>Model Accuracy Summary</h2>",
-            f"<p>Total Accuracy Across All Fields: {self.total_accuracy * 100:.1f}%</p>",
-            "<h3>Per-Field Accuracy</h3>",
-            self.summary_df.to_html(border=1),
+            f"<h2>Model Similarity Summary</h2>",
+            f"<p>Total Identical Fields: {self.total_accuracy * 100:.1f}%</p>",
+            "<h3>Identical Entries Per-Field</h3>",
+            self.summary_df.rename(columns={"accuracy": "identical"}).to_html(border=1),
         ]
-        fig1, fig2 = self.visualize(show=False)
+        fig1 = self.visualize(show=False)
         import io, base64
         buf = io.BytesIO()
         fig1.savefig(buf, format='png')
         encoded1 = base64.b64encode(buf.getvalue()).decode()
-        buf.seek(0)
-        fig2.savefig(buf, format='png')
-        encoded2 = base64.b64encode(buf.getvalue()).decode()
         buf.close()
         html_parts.append(f"<img src='data:image/png;base64,{encoded1}'/>")
-        html_parts.append(f"<img src='data:image/png;base64,{encoded2}'/>")
-        sample_html = self.display_sample_diffs(display_inline=False)
-        if sample_html:
-            html_parts.append("<h3>Sample Mismatches</h3>")
-            html_parts.append(sample_html)
-        html_parts.append("<h3>Diff View</h3>")
-        html_parts.append(self.display_diff_view(return_html=True))
-        return html_parts
+
         sample_html = self.display_sample_diffs(display_inline=False)
         if sample_html:
             html_parts.append("<h3>Sample Mismatches</h3>")
