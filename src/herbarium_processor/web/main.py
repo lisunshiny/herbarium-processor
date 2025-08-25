@@ -8,7 +8,7 @@ from pydantic import BaseModel
 import shutil
 import csv
 
-from herbarium_processor.config import ROOT_DIR, TMP_DIR
+from herbarium_processor.config import ROOT_DIR, STORAGE_DIR
 from herbarium_processor.core.ocr.ocr_client import OcrClient
 from herbarium_processor.core.inference import create_prompt_builder_from_yaml
 from herbarium_processor.core.inference.label_extraction_batch_runner import (
@@ -26,7 +26,7 @@ app = FastAPI(title="Herbarium Processor Web")
 
 STATIC_DIR = Path(__file__).parent / "static"
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
-app.mount("/tmp", StaticFiles(directory=TMP_DIR), name="tmp")
+app.mount("/tmp", StaticFiles(directory=STORAGE_DIR), name="tmp")
 
 MAX_FILES = 30
 
@@ -53,7 +53,7 @@ async def edit(job_id: str):
 @app.get("/jobs")
 async def list_jobs():
     jobs = []
-    for p in TMP_DIR.glob("job_*"):
+    for p in STORAGE_DIR.glob("job_*"):
         if p.is_dir():
             jobs.append(p.name[len("job_"):])
     jobs.sort(reverse=True)
@@ -68,7 +68,7 @@ async def upload(files: List[UploadFile] = File(...)):
         )
 
     job_id = str(uuid4())
-    job_dir = TMP_DIR / f"job_{job_id}"
+    job_dir = STORAGE_DIR / f"job_{job_id}"
     images_dir = job_dir / "images"
     images_dir.mkdir(parents=True, exist_ok=True)
 
@@ -87,7 +87,7 @@ async def upload(files: List[UploadFile] = File(...)):
 
 @app.post("/sanitize/{job_id}")
 async def sanitize(job_id: str, ops: List[CropOperation] = Body(...)):
-    job_dir = TMP_DIR / f"job_{job_id}"
+    job_dir = STORAGE_DIR / f"job_{job_id}"
     images_dir = job_dir / "images"
     if not images_dir.exists():
         raise HTTPException(status_code=404, detail="Job not found")
@@ -101,10 +101,10 @@ async def sanitize(job_id: str, ops: List[CropOperation] = Body(...)):
         crop_rotate_and_resize(path, crop, angle)
         rel_path = path.relative_to(ROOT_DIR)
         ocr.extract_text_json(str(rel_path))
-        bound_src = TMP_DIR / f"ocr_bounding_{path.stem}.jpg"
+        bound_src = STORAGE_DIR / f"ocr_bounding_{path.stem}.jpg"
         if bound_src.exists():
             shutil.copy(bound_src, job_dir / bound_src.name)
-        ocr_json = TMP_DIR / f"ocr_ai_input_{path.stem}.json"
+        ocr_json = STORAGE_DIR / f"ocr_ai_input_{path.stem}.json"
         targets.append(
             SpecimenLabel(
                 id=path.stem,
@@ -131,7 +131,7 @@ async def sanitize(job_id: str, ops: List[CropOperation] = Body(...)):
 
 @app.get("/results/{job_id}")
 async def get_results(job_id: str):
-    job_dir = TMP_DIR / f"job_{job_id}"
+    job_dir = STORAGE_DIR / f"job_{job_id}"
     csv_path = job_dir / "results.csv"
     if not csv_path.exists():
         raise HTTPException(status_code=404, detail="Results not found")
@@ -146,7 +146,7 @@ async def get_results(job_id: str):
 
 @app.post("/finalize/{job_id}")
 async def finalize(job_id: str, rows: List[Dict[str, str]] = Body(...)):
-    job_dir = TMP_DIR / f"job_{job_id}"
+    job_dir = STORAGE_DIR / f"job_{job_id}"
     if not job_dir.exists():
         raise HTTPException(status_code=404, detail="Job not found")
     final_csv = job_dir / "final.csv"
@@ -162,7 +162,7 @@ async def finalize(job_id: str, rows: List[Dict[str, str]] = Body(...)):
 
 @app.get("/download/{job_id}")
 async def download(job_id: str):
-    job_dir = TMP_DIR / f"job_{job_id}"
+    job_dir = STORAGE_DIR / f"job_{job_id}"
     csv_path = job_dir / "final.csv"
     if not csv_path.exists():
         csv_path = job_dir / "results.csv"

@@ -8,7 +8,7 @@ import cv2
 import numpy as np
 import json
 
-from herbarium_processor.config import ROOT_DIR, TMP_DIR
+from herbarium_processor.config import ROOT_DIR, STORAGE_DIR
 
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.expanduser(
@@ -24,7 +24,7 @@ class OcrClient:
         image_path = ROOT_DIR / image_path
         # Get the base name of the file without extension
         base_name = os.path.splitext(os.path.basename(image_path))[0]
-        preprocessed_path = TMP_DIR / f"ocr_preprocessed_{base_name}.jpg"
+        preprocessed_path = STORAGE_DIR / f"ocr_preprocessed_{base_name}.jpg"
         preprocessed_path = os.path.normpath(preprocessed_path)
         self.preprocessor.preprocess_and_save(image_path, preprocessed_path)
 
@@ -42,9 +42,9 @@ class OcrClient:
         lines = self.parse_google_ocr_response(response)
         merged_lines = self.merge_to_lines(lines)
         self.visualize_bounding_boxes(
-            merged_lines, image_path, TMP_DIR / f"ocr_bounding_{base_name}.jpg"
+            merged_lines, image_path, STORAGE_DIR / f"ocr_bounding_{base_name}.jpg"
         )
-        ai_input_path = TMP_DIR / f"ocr_ai_input_{base_name}.json"
+        ai_input_path = STORAGE_DIR / f"ocr_ai_input_{base_name}.json"
         ai_input_path = os.path.normpath(ai_input_path)
         with open(ai_input_path, "w", encoding="utf-8") as f:
             json.dump(merged_lines, f, ensure_ascii=False, indent=2)

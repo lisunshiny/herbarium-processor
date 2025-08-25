@@ -2,7 +2,7 @@ import csv
 import random
 import os
 from herbarium_processor.core.inference.gemini_label_extractor import GeminiLabelExtractor
-from herbarium_processor.config import ROOT_DIR, TMP_DIR
+from herbarium_processor.config import ROOT_DIR, STORAGE_DIR
 import concurrent.futures
 
 class LabelExtractionBatchRunner:
@@ -66,7 +66,7 @@ class LabelExtractionBatchRunner:
                  targets=[]):
         self.output_csv_path = ROOT_DIR / output_csv_path
         self.system_instructions_path = ROOT_DIR / system_instructions_path
-        self.output_dir = ROOT_DIR / output_dir if output_dir else TMP_DIR
+        self.output_dir = ROOT_DIR / output_dir if output_dir else STORAGE_DIR
 
         self.prompt_builder = prompt_builder
         self.targets = targets

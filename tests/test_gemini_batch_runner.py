@@ -6,7 +6,7 @@ import pytest
 from herbarium_processor.core.inference.label_extraction_batch_runner import LabelExtractionBatchRunner
 from herbarium_processor.core.types.specimen_label import SpecimenLabel
 
-from herbarium_processor.config import ROOT_DIR, TMP_DIR
+from herbarium_processor.config import ROOT_DIR, STORAGE_DIR
 
 
 def test_load_prompts(tmp_path):
