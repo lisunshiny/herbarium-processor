@@ -1,0 +1,13 @@
+# Exclude files not needed in the Docker image
+.git
+.github
+.pytest_cache
+data/
+notebooks/
+tests/
+tmp/
+.venv
+*.pyc
+.tmp
+.env
+__pycache__/
