@@ -5,8 +5,9 @@ repos:
     hooks:
       - id: nbstripout
 
-  # Auto-format with black
-  - repo: https://github.com/psf/black
-    rev: 24.4.2
+repos:
+  # Using this mirror lets us use mypyc-compiled black, which is about 2x faster
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 25.1.0
     hooks:
-      - id: black
+      - id: black-jupyter
