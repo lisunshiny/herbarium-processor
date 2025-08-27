@@ -1,5 +1,6 @@
-from pathlib import Path
 import os
+from pathlib import Path
+
 from dotenv import load_dotenv
 
 # Load environment variables from .env file (if present)
@@ -16,6 +17,7 @@ CS_IMG_DIR = ROOT_DIR / "data" / "cs"
 
 # tmp paths
 TMP_DIR = ROOT_DIR / "tmp"
+
 
 def resolve_path(p: str | Path) -> Path:
     p = Path(p)

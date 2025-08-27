@@ -37,11 +37,11 @@ Dependencies:
 - Optionally uses a `PromptBuilder` for generating prompts
 """
 
-import os
 import datetime
+import os
 
-from herbarium_processor.core.analysis.csv_comparator import CsvComparator
 from herbarium_processor.config import ROOT_DIR
+from herbarium_processor.core.analysis.csv_comparator import CsvComparator
 
 
 class HTMLReportGenerator:
@@ -59,7 +59,7 @@ class HTMLReportGenerator:
         if system_instructions_path is not None:
             self.system_instructions_path = ROOT_DIR / system_instructions_path
         else:
-            self.system_instructions_path = None        
+            self.system_instructions_path = None
         self.html_output_path = ROOT_DIR / html_output_path
         self.comparator = CsvComparator(
             canonical_csv_path=self.canonical_csv_path, test_csv_path=self.test_csv_path

@@ -1,12 +1,15 @@
-import os
 import csv
+import os
 import random
 from types import SimpleNamespace
+
 import pytest
-from herbarium_processor.core.inference.label_extraction_batch_runner import LabelExtractionBatchRunner
-from herbarium_processor.core.types.specimen_label import SpecimenLabel
 
 from herbarium_processor.config import ROOT_DIR, TMP_DIR
+from herbarium_processor.core.inference.label_extraction_batch_runner import (
+    LabelExtractionBatchRunner,
+)
+from herbarium_processor.core.types.specimen_label import SpecimenLabel
 
 
 def test_load_prompts(tmp_path):
@@ -47,8 +50,8 @@ def test_run_extraction(monkeypatch, tmp_path):
         prompt_builder="PB",
         targets=[],
     )
-    t1 = SpecimenLabel(id="a", img_path=str(tmp_path/"a.jpg"), ocr_path="x")
-    t2 = SpecimenLabel(id="b", img_path=str(tmp_path/"b.jpg"), ocr_path="y")
+    t1 = SpecimenLabel(id="a", img_path=str(tmp_path / "a.jpg"), ocr_path="x")
+    t2 = SpecimenLabel(id="b", img_path=str(tmp_path / "b.jpg"), ocr_path="y")
     runner.targets = [t1, t2]
     runner.sys_instr = "SYS"
     runner.run_extraction()
@@ -77,7 +80,9 @@ def test_save_csv(tmp_path):
 
 def test_run_calls_all_methods(monkeypatch):
     order = []
-    runner = LabelExtractionBatchRunner(output_csv_path="out.csv", prompt_builder=None, targets=[])
+    runner = LabelExtractionBatchRunner(
+        output_csv_path="out.csv", prompt_builder=None, targets=[]
+    )
     monkeypatch.setattr(runner, "load_prompts", lambda: order.append("load"))
     monkeypatch.setattr(runner, "run_extraction", lambda: order.append("extract"))
     monkeypatch.setattr(runner, "save_csv", lambda: order.append("save"))

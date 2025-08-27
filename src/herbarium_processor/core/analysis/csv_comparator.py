@@ -1,12 +1,14 @@
-import pandas as pd
-import numpy as np
 import re
 from difflib import SequenceMatcher, ndiff
+
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 import seaborn as sns
-from IPython.display import display, HTML
+from IPython.display import HTML, display
 
 from herbarium_processor.config import ROOT_DIR
+
 
 class CsvComparator:
     def __init__(self, canonical_csv_path: str, test_csv_path: str):
@@ -18,13 +20,15 @@ class CsvComparator:
         canon.columns = canon.columns.str.strip().str.lower()
         test.columns = test.columns.str.strip().str.lower()
 
-        if 'id' not in canon.columns or 'id' not in test.columns:
+        if "id" not in canon.columns or "id" not in test.columns:
             raise ValueError("Both CSV files must include an 'id' column.")
 
         canon["id"] = canon["id"].astype(str).str.strip()
         test["id"] = test["id"].astype(str).str.strip()
 
-        shared_columns = [col for col in test.columns if col in canon.columns and col != "id"]
+        shared_columns = [
+            col for col in test.columns if col in canon.columns and col != "id"
+        ]
         self.comparison_columns = shared_columns
 
         canon_sub = canon[["id"] + shared_columns].copy()
@@ -33,10 +37,16 @@ class CsvComparator:
         canon_sub = canon_sub.sort_values("id").reset_index(drop=True)
         test_sub = test_sub.sort_values("id").reset_index(drop=True)
 
-        self.merged = pd.merge(canon_sub, test_sub, on="id", suffixes=("_canon", "_test"))
+        self.merged = pd.merge(
+            canon_sub, test_sub, on="id", suffixes=("_canon", "_test")
+        )
 
-        self.test_csv = self.merged[["id"] + [f"{col}_test" for col in shared_columns]].rename(columns=lambda c: c.replace("_test", ""))
-        self.canonical_csv = self.merged[["id"] + [f"{col}_canon" for col in shared_columns]].rename(columns=lambda c: c.replace("_canon", ""))
+        self.test_csv = self.merged[
+            ["id"] + [f"{col}_test" for col in shared_columns]
+        ].rename(columns=lambda c: c.replace("_test", ""))
+        self.canonical_csv = self.merged[
+            ["id"] + [f"{col}_canon" for col in shared_columns]
+        ].rename(columns=lambda c: c.replace("_canon", ""))
 
         self.row_correct_counts = [0] * len(self.merged)
         self.accuracy_report = {}
@@ -47,10 +57,10 @@ class CsvComparator:
         if pd.isna(val):
             return ""
         val = str(val).strip()
-        val = re.sub(r'\bfeet\b', 'ft', val)
+        val = re.sub(r"\bfeet\b", "ft", val)
         if normalize_more:
             val = val.lower()
-            val = re.sub(r'[\s\W_]+', '', val)
+            val = re.sub(r"[\s\W_]+", "", val)
         return val
 
     def compare_fields(self, val1, val2):
@@ -73,29 +83,36 @@ class CsvComparator:
                     correct += 1
                     self.row_correct_counts[i] += 1
                 elif len(diffs) < 5:
-                    diffs.append({
-                        "id": self.merged.at[i, "id"],
-                        "original": self.normalize(val1),
-                        "test": self.normalize(val2)
-                    })
+                    diffs.append(
+                        {
+                            "id": self.merged.at[i, "id"],
+                            "original": self.normalize(val1),
+                            "test": self.normalize(val2),
+                        }
+                    )
             self.total_correct += correct
             self.accuracy_report[column] = {
                 "correct": correct,
                 "total": total_rows,
                 "accuracy": round(correct / total_rows, 3),
-                "examples": diffs
+                "examples": diffs,
             }
 
         total_fields = total_rows * len(self.comparison_columns)
         self.total_accuracy = round(self.total_correct / total_fields, 3)
         self.summary_df = pd.DataFrame.from_dict(
-            {col: {"accuracy": v["accuracy"]} for col, v in self.accuracy_report.items()},
-            orient="index"
+            {
+                col: {"accuracy": v["accuracy"]}
+                for col, v in self.accuracy_report.items()
+            },
+            orient="index",
         )
 
         if verbose:
             print(f"\n🧠 Model Similarity Summary")
-            print(f"✅ Percentage of identical fields: {self.total_accuracy * 100:.1f}%\n")
+            print(
+                f"✅ Percentage of identical fields: {self.total_accuracy * 100:.1f}%\n"
+            )
             print("📊 Per column identical:")
             display(self.summary_df)
         return self.summary_df
@@ -116,7 +133,7 @@ class CsvComparator:
 
     def display_sample_diffs(self, display_inline: bool = True):
         html_parts = []
-        toggle_script = '''
+        toggle_script = """
 <button onclick="toggleSampleDiffView()">Toggle Diff View</button>
 <script>
 function toggleSampleDiffView() {
@@ -133,14 +150,16 @@ function toggleSampleDiffView() {
     }
 }
 </script>
-'''
+"""
         tables_html = []
         for col, data in self.accuracy_report.items():
             if data["examples"]:
                 orig_rows = []
                 diff_rows = []
                 for ex in data["examples"]:
-                    arrow_view = f"{ex['test']}<br><small><i>→ {ex['original']}</i></small>"
+                    arrow_view = (
+                        f"{ex['test']}<br><small><i>→ {ex['original']}</i></small>"
+                    )
                     diff_view = self.inline_diff(ex["test"], ex["original"])
                     orig_rows.append(
                         f"<tr><td style='padding:4px;'>{ex['id']}</td>"
@@ -206,15 +225,21 @@ function toggleSampleDiffView() {
                 red = int((1 - sim) * 255)
                 color = f"#{255:02x}{255 - red:02x}{128:02x}"
                 style = f"background-color: {color}; color: #000; font-weight: bold; padding: 4px;"
-                arrow_view = f"{test_val_norm}<br><small><i>→ {canon_val_norm}</i></small>"
+                arrow_view = (
+                    f"{test_val_norm}<br><small><i>→ {canon_val_norm}</i></small>"
+                )
                 diff_view = self.inline_diff(test_val, canon_val)
                 display_val = f"<span class='arrow-view'>{arrow_view}</span><span class='diff-view' style='display:none'>{diff_view}<br><small><i>→ {canon_val_norm}</i></small></span>"
             styled.append(f'<td style="{style}">{display_val}</td>')
         link = f'<a href="https://lichenportal.org/portal/collections/individual/index.php?occid={row["id"]}" target="_blank">🔗</a>'
-        return f'<tr><td style="padding: 4px;"><b>{row["id"]}</b><br>{link}</td>' + ''.join(styled) + '</tr>'
+        return (
+            f'<tr><td style="padding: 4px;"><b>{row["id"]}</b><br>{link}</td>'
+            + "".join(styled)
+            + "</tr>"
+        )
 
     def display_diff_view(self, return_html: bool = False):
-        html = '''<button onclick="toggleDiffView()">Toggle Diff View</button>
+        html = """<button onclick="toggleDiffView()">Toggle Diff View</button>
 <script>
 function toggleDiffView() {
     const arrow = document.querySelectorAll('.arrow-view');
@@ -230,11 +255,20 @@ function toggleDiffView() {
     }
 }
 </script>
-'''
+"""
         html += '<table border="1" style="border-collapse: collapse; font-family: sans-serif; font-size: 14px;">'
-        html += '<tr><th style="padding: 6px;">ID</th>' + ''.join([f'<th style="padding: 6px;">{col}</th>' for col in self.comparison_columns]) + '</tr>'
-        html += '\n'.join(self.merged.apply(self.highlight_diffs, axis=1))
-        html += '</table>'
+        html += (
+            '<tr><th style="padding: 6px;">ID</th>'
+            + "".join(
+                [
+                    f'<th style="padding: 6px;">{col}</th>'
+                    for col in self.comparison_columns
+                ]
+            )
+            + "</tr>"
+        )
+        html += "\n".join(self.merged.apply(self.highlight_diffs, axis=1))
+        html += "</table>"
         if return_html:
             return html
         display(HTML(html))
@@ -248,9 +282,11 @@ function toggleDiffView() {
             self.summary_df.rename(columns={"accuracy": "identical"}).to_html(border=1),
         ]
         fig1 = self.visualize(show=False)
-        import io, base64
+        import base64
+        import io
+
         buf = io.BytesIO()
-        fig1.savefig(buf, format='png')
+        fig1.savefig(buf, format="png")
         encoded1 = base64.b64encode(buf.getvalue()).decode()
         buf.close()
         html_parts.append(f"<img src='data:image/png;base64,{encoded1}'/>")

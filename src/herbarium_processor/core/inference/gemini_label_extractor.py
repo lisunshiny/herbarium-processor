@@ -1,11 +1,13 @@
+import json
 import os
 import re
-import json
 import time
-from dotenv import load_dotenv
+
 import google.generativeai as genai
+from dotenv import load_dotenv
 
 from herbarium_processor.config import ROOT_DIR
+
 
 class GeminiLabelExtractor:
     """
@@ -46,17 +48,22 @@ class GeminiLabelExtractor:
     ```
     """
 
-    def __init__(self, system_instructions, prompt_builder, output_dir="tmp/", model_name="gemini-2.5-pro"):
+    def __init__(
+        self,
+        system_instructions,
+        prompt_builder,
+        output_dir="tmp/",
+        model_name="gemini-2.5-pro",
+    ):
         load_dotenv()
-        genai.configure(api_key=os.getenv('GOOGLE_API_KEY'))
+        genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
         self.system_instructions = system_instructions
         self.prompt_builder = prompt_builder
         self.session_timestamp = int(time.time())
 
         self.model = genai.GenerativeModel(
-            model_name,
-            system_instruction=self.system_instructions
+            model_name, system_instruction=self.system_instructions
         )
         self.output_dir = ROOT_DIR / output_dir
         os.makedirs(self.output_dir, exist_ok=True)
@@ -77,17 +84,19 @@ class GeminiLabelExtractor:
         contents = self.prompt_builder.generate_contents(target)
         response = self.model.generate_content(contents=contents)
         raw = response.candidates[0].content.parts[0].text.strip()
-        json_text = re.sub(r'^```json\s*|```$', '', raw)
+        json_text = re.sub(r"^```json\s*|```$", "", raw)
 
         try:
             result = json.loads(json_text)
         except json.JSONDecodeError:
             raise ValueError("Failed to parse model output as JSON:\n" + json_text)
 
-        output_path = self.output_dir / f"processed_output_{self.session_timestamp}_{image_basename}.json"
+        output_path = (
+            self.output_dir
+            / f"processed_output_{self.session_timestamp}_{image_basename}.json"
+        )
         with open(output_path, "w") as f:
             json.dump(result, f, indent=2)
 
         print(f"Saved output to {output_path}")
         return result
-    

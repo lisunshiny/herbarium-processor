@@ -4,7 +4,9 @@ from types import SimpleNamespace as SN
 
 import pytest
 
-from herbarium_processor.core.inference.gemini_label_extractor import GeminiLabelExtractor
+from herbarium_processor.core.inference.gemini_label_extractor import (
+    GeminiLabelExtractor,
+)
 
 
 class DummyBuilder:
@@ -28,7 +30,11 @@ def test_classify_creates_output(tmp_path):
     extractor.prompt_builder = builder
     extractor.output_dir = tmp_path
     extractor.session_timestamp = 123
-    extractor.model = SimpleNamespace(generate_content=lambda *args, **kwargs: make_fake_response("```json\n{\"result\": 1}\n```"))
+    extractor.model = SimpleNamespace(
+        generate_content=lambda *args, **kwargs: make_fake_response(
+            '```json\n{"result": 1}\n```'
+        )
+    )
 
     target = SimpleNamespace(id="foo", img_path="foo.jpg", ocr_path="foo.json")
     result = extractor.classify(target)
