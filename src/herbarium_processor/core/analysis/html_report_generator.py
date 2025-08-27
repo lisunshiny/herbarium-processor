@@ -56,7 +56,10 @@ class HTMLReportGenerator:
         self.canonical_csv_path = ROOT_DIR / canonical_csv_path
         self.test_csv_path = ROOT_DIR / test_csv_path
         self.prompt_builder = prompt_builder
-        self.system_instructions_path = ROOT_DIR / system_instructions_path
+        if system_instructions_path is not None:
+            self.system_instructions_path = ROOT_DIR / system_instructions_path
+        else:
+            self.system_instructions_path = None        
         self.html_output_path = ROOT_DIR / html_output_path
         self.comparator = CsvComparator(
             canonical_csv_path=self.canonical_csv_path, test_csv_path=self.test_csv_path
