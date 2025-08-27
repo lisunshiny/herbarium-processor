@@ -23,6 +23,11 @@ Given a bunch of specimen label images, it will:
    GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/credentials.json"
    ```
 5) Run `poetry install` in the terminal to install the project dependencies (`pip3 install poetry` if you don't have it).
+6) If you plan on contributing to the repo, we use precommit to strip notebook metadata. Also run 
+
+```
+poetry run pre-commit install
+```
 
 
 ### Step 1: Using the tool
