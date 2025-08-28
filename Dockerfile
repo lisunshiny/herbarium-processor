@@ -12,15 +12,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Set work directory
 WORKDIR /app
 
-# Install Poetry and project dependencies
+# Install Poetry
 ENV POETRY_VERSION=2.1.4
 RUN pip install --no-cache-dir "poetry==$POETRY_VERSION"
 
-COPY pyproject.toml poetry.lock* /app/
+# Copy only dependency files first (better layer caching)
+# TODO -- move data/cs_canonical.csv to the prompt directory
+COPY pyproject.toml poetry.lock* README.md data/cs_canonical.csv prompts/ /app/
+COPY src/ /app/src/
+
+# Install dependencies only; do not install the project package
 RUN poetry config virtualenvs.create false \
     && poetry install --only main --no-interaction --no-ansi
 
-# Copy project files
+# Now copy the rest of the project
 COPY . /app
 
 # Set the port for Cloud Run

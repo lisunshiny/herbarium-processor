@@ -76,3 +76,19 @@ You can run the web app on GCP using Cloud Run.
    ```
 
 After deployment, Cloud Run will output the service URL where the app is available.
+
+
+Some other commands for debugging the Dockerfile locally
+
+```
+docker build -t herbarium-processor .
+```
+
+```
+docker run --rm -p 8000:8080 \
+  --env-file .env \
+  -e GOOGLE_APPLICATION_CREDENTIALS=/secrets/vision-key.json \
+  -v $HOME/.secrets/vision-key.json:/secrets/vision-key.json:ro \
+  herbarium-processor
+
+```

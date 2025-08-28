@@ -11,12 +11,12 @@ from PIL import ExifTags, Image, ImageDraw, ImageFont
 
 from herbarium_processor.config import ROOT_DIR, TMP_DIR
 
-# Allow callers to provide their own credentials path. If none is set,
-# fall back to the default location used for local development.
+# Prefer Application Default Credentials (ADC).
+# Only fall back to ~/.secrets if nothing else is configured.
 if "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ:
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.expanduser(
-        "~/.secrets/vision-key.json"
-    )
+    default_path = os.path.expanduser("~/.secrets/vision-key.json")
+    if os.path.exists(default_path):
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = default_path
 
 
 class OcrClient:
