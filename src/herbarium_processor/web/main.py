@@ -4,8 +4,8 @@ from pathlib import Path
 from typing import Dict, List
 from uuid import uuid4
 
-from fastapi import Body, FastAPI, File, HTTPException, UploadFile
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi import Body, FastAPI, File, HTTPException, UploadFile, Request
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -31,6 +31,15 @@ app.mount("/tmp", StaticFiles(directory=TMP_DIR), name="tmp")
 MAX_FILES = 30
 
 
+@app.middleware("http")
+async def redirect_www_to_apex(request: Request, call_next):
+    host = request.headers.get("host", "")
+    if host.startswith("www."):
+        url = request.url.replace(netloc=host[4:])
+        return RedirectResponse(str(url), status_code=301)
+    return await call_next(request)
+
+
 class CropOperation(BaseModel):
     filename: str
     x: float = 0.0
@@ -43,6 +52,11 @@ class CropOperation(BaseModel):
 @app.get("/", response_class=HTMLResponse)
 async def index():
     return (STATIC_DIR / "index.html").read_text()
+
+
+@app.get("/robots.txt")
+async def robots():
+    return FileResponse(STATIC_DIR / "robots.txt", media_type="text/plain")
 
 
 @app.get("/edit/{job_id}", response_class=HTMLResponse)
