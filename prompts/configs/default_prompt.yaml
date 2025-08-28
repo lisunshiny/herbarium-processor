@@ -1,26 +1,22 @@
 csv_path: data/cs_canonical.csv
 field_list:
-  - label_header
-  - scientific_name
-  - field_collection_location_verbatim
+  - scientificName
+  - locality
   - county
-  - state
+  - stateProvince
   - country
-  - verbatim_latitude
-  - verbatim_longitude
-  - elevation
-  - habitat_information
-  - field_collection_date
-  - comment
-  - field_collectors
-  - field_collection_number
-  - identifier
-  - identification_date
-  - exsiccatae
-  - associated_taxa
-  - old_scientific_name
-  - old_identifier
-  - old_identification_date
+  - verbatimCoordinates
+  - verbatimElevation
+  - habitat
+  - eventDate
+  - occurrenceRemarks
+  - recordedBy
+  - recordNumber
+  - identifiedBy
+  - dateIdentified
+  - dentificationRemarks
+  - associatedTaxa
+
 shot_data:
   - id: UC46732_2
     img_path: prompts/few_shot_data/UC46732_2.JPG
