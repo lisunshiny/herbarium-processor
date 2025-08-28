@@ -1,12 +1,9 @@
 import json
 from types import SimpleNamespace
-from types import SimpleNamespace as SN
 
 import pytest
 
-from herbarium_processor.core.inference.gemini_label_extractor import (
-    GeminiLabelExtractor,
-)
+from herbarium_processor.core.inference.label_extractor import LabelExtractor
 
 
 class DummyBuilder:
@@ -19,22 +16,16 @@ class DummyBuilder:
         return self.contents
 
 
-def make_fake_response(data):
-    return SN(candidates=[SN(content=SN(parts=[SN(text=data)]))])
+class DummyAPI:
+    def generate_content(self, contents):
+        return '```json\n{"result": 1}\n```'
 
 
 def test_classify_creates_output(tmp_path):
     builder = DummyBuilder(["text part"])
-    extractor = GeminiLabelExtractor.__new__(GeminiLabelExtractor)
-    extractor.system_instructions = "sys"
-    extractor.prompt_builder = builder
-    extractor.output_dir = tmp_path
+    api = DummyAPI()
+    extractor = LabelExtractor(llm_api=api, prompt_builder=builder, output_dir=tmp_path)
     extractor.session_timestamp = 123
-    extractor.model = SimpleNamespace(
-        generate_content=lambda *args, **kwargs: make_fake_response(
-            '```json\n{"result": 1}\n```'
-        )
-    )
 
     target = SimpleNamespace(id="foo", img_path="foo.jpg", ocr_path="foo.json")
     result = extractor.classify(target)
