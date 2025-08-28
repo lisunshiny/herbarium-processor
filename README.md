@@ -42,4 +42,53 @@ From here you have two options to use the processor, either the **web interface*
 
 #### Notebook
 1. Open the notebook located at notebooks/herbarium_processor.ipynb
-2. Specify a dir to process -- note that you can delete all of the items in the img/bucket directory and use that. 
+2. Specify a dir to process -- note that you can delete all of the items in the img/bucket directory and use that.
+
+### Deploying on Google Cloud Run
+
+You can run the web app on GCP using Cloud Run.
+
+1. **Build the container image** (replace `PROJECT_ID` with your GCP project):
+
+   ```bash
+   gcloud builds submit --tag gcr.io/PROJECT_ID/herbarium-processor
+   ```
+
+2. **Deploy to Cloud Run**:
+
+   ```bash
+   gcloud run deploy herbarium-processor \
+       --image gcr.io/PROJECT_ID/herbarium-processor \
+       --platform managed \
+       --region REGION \
+       --allow-unauthenticated \
+       --set-env-vars GOOGLE_API_KEY=your_key
+   ```
+
+3. **Provide Vision API credentials**. Cloud Run can use a service account with
+   the Vision API enabled, or you can mount a key file stored in Secret
+   Manager at `~/.secrets/vision-key.json`:
+
+   ```bash
+   gcloud secrets create vision-key --data-file=path/to/vision-key.json
+   gcloud run services update herbarium-processor \
+       --update-secrets GOOGLE_APPLICATION_CREDENTIALS=vision-key:latest
+   ```
+
+After deployment, Cloud Run will output the service URL where the app is available.
+
+
+Some other commands for debugging the Dockerfile locally
+
+```
+docker build -t herbarium-processor .
+```
+
+```
+docker run --rm -p 8000:8080 \
+  --env-file .env \
+  -e GOOGLE_APPLICATION_CREDENTIALS=/secrets/vision-key.json \
+  -v $HOME/.secrets/vision-key.json:/secrets/vision-key.json:ro \
+  herbarium-processor
+
+```
