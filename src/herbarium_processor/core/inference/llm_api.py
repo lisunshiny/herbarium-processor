@@ -40,8 +40,6 @@ class GeminiAPI(BaseLLMAPI):
 class OpenRouterAPI(BaseLLMAPI):
     """Access LLMs via the OpenRouter aggregation API."""
 
-    BASE_URL = "https://openrouter.ai/api/v1"
-
     def __init__(
         self,
         system_instructions: str,
