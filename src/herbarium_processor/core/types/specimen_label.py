@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from herbarium_processor.config import ROOT_DIR
 
+
 @dataclass
 class SpecimenLabel:
     id: str

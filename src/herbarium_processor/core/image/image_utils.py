@@ -1,9 +1,9 @@
 import os
 from typing import Optional
 
-from PIL import Image, ExifTags
-import pytesseract
 import pillow_heif
+import pytesseract
+from PIL import ExifTags, Image
 
 from herbarium_processor.config import ROOT_DIR, resolve_path
 
@@ -73,6 +73,7 @@ def apply_exif_rotation_and_strip(image: Image.Image, label: str = "") -> Image.
     image = image.copy()
     image.info.pop("exif", None)
     return image
+
 
 def rotate_image_if_needed(image: Image.Image, label: str = "") -> Image.Image:
     """Detect and correct image rotation based on OCR and EXIF, and strip EXIF."""
@@ -204,6 +205,7 @@ def process_directory(directory: str) -> None:
         else:
             auto_rotate_text_image(path)
 
+
 def process_directory_no_auto_rotate(directory: str) -> None:
     directory = resolve_path(directory)
     """Process all images in the given directory."""
@@ -228,6 +230,3 @@ def process_directory_no_auto_rotate(directory: str) -> None:
             print(f"[{label}] Saved corrected image to {path}")
         except Exception as e:
             print(f"[{label}] Failed to process image: {e}")
-
-
-        

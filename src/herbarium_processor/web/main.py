@@ -1,26 +1,26 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException, Body
+import csv
+import shutil
+from pathlib import Path
+from typing import Dict, List
+from uuid import uuid4
+
+from fastapi import Body, FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from uuid import uuid4
-from pathlib import Path
-from typing import List, Dict
 from pydantic import BaseModel
-import shutil
-import csv
 
 from herbarium_processor.config import ROOT_DIR, TMP_DIR
-from herbarium_processor.core.ocr.ocr_client import OcrClient
+from herbarium_processor.core.image.image_utils import (
+    convert_heic_to_jpg_no_resize,
+    crop_rotate_and_resize,
+    preprocess_image_file_no_resize,
+)
 from herbarium_processor.core.inference import create_prompt_builder_from_yaml
 from herbarium_processor.core.inference.label_extraction_batch_runner import (
     LabelExtractionBatchRunner,
 )
+from herbarium_processor.core.ocr.ocr_client import OcrClient
 from herbarium_processor.core.types.specimen_label import SpecimenLabel
-from herbarium_processor.core.image.image_utils import (
-    convert_heic_to_jpg_no_resize,
-    preprocess_image_file_no_resize,
-    crop_rotate_and_resize,
-)
-
 
 app = FastAPI(title="Herbarium Processor Web")
 
@@ -55,7 +55,7 @@ async def list_jobs():
     jobs = []
     for p in TMP_DIR.glob("job_*"):
         if p.is_dir():
-            jobs.append(p.name[len("job_"):])
+            jobs.append(p.name[len("job_") :])
     jobs.sort(reverse=True)
     return {"jobs": jobs}
 

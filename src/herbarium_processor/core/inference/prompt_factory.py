@@ -1,9 +1,11 @@
-import yaml
 from pathlib import Path
 
-from .prompt_builder import PromptBuilder
+import yaml
+
 from herbarium_processor.config import ROOT_DIR
 from herbarium_processor.core.types.specimen_label import SpecimenLabel
+
+from .prompt_builder import PromptBuilder
 
 
 def create_prompt_builder_from_yaml(config_path: str) -> PromptBuilder:

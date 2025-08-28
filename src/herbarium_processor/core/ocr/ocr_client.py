@@ -1,19 +1,20 @@
-from google.cloud import vision
 import io
+import json
 import os
-from google.protobuf.json_format import MessageToDict
 from collections import defaultdict
-from PIL import Image, ImageDraw, ImageFont, ExifTags
+
 import cv2
 import numpy as np
-import json
+from google.cloud import vision
+from google.protobuf.json_format import MessageToDict
+from PIL import ExifTags, Image, ImageDraw, ImageFont
 
 from herbarium_processor.config import ROOT_DIR, TMP_DIR
-
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.expanduser(
     "~/.secrets/vision-key.json"
 )
+
 
 class OcrClient:
     def __init__(self):
@@ -68,7 +69,9 @@ class OcrClient:
                     for word_idx, word in enumerate(para.get("words", [])):
                         word_text = "".join([s["text"] for s in word["symbols"]])
                         bbox = word.get("boundingBox", {}).get("vertices", [])
-                        if not bbox or any("x" not in pt or "y" not in pt for pt in bbox):
+                        if not bbox or any(
+                            "x" not in pt or "y" not in pt for pt in bbox
+                        ):
                             continue  # skip this word
                         id_str = f"{page_idx + 1}.{block_idx + 1}.{id_counter}"
                         id_counter += 1
@@ -159,6 +162,7 @@ class OcrClient:
             f"Saved visualized image with bounding boxes and sources to {output_path}"
         )
 
+
 class ImagePreprocessor:
     """
     Preprocess images for improved OCR accuracy using grayscale conversion,
@@ -199,7 +203,7 @@ class ImagePreprocessor:
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
         # Step 2: Sharpen image to improve text clarity
-        kernel = np.array([[0, -1, 0], [-1, 5,-1], [0, -1, 0]])
+        kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
         sharpened = cv2.filter2D(gray, -1, kernel)
 
         # Step 3: Resize if resolution is low
@@ -207,7 +211,9 @@ class ImagePreprocessor:
         self.last_resize_fx = self.last_resize_fy = 1.0
         if height < 1000:
             self.last_resize_fx = self.last_resize_fy = 1.5
-            sharpened = cv2.resize(sharpened, None, fx=1.5, fy=1.5, interpolation=cv2.INTER_CUBIC)
+            sharpened = cv2.resize(
+                sharpened, None, fx=1.5, fy=1.5, interpolation=cv2.INTER_CUBIC
+            )
 
         # Step 4: Light contrast stretch
         processed = cv2.convertScaleAbs(sharpened, alpha=1.2, beta=10)
@@ -222,7 +228,9 @@ class ImagePreprocessor:
         blur = cv2.GaussianBlur(gray, (5, 5), 0)
         edged = cv2.Canny(blur, 50, 200)
 
-        contours, _ = cv2.findContours(edged.copy(), cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+        contours, _ = cv2.findContours(
+            edged.copy(), cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE
+        )
         contours = sorted(contours, key=cv2.contourArea, reverse=True)[:5]
 
         for c in contours:
@@ -257,12 +265,15 @@ class ImagePreprocessor:
         height_b = np.linalg.norm(tl - bl)
         max_height = max(int(height_a), int(height_b))
 
-        dst = np.array([
-            [0, 0],
-            [max_width - 1, 0],
-            [max_width - 1, max_height - 1],
-            [0, max_height - 1]
-        ], dtype="float32")
+        dst = np.array(
+            [
+                [0, 0],
+                [max_width - 1, 0],
+                [max_width - 1, max_height - 1],
+                [0, max_height - 1],
+            ],
+            dtype="float32",
+        )
 
         M = cv2.getPerspectiveTransform(rect, dst)
         self.last_perspective_transform = M
@@ -273,7 +284,9 @@ class ImagePreprocessor:
 
     def map_bbox_to_original(self, bbox_points):
         if self.last_inverse_transform is None:
-            raise ValueError("No perspective transform available. Set correct_perspective=True and run preprocessing first.")
+            raise ValueError(
+                "No perspective transform available. Set correct_perspective=True and run preprocessing first."
+            )
 
         # 1. Unscale the coordinates back to warped image size
         unscaled = np.array(bbox_points, dtype=np.float32).reshape(-1, 2)

@@ -1,9 +1,13 @@
-import csv
-import random
-import os
-from herbarium_processor.core.inference.gemini_label_extractor import GeminiLabelExtractor
-from herbarium_processor.config import ROOT_DIR, TMP_DIR
 import concurrent.futures
+import csv
+import os
+import random
+
+from herbarium_processor.config import ROOT_DIR, TMP_DIR
+from herbarium_processor.core.inference.gemini_label_extractor import (
+    GeminiLabelExtractor,
+)
+
 
 class LabelExtractionBatchRunner:
     """
@@ -58,12 +62,15 @@ class LabelExtractionBatchRunner:
         runner.run()
         ```
     """
-    def __init__(self,
-                 output_csv_path=None,
-                 system_instructions_path='prompts/system_instructions_no_ocr.md',
-                 output_dir=None,
-                 prompt_builder=None,
-                 targets=[]):
+
+    def __init__(
+        self,
+        output_csv_path=None,
+        system_instructions_path="prompts/system_instructions_no_ocr.md",
+        output_dir=None,
+        prompt_builder=None,
+        targets=[],
+    ):
         self.output_csv_path = ROOT_DIR / output_csv_path
         self.system_instructions_path = ROOT_DIR / system_instructions_path
         self.output_dir = ROOT_DIR / output_dir if output_dir else TMP_DIR
@@ -80,15 +87,16 @@ class LabelExtractionBatchRunner:
         extractor = GeminiLabelExtractor(
             system_instructions=self.sys_instr,
             prompt_builder=self.prompt_builder,
-            output_dir=self.output_dir
+            output_dir=self.output_dir,
         )
 
         def classify_and_tag(target):
             print(f"Processing image: {target.img_path}")
             result = extractor.classify(target)
             print(f"Done classifying image: {target.img_path}")
-            result['id'] = os.path.splitext(os.path.basename(target.img_path))[0]
+            result["id"] = os.path.splitext(os.path.basename(target.img_path))[0]
             return result
+
         # run gemini calls in parallel. note that there is a 150rpm limit.
         print("Running classification in parallel...")
         with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -110,7 +118,7 @@ class LabelExtractionBatchRunner:
         ordered += sorted(remaining)
         fieldnames = ordered
 
-        with open(self.output_csv_path, 'w', newline='') as csvfile:
+        with open(self.output_csv_path, "w", newline="") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             for row in self.results:

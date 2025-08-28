@@ -1,9 +1,10 @@
-import pandas as pd
 import json
 import os
-from jinja2 import Environment, FileSystemLoader
-from typing import List, Dict, Tuple
 import re
+from typing import Dict, List, Tuple
+
+import pandas as pd
+from jinja2 import Environment, FileSystemLoader
 
 from herbarium_processor.config import ROOT_DIR
 from herbarium_processor.core.types.specimen_label import SpecimenLabel
@@ -52,12 +53,13 @@ class PromptBuilder:
     # `image_paths` is a list of image file paths referenced in the prompt
     # `contents` is a list of text and image parts suitable for Gemini's API
     """
+
     def __init__(
         self,
         csv_path: str,
         field_list: List[str],
         shot_data: List[SpecimenLabel],
-        template_path: str
+        template_path: str,
     ):
         self.csv_path = ROOT_DIR / csv_path
         self.field_list = field_list
@@ -78,7 +80,9 @@ class PromptBuilder:
         output = {}
         for key in self.field_list:
             if key == "sources":
-                output["sources"] = json.loads(row["sources"]) if row.get("sources") else {}
+                output["sources"] = (
+                    json.loads(row["sources"]) if row.get("sources") else {}
+                )
             else:
                 output[key] = row.get(key, None)
         return output
@@ -98,7 +102,9 @@ class PromptBuilder:
             "ocr_json": self._load_ocr_json(target_data.ocr_path),
         }
 
-        prompt = self.template.render(field_list=self.field_list, shots=shots, target=target)
+        prompt = self.template.render(
+            field_list=self.field_list, shots=shots, target=target
+        )
 
         return prompt
 
@@ -125,7 +131,9 @@ class PromptBuilder:
             "ocr_json": {},
         }
 
-        prompt = self.template.render(field_list=self.field_list, shots=shots, target=target)
+        prompt = self.template.render(
+            field_list=self.field_list, shots=shots, target=target
+        )
         return prompt
 
     def generate(self, target_data) -> Tuple[str, List[str]]:
@@ -164,4 +172,3 @@ class PromptBuilder:
             "mime_type": "image/jpeg",
             "data": img_bytes,
         }
-
