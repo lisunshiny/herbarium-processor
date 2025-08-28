@@ -4,9 +4,8 @@ import os
 import random
 
 from herbarium_processor.config import ROOT_DIR, TMP_DIR
-from herbarium_processor.core.inference.gemini_label_extractor import (
-    GeminiLabelExtractor,
-)
+from herbarium_processor.core.inference.label_extractor import LabelExtractor
+from herbarium_processor.core.inference.llm_api import OpenRouterAPI, BaseLLMAPI
 
 
 class LabelExtractionBatchRunner:
@@ -70,6 +69,7 @@ class LabelExtractionBatchRunner:
         output_dir=None,
         prompt_builder=None,
         targets=[],
+        llm_api_cls: type[BaseLLMAPI] = OpenRouterAPI,
     ):
         self.output_csv_path = ROOT_DIR / output_csv_path
         self.system_instructions_path = ROOT_DIR / system_instructions_path
@@ -78,14 +78,16 @@ class LabelExtractionBatchRunner:
         self.prompt_builder = prompt_builder
         self.targets = targets
         self.results = []
+        self.llm_api_cls = llm_api_cls
 
     def load_prompts(self):
         with open(self.system_instructions_path) as f:
             self.sys_instr = f.read()
 
     def run_extraction(self):
-        extractor = GeminiLabelExtractor(
-            system_instructions=self.sys_instr,
+        api_client = self.llm_api_cls(system_instructions=self.sys_instr)
+        extractor = LabelExtractor(
+            llm_api=api_client,
             prompt_builder=self.prompt_builder,
             output_dir=self.output_dir,
         )

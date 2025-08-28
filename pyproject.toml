@@ -25,6 +25,7 @@ fastapi = "*"
 uvicorn = "*"
 python-multipart = "*"
 pyyaml = "*"
+openai = "^1.102.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "*"

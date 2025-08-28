@@ -29,8 +29,8 @@ def test_run_extraction(monkeypatch, tmp_path):
     calls = []
 
     class FakeExtractor:
-        def __init__(self, system_instructions, prompt_builder, output_dir):
-            self.system_instructions = system_instructions
+        def __init__(self, llm_api, prompt_builder, output_dir):
+            self.llm_api = llm_api
             self.prompt_builder = prompt_builder
             self.output_dir = output_dir
 
@@ -38,17 +38,21 @@ def test_run_extraction(monkeypatch, tmp_path):
             calls.append(target)
             return {"value": target.img_path}
 
+    class FakeAPI:
+        def __init__(self, system_instructions, model_name="m"):
+            self.system_instructions = system_instructions
+
     monkeypatch.setattr(
-        "herbarium_processor.core.inference.label_extraction_batch_runner.GeminiLabelExtractor",
+        "herbarium_processor.core.inference.label_extraction_batch_runner.LabelExtractor",
         FakeExtractor,
     )
-    monkeypatch.setattr("importlib.reload", lambda mod: mod)
 
     runner = LabelExtractionBatchRunner(
         output_csv_path="out.csv",
         output_dir=str(tmp_path),
         prompt_builder="PB",
         targets=[],
+        llm_api_cls=FakeAPI,
     )
     t1 = SpecimenLabel(id="a", img_path=str(tmp_path / "a.jpg"), ocr_path="x")
     t2 = SpecimenLabel(id="b", img_path=str(tmp_path / "b.jpg"), ocr_path="y")
