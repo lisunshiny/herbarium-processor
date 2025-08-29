@@ -2,18 +2,67 @@
   <div class="card card-border bg-base-100 mx-4 my-8">
     <div class="card-body">
       <h2 class="card-title">Upload images</h2>
-      <p>TODO add upload here</p>
+      Upload up to 10 images at a time.
+      <!-- File input -->
+      <input
+        ref="fileInput"
+        type="file"
+        multiple
+        accept="image/*"
+        class="file-input file-input-bordered w-full max-w-xs mb-4"
+      />
       <div class="card-actions justify-end">
-        <button class="btn btn-primary">Upload</button>
+        <button class="btn btn-primary" :disabled="isUploading" @click="handleUpload">
+          <span v-if="isUploading" class="loading loading-spinner mr-2"></span>
+          {{ isUploading ? 'Uploading…' : 'Next' }}
+        </button>
       </div>
     </div>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { ref } from "vue"
+import { useRouter } from "vue-router"
+
+const router = useRouter()
+const fileInput = ref(null)
+const isUploading = ref(false)
+
+const handleUpload = async () => {
+  if (!fileInput.value.files.length) {
+    alert("Please choose a file first.")
+    return
+  }
+  isUploading.value = true
+
+  const formData = new FormData()
+  for (const file of fileInput.value.files) {
+    formData.append("files", file) // match the parameter name in FastAPI
+  }
+
+  try {
+    const res = await fetch("/api/batches", {
+      method: "POST",
+      body: formData,
+    })
+
+    if (!res.ok) throw new Error(`Upload failed: ${res.status}`)
+    
+    const data = await res.json()
+    const batchId = data?.batch_id ?? data?.id ?? data?.uuid
+    if (!batchId) throw new Error("Batch ID missing in response.")
+
+    // Navigate to the batch page
+    router.push({ name: "batch", params: { id: batchId } })
+  } catch (err) {
+    console.error("❌ Error uploading:", err)
+    alert("Upload failed. Check console for details.")
+  } finally {
+    isUploading.value = false
+  }
+}
+</script>
 
 <style scoped>
-p {
-  color: blue;
-}
 </style>
