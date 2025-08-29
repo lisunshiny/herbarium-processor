@@ -1,5 +1,5 @@
 <template>
-  <footer class="w-full bg-base-200 text-base-content">
+  <footer class="w-full bg-base-100 text-base-content">
     <div class="mx-auto max-w-6xl px-4 py-4">
       <div class="flex flex-col items-center gap-1 text-sm md:flex-row md:justify-between md:gap-4">
         <p class="font-medium">Parsely is made with ❤️ in Oakland, CA</p>

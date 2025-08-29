@@ -1,9 +1,11 @@
 <template>
-  <Header />
-  <div>
-    <router-view />
+  <div class="min-h-screen bg-base-200 flex flex-col">
+    <Header />
+    <main class="flex-1">
+      <router-view />
+    </main>
+    <Footer />
   </div>
-  <Footer />
 </template>
 
 <script setup>
