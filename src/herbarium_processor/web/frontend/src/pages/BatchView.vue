@@ -11,48 +11,45 @@
         No images in this batch.
       </div>
       <div v-else class="grid gap-4 grid-cols-2 md:grid-cols-3">
-        there are images
-        <div
-          v-for="img in images"
-          :key="img.id || img.url"
-          class="card bg-base-100 shadow"
-        >
-          <img
-            v-if="img.url"
-            :src="img.url"
-            class="w-full h-40 object-cover"
-          />
-          <div class="p-2 text-sm">
-            {{ img.filename || img.id }}
-          </div>
+        <div class="col-span-full text-gray-700 font-medium mb-2">
+          {{ images.length }} image{{ images.length === 1 ? "" : "s" }} in this
+          batch
         </div>
+        <SpecimenCard
+          v-for="img in images"
+          :key="img.id"
+          :image="img"
+          @updated="merge"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue"
-import { useRoute } from "vue-router"
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import SpecimenCard from "@/components/SpecimenCard.vue";
+import BaseCard from "@/components/ui/BaseCard.vue";
 
 const props = defineProps({
-  id: { type: String, required: true }
-})
+  id: { type: String, required: true },
+});
 
-const images = ref([])
-const loading = ref(true)
-const error = ref(null)
+const images = ref([]);
+const loading = ref(true);
+const error = ref(null);
 
 onMounted(async () => {
   try {
-    const res = await fetch(`/api/batches/${props.id}`)
-    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
-    const data = await res.json()
-    images.value = data.images ?? []
+    const res = await fetch(`/api/batches/${props.id}`);
+    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+    const data = await res.json();
+    images.value = data.images ?? [];
   } catch (err) {
-    error.value = err.message || "Unknown error"
+    error.value = err.message || "Unknown error";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-})
+});
 </script>
