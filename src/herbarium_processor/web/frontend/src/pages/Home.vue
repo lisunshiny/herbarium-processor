@@ -56,8 +56,8 @@ const handleUpload = async () => {
     const batchId = data?.batch_id ?? data?.id ?? data?.uuid;
     if (!batchId) throw new Error("Batch ID missing in response.");
 
-    // Navigate to the batch page
-    router.push({ name: "batch", params: { id: batchId } });
+    // Navigate to the first step, cropping
+    router.replace({ name: "cropWizard", params: { id: batchId } })
   } catch (err) {
     console.error("❌ Error uploading:", err);
     alert("Upload failed. Check console for details.");

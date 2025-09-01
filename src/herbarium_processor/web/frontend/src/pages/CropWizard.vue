@@ -18,9 +18,10 @@
           <!-- Left: crop views, scrollable if tall -->
           <div class="flex-1 overflow-y-auto max-h-[70vh] pr-2">
             <SpecimenCropView
-              v-for="img in images"
-              :key="img.id"
-              :image="img"
+              v-if="currentSpecimen"
+              :key="currentSpecimen?.id ?? currentIndex"
+              :specimen="currentSpecimen"
+              :ref="setCropperRef"
               class="mb-4"
             />
           </div>
@@ -49,7 +50,13 @@
               v-if="isUploading"
               class="loading loading-spinner mr-2"
             ></span>
-            {{ isUploading ? "Uploading…" : "Process label & next" }}
+            {{
+              isUploading
+                ? "Uploading…"
+                : currentIndex < specimens.length - 1
+                ? "Process label & next"
+                : "Finish"
+            }}
           </button>
         </template>
       </BaseCard>
@@ -58,32 +65,114 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import {
+  ref,
+  computed,
+  onMounted,
+  onBeforeUpdate,
+  onMounted as vueOnMounted,
+  onBeforeUnmount,
+} from "vue";
+import { useRouter } from "vue-router";
 import SpecimenCropView from "@/components/SpecimenCropView.vue";
-import { useBatchStore } from "@/stores/batch"; // our Pinia store
+import { useBatchStore } from "@/stores/batch";
 import BaseCard from "@/components/ui/BaseCard.vue";
 
 const props = defineProps({
   id: { type: String, required: true },
 });
 
-const images = ref([]);
+const router = useRouter();
+const specimens = ref([]);
 const loading = ref(true);
 const error = ref(null);
+const cropperRefs = ref([]);
+const isUploading = ref(false);
+const currentIndex = ref(0);
 
 const batchStore = useBatchStore();
+
+const hasSpecimens = computed(() => specimens.value.length > 0);
+const currentSpecimen = computed(() =>
+  hasSpecimens.value ? specimens.value[currentIndex.value] : null
+);
+console.log(currentSpecimen);
+const progressText = computed(() =>
+  hasSpecimens.value
+    ? `${currentIndex.value + 1}/${specimens.value.length}`
+    : "0/0"
+);
+const progressPercent = computed(() =>
+  hasSpecimens.value
+    ? Math.round(((currentIndex.value + 1) / specimens.value.length) * 100)
+    : 0
+);
+
+// Avoid stale element refs between patches
+onBeforeUpdate(() => {
+  cropperRefs.value = [];
+});
 
 onMounted(async () => {
   try {
     const batch = await batchStore.getBatch(props.id); // use store
     if (batchStore.getBatchState(props.id) !== "cropping") {
-      throw new Error("not at crop");
+      router.push({ name: "batch", params: { id: props.id } });
     }
-    images.value = batch.images ?? [];
+    specimens.value = batch.specimens ?? [];
+    cropperRefs.value = Array(specimens.value.length).fill(null); // ensure array length matches specimens
   } catch (err) {
-    error.value = err.message || "Unknown error";
+    error.value = err?.message || "Unknown error";
   } finally {
     loading.value = false;
   }
 });
+
+// Safe function ref: never use .value from template; set here.
+function setCropperRef(el) {
+  // Function refs fire with el (instance) on mount and el=null on unmount.
+  if (!el) return;
+  const i = currentIndex.value;
+  if (!Array.isArray(cropperRefs.value)) cropperRefs.value = [];
+  // Make sure our array is at least i+1 long
+  if (cropperRefs.value.length < i + 1) {
+    cropperRefs.value.length = i + 1;
+  }
+  cropperRefs.value[i] = el;
+}
+
+async function handleUpload() {
+  if (!hasSpecimens.value) return;
+  isUploading.value = true;
+
+  try {
+    const specimen = specimens.value[currentIndex.value];
+    const cropperRef = cropperRefs.value[currentIndex.value];
+
+    if (!specimen) throw new Error("Missing current image");
+    if (!cropperRef || typeof cropperRef.getCropOperation !== "function") {
+      throw new Error("Cropper not ready");
+    }
+
+    const cropOp = await cropperRef.getCropOperation();
+    if (!cropOp) throw new Error("No crop operation");
+
+    // Fire-and-forget via Pinia store; it will merge result into state
+    batchStore
+      .cropAndInfer(props.id, specimen.id, cropOp)
+      .catch((e) => console.error("crop_and_infer error", e));
+
+    // Immediately advance UI without waiting for POST
+    if (currentIndex.value < specimens.value.length - 1) {
+      currentIndex.value++;
+    } else {
+      router.push({ name: "batch", params: { id: props.id } });
+    }
+  } catch (err) {
+    error.value = err?.message || "Unknown error";
+  } finally {
+    // Re-enable the button right away for next interaction
+    isUploading.value = false;
+  }
+}
 </script>

@@ -12,10 +12,17 @@ from herbarium_processor.core.image.image_utils import (
     crop_rotate_and_resize,
     preprocess_image_file_no_resize,
 )
+from herbarium_processor.core.inference import create_prompt_builder_from_yaml
+from herbarium_processor.core.inference.label_extraction_batch_runner import (
+    LabelExtractionBatchRunner,
+)
+from herbarium_processor.core.ocr.ocr_client import OcrClient
+from herbarium_processor.core.types.specimen_label import SpecimenLabel
+
+import shutil
 
 
 class CropOperation(BaseModel):
-    filename: str
     x: float = 0.0
     y: float = 0.0
     width: float = 0.0
@@ -124,3 +131,86 @@ def get_batch(batch_id: str):
 
             images.append(ImageInfo(**fields))
     return {"batch_id": batch_id, "images": images}
+
+
+@router.post("/{batch_id}/crop_and_infer/{image_id}")
+async def crop_and_infer(batch_id: str, image_id: str, ops: CropOperation):
+    job_dir = TMP_DIR / f"batch_{batch_id}"
+    images_dir = job_dir / "images"
+    if not images_dir.exists():
+        raise HTTPException(status_code=404, detail="Batch not found")
+
+    image_dir = images_dir / image_id
+    if not image_dir.exists():
+        raise HTTPException(status_code=404, detail="Image not found")
+
+    path = image_dir / "pre_crop.jpg"
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="Pre-crop image not found")
+
+    # Crop and rotate
+    crop = (ops.x, ops.y, ops.width, ops.height)
+    angle = ops.rotate
+    post_crop_path = image_dir / "post_crop.jpg"
+    crop_rotate_and_resize(path, crop, angle, post_crop_path)
+    print("test 1")
+    if not post_crop_path.exists():
+        print("test 123")
+        raise HTTPException(status_code=500, detail="Post-crop image not found")
+
+    ocr = OcrClient()
+    preprocessed_path = image_dir / "post_ocr.jpg"
+    ocr_annotated_path = image_dir / "ocr_bounding.jpg"
+    llm_json_path = image_dir / "llm_input.json"
+    ocr.extract_text_json(
+        str(post_crop_path),
+        preprocessed_path=preprocessed_path,
+        ocr_annotated_path=ocr_annotated_path,
+        llm_json_path=llm_json_path,
+    )
+    print("test 2")
+    targets = [
+        SpecimenLabel(
+            id=path.stem,
+            img_path=str(post_crop_path),
+            ocr_path=str(llm_json_path),
+        )
+    ]
+    # Run batch runner
+    builder = create_prompt_builder_from_yaml("prompts/configs/default_prompt.yaml")
+    csv_rel = image_dir / "result.csv"
+    runner = LabelExtractionBatchRunner(
+        output_csv_path=str(csv_rel),
+        output_dir=str(image_dir),
+        system_instructions_path="prompts/ocr_system_instructions_no_citations.md",
+        prompt_builder=builder,
+        targets=targets,
+    )
+    runner.run()
+
+    # find the first file that starts with "processed_output"
+    llm_output_path = next(image_dir.glob("processed_output*"), None)
+    if llm_output_path.exists():
+        with open(llm_output_path, "r") as f_json:
+            llm_output = json.load(f_json)
+    else:
+        llm_output = None
+
+    # Build updated image info
+    info_path = image_dir / "info.json"
+    info = json.loads(info_path.read_text()) if info_path.exists() else {}
+    fields = {
+        "id": info.get("id", image_id),
+        "name": info.get("original_name", "pre_crop.jpg"),
+        "pre_crop_url": f"/tmp/batch_{batch_id}/images/{image_id}/pre_crop.jpg",
+        "url": f"/tmp/batch_{batch_id}/images/{image_id}/pre_crop.jpg",
+        "post_crop_url": f"/tmp/batch_{batch_id}/images/{image_id}/post_crop.jpg",
+        "ocr_bounding_url": (
+            f"/tmp/batch_{batch_id}/images/{image_id}/ocr_bounding.jpg"
+            if (image_dir / "ocr_bounding.jpg").exists()
+            else ""
+        ),
+        "llm_output": llm_output,
+    }
+
+    return fields

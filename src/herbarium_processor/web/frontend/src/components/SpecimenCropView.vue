@@ -3,7 +3,7 @@
     <Cropper
       ref="cropper"
       class="cropper"
-      :src="image.url"
+      :src="specimen.image_info.url"
       :default-size="defaultSize"
       image-restriction="fit-area"
     />
@@ -15,9 +15,10 @@ import { ref, onMounted } from "vue";
 import { Cropper } from "vue-advanced-cropper";
 
 const props = defineProps({
-  image: { type: Object, required: true }, // {id, url, name, status?, fields?}
+  specimen: { type: Object, required: true }, // {id, url, name, status?, fields?}
 });
 
+console.log(props.specimen);
 const cropper = ref(null);
 
 function defaultSize(image) {
@@ -35,10 +36,11 @@ async function getCropOperation() {
   if (!res || !res.coordinates) return null;
   const { left, top, width, height } = res.coordinates;
   return {
-    left,
-    top,
+    x: left,
+    y: top,
     width,
     height,
+    rotate: res.angle ?? 0,
   };
 }
 
