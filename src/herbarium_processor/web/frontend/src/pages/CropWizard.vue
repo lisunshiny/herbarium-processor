@@ -1,51 +1,61 @@
 <template>
-  <div class="p-6">
-    <h1 class="text-2xl font-bold mb-4">CROP Batch {{ id }}</h1>
+  <div class="progress-header px-6 py-2 bg-info-content">
+    <div class="flex justify-between items-center">
+      <span class="text-gray-400">Step 1: Crop</span>
+      <span class="font-semibold">5/10</span>
+    </div>
+  </div>
 
+  <div class="p-6">
     <div v-if="loading">Loading batch…</div>
     <div v-else-if="error" class="text-red-500">
       Failed to load batch: {{ error }}
     </div>
     <div v-else>
-<BaseCard class="m-4 mx-auto">
-  <!-- Constrain height and width -->
-  <div class="flex gap-6">
-    <!-- Left: crop views, scrollable if tall -->
-    <div class="flex-1 overflow-y-auto max-h-[70vh] pr-2">
-      <SpecimenCropView
-        v-for="img in images"
-        :key="img.id"
-        :image="img"
-        class="mb-4"
-      />
-    </div>
+      <BaseCard class="max-w-5xl mx-auto">
+        <!-- Constrain height and width -->
+        <div class="flex gap-6">
+          <!-- Left: crop views, scrollable if tall -->
+          <div class="flex-1 overflow-y-auto max-h-[70vh] pr-2">
+            <SpecimenCropView
+              v-for="img in images"
+              :key="img.id"
+              :image="img"
+              class="mb-4"
+            />
+          </div>
 
-    <!-- Right: instructions, fixed narrow width -->
-    <div class="w-64 text-sm text-gray-600">
-      <h2 class="font-semibold mb-2">Instructions</h2>
-      <p>
-        Lorem ipsum add some instructions about cropping here. Explain to the
-        user how to align, zoom, and confirm the crop before moving to the next
-        image.
-      </p>
-    </div>
-  </div>
+          <!-- Right: instructions, fixed narrow width -->
+          <aside class="w-64 text-sm text-gray-300">
+            <h2 class="font-semibold mb-2">Instructions</h2>
+            <ul class="space-y-2 list-disc list-inside">
+              <li>Drag the handles to fit the label tightly.</li>
+              <li>blah blah.</li>
+              <li>
+                Press <kbd class="px-1 py-0.5 bg-gray-700 rounded">N</kbd> for
+                next.
+              </li>
+            </ul>
+          </aside>
+        </div>
 
-  <template #actions>
-    <button
-      class="btn btn-primary"
-      :disabled="isUploading"
-      @click="handleUpload"
-    >
-      <span v-if="isUploading" class="loading loading-spinner mr-2"></span>
-      {{ isUploading ? "Uploading…" : "Process label & next" }}
-    </button>
-  </template>
-</BaseCard>
+        <template #actions>
+          <button
+            class="btn btn-primary"
+            :disabled="isUploading"
+            @click="handleUpload"
+          >
+            <span
+              v-if="isUploading"
+              class="loading loading-spinner mr-2"
+            ></span>
+            {{ isUploading ? "Uploading…" : "Process label & next" }}
+          </button>
+        </template>
+      </BaseCard>
     </div>
   </div>
 </template>
-
 
 <script setup>
 import { ref, onMounted } from "vue";
@@ -66,7 +76,7 @@ const batchStore = useBatchStore();
 onMounted(async () => {
   try {
     const batch = await batchStore.getBatch(props.id); // use store
-    if (batchStore.getBatchState(props.id) !== "crop") {
+    if (batchStore.getBatchState(props.id) !== "cropping") {
       throw new Error("not at crop");
     }
     images.value = batch.images ?? [];

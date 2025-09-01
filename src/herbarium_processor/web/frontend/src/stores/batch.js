@@ -7,8 +7,25 @@ export const useBatchStore = defineStore("batches", {
     batches: {},
   }),
   actions: {
+    getItemsInEachState(id) {
+      const batch = this.batches[id];
+      if (!batch || !batch.images) return { cropping: 0, digitizing: 0, ready: 0 };
+
+      let cropping = 0, digitizing = 0, ready = 0;
+      for (const img of batch.images) {
+        if (!img.post_crop_url || img.post_crop_url === "") {
+          cropping++;
+        } else if (!img.llm_output || img.llm_output === "") {
+          digitizing++;
+        } else {
+          ready++;
+        }
+      }
+      return { cropping, digitizing, ready };
+    },
     getBatchState(id) {
-      return "crop";
+      if(this.getItemsInEachState(id).cropping > 0) return "cropping";
+      return "digitizing";
     },
     /**
      * Returns the batch for `id`.
