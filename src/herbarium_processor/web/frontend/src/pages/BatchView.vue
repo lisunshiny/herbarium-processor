@@ -27,29 +27,29 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
-import SpecimenCard from "@/components/SpecimenCard.vue";
-import SpecimenCropView from "@/components/SpecimenCropView.vue";
+import { ref, onMounted } from "vue"
+import SpecimenCard from "@/components/SpecimenCard.vue"
+import SpecimenCropView from "@/components/SpecimenCropView.vue"
+import { useBatchStore } from "@/stores/batch"   // our Pinia store
 
 const props = defineProps({
   id: { type: String, required: true },
-});
+})
 
-const images = ref([]);
-const loading = ref(true);
-const error = ref(null);
+const images = ref([])
+const loading = ref(true)
+const error = ref(null)
+
+const batchStore = useBatchStore()
 
 onMounted(async () => {
   try {
-    const res = await fetch(`/api/batches/${props.id}`);
-    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-    const data = await res.json();
-    images.value = data.images ?? [];
+    const batch = await batchStore.getBatch(props.id) // use store
+    images.value = batch.images ?? []
   } catch (err) {
-    error.value = err.message || "Unknown error";
+    error.value = err.message || "Unknown error"
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-});
+})
 </script>

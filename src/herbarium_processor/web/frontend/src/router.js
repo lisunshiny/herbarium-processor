@@ -9,6 +9,12 @@ const routes = [
     component: () => import("@/pages/BatchView.vue"), // your crop/review UI
     props: true,
   },
+  {
+    path: "/batches/:id/crop",
+    name: "cropWizard",
+    component: () => import("@/pages/CropWizard.vue"), // your crop/review UI
+    props: true,
+  },
 
   // Add more routes here as needed
 ]

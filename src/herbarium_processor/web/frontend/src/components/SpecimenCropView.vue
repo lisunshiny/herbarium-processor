@@ -1,5 +1,4 @@
 <template>
-  I am a crop view
   <ImageCropper :imageUrl="image.url" ref="cropper" />
 </template>
 
