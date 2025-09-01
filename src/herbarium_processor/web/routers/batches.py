@@ -189,10 +189,23 @@ async def crop_and_infer(batch_id: str, image_id: str, ops: CropOperation):
     runner.run()
 
     # find the first file that starts with "processed_output"
-    llm_output_path = next(image_dir.glob("processed_output*"), None)
-    if llm_output_path.exists():
-        with open(llm_output_path, "r") as f_json:
-            llm_output = json.load(f_json)
+    src = next((p for p in image_dir.glob("processed_output*") if p.is_file()), None)
+
+    dest = image_dir / "llm_output.json"
+    llm_output = None
+
+    if src and src.exists():
+        print("exists:", src)
+        # copy to a canonical name
+        shutil.copyfile(src, dest)
+
+        # read the canonical file
+        try:
+            with dest.open("r", encoding="utf-8") as f:
+                llm_output = json.load(f)
+        except json.JSONDecodeError:
+            # leave llm_output = None if the file isn't valid JSON
+            print(f"Warning: {dest} is not valid JSON")
     else:
         llm_output = None
 

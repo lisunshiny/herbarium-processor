@@ -1,5 +1,5 @@
 <template>
-  <div class="progress-header px-6 py-2 bg-info-content">
+  <div class="progress-header px-6 py-2 bg-base-300">
     <div class="flex justify-between items-center">
       <span class="text-gray-400">Step 1: Crop</span>
       <span class="font-semibold">5/10</span>
@@ -27,16 +27,21 @@
           </div>
 
           <!-- Right: instructions, fixed narrow width -->
-          <aside class="w-64 text-sm text-gray-300">
-            <h2 class="font-semibold mb-2">Instructions</h2>
-            <ul class="space-y-2 list-disc list-inside">
-              <li>Drag the handles to fit the label tightly.</li>
-              <li>blah blah.</li>
-              <li>
-                Press <kbd class="px-1 py-0.5 bg-gray-700 rounded">N</kbd> for
-                next.
-              </li>
-            </ul>
+          <aside class="w-64 text-sm text-gray-300 border-l border-base-300 pl-4">
+            <h2 class="text-lg font-semibold tracking-tight text-base-content">
+              Crop · {{ currentSpecimen.image_info.name }}
+            </h2>
+            <p class="mt-2 text-sm text-base-content/80">
+              Draw the crop box around the label. Use the handles to resize.
+              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum
+              perspiciatis totam corporis ratione delectus nisi repellendus
+              maxime! Ex magnam exercitationem maxime aut nemo consequuntur
+              saepe vero voluptas earum consequatur? Sed.
+            </p>
+
+            <p class="mt-3 text-xs leading-snug text-base-content/60">
+              Guidelines: include barcode; exclude mounting board edges.
+            </p>
           </aside>
         </div>
 
@@ -55,7 +60,7 @@
                 ? "Uploading…"
                 : currentIndex < specimens.length - 1
                 ? "Process label & next"
-                : "Finish"
+                : "Finish & proceed to labeling"
             }}
           </button>
         </template>

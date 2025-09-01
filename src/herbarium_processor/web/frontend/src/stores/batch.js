@@ -107,7 +107,7 @@ export const useBatchStore = defineStore("batches", {
      */,
     getBatchState(id) {
       if (this.getItemsInEachState(id).cropping > 0) return "cropping";
-      return "digitizing";
+      return "labeling";
     },
     /**
      * Returns the batch for `id`.

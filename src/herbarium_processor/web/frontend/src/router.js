@@ -15,6 +15,12 @@ const routes = [
     component: () => import("@/pages/CropWizard.vue"), // your crop/review UI
     props: true,
   },
+  {
+    path: "/batches/:id/label",
+    name: "labelWizard",
+    component: () => import("@/pages/LabelWizard.vue"), // the side by side label UI
+    props: true,
+  },
 
   // Add more routes here as needed
 ]
