@@ -11,6 +11,7 @@
         No images in this batch.
       </div>
       <div v-else class="grid gap-4 grid-cols-2 md:grid-cols-3">
+        <SpecimenCropView :image="images[0]"/>
         <div class="col-span-full text-gray-700 font-medium mb-2">
           {{ images.length }} image{{ images.length === 1 ? "" : "s" }} in this
           batch
@@ -19,7 +20,6 @@
           v-for="img in images"
           :key="img.id"
           :image="img"
-          @updated="merge"
         />
       </div>
     </div>
@@ -30,7 +30,7 @@
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import SpecimenCard from "@/components/SpecimenCard.vue";
-import BaseCard from "@/components/ui/BaseCard.vue";
+import SpecimenCropView from "@/components/SpecimenCropView.vue";
 
 const props = defineProps({
   id: { type: String, required: true },
