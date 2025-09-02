@@ -1,11 +1,9 @@
 <template>
-  <div class="relative w-full h-full bg-base-200 rounded-box overflow-hidden">
+  <div class="relative w-full h-full bg-base-200 overflow-hidden ">
     <img
       :src="image_url"
       :alt="specimen.name || 'specimen'"
-      draggable="false"
-      :style="imageStyle"
-      @load="onLoad"
+      class="absolute inset-0 m-auto max-w-full max-h-full object-contain block"
     />
   </div>
 </template>
@@ -23,8 +21,4 @@ const specimen = props.specimen;
 </script>
 
 <style scoped>
-*[draggable="false"] {
-  -webkit-user-drag: none;
-  user-select: none;
-}
 </style>
