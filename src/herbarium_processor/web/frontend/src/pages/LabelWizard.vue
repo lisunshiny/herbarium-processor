@@ -21,10 +21,10 @@
           class="mx-auto grid grid-cols-1 md:grid-cols-[1fr_auto] h-full"
         >
           <!-- Left card (stretches) -->
-            <ImageExplorer
-              :specimen="currentSpecimen"
-              :image_url="currentSpecimen.image_info.ocr_bounding_url"
-            />
+          <ImageExplorer
+            :specimen="currentSpecimen"
+            :image_url="currentSpecimen.image_info.ocr_bounding_url"
+          />
 
           <!-- Right card (fixed w-64, scrollable) -->
           <div class="w-64 h-full overflow-y-auto border-l border-base-300 p-4">
