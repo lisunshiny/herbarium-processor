@@ -1,12 +1,6 @@
 <template>
-  <div class="progress-header px-6 py-2 bg-base-300">
-    <div class="flex justify-between items-center">
-      <span class="text-gray-400">Step 1: Crop</span>
-      <span class="font-semibold">5/10</span>
-    </div>
-  </div>
-
-  <div class="p-6">
+  <StatusBar :id="id" />
+  <div class="">
     <div v-if="loading">Loading batch…</div>
     <div v-else-if="error" class="text-red-500">
       Failed to load batch: {{ error }}
@@ -82,9 +76,12 @@ import { useRouter } from "vue-router";
 import SpecimenCropView from "@/components/SpecimenCropView.vue";
 import { useBatchStore } from "@/stores/batch";
 import BaseCard from "@/components/ui/BaseCard.vue";
+import StatusBar from "@/components/StatusBar.vue";
 
 const props = defineProps({
   id: { type: String, required: true },
+    do_not_redirect: { type: Boolean, default: false },
+
 });
 
 const router = useRouter();
@@ -121,7 +118,7 @@ onBeforeUpdate(() => {
 onMounted(async () => {
   try {
     const batch = await batchStore.getBatch(props.id); // use store
-    if (batchStore.getBatchState(props.id) !== "cropping") {
+    if (!props.do_not_redirect && batchStore.getBatchState(props.id) !== "cropping") {
       router.push({ name: "batch", params: { id: props.id } });
     }
     specimens.value = batch.specimens ?? [];
@@ -171,7 +168,8 @@ async function handleUpload() {
     if (currentIndex.value < specimens.value.length - 1) {
       currentIndex.value++;
     } else {
-      router.push({ name: "batch", params: { id: props.id } });
+      console.log("Done cropping; go to labeling");
+      router.push({ name: "labelWizard", params: { id: props.id, do_not_redirect: true } });
     }
   } catch (err) {
     error.value = err?.message || "Unknown error";

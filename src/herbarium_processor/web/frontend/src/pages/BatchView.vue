@@ -1,5 +1,6 @@
 <template>
-  <div class="p-6">
+  <StatusBar :id="id" class="mb-4" />
+  <div class="">
     <h1 class="text-2xl font-bold mb-4">Batch {{ id }}</h1>
 
     <div v-if="loading">Loading batch…</div>
@@ -30,6 +31,7 @@ import { ref, onMounted } from "vue"
 import { useRouter } from "vue-router"
 import SpecimenCard from "@/components/SpecimenCard.vue"
 import { useBatchStore } from "@/stores/batch"   // our Pinia store
+import StatusBar from "@/components/StatusBar.vue";
 
 const props = defineProps({
   id: { type: String, required: true },
@@ -51,6 +53,9 @@ onMounted(async () => {
     const stage = batchStore.getBatchState(props.id)
     if (stage === "cropping") {
       router.replace({ name: "cropWizard", params: { id: props.id } })
+      return
+    } else if (stage === "labeling") {
+      router.replace({ name: "labelWizard", params: { id: props.id } })
       return
     }
   } catch (err) {

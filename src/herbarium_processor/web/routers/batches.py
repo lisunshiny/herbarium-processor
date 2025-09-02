@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import Any, List
+from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
@@ -44,7 +44,9 @@ class ImageInfo(BaseModel):
     # the uuid I assigned to this image (i.e. the filename)
     id: str
     # json object of the llm output
-    llm_output: Any = None
+    llm_output: Optional[Dict[str, Any]] = None
+    # user saved fields of the llm output
+    user_edited_llm_output: Any = None
 
 
 router = APIRouter(prefix="/batches", tags=["batches"])
@@ -129,6 +131,11 @@ def get_batch(batch_id: str):
                 with open(llm_output_path, "r") as f_json:
                     fields["llm_output"] = json.load(f_json)
 
+            user_edited_llm_output_path = subdir / "user_edited_llm_output.json"
+            if user_edited_llm_output_path.exists():
+                with open(user_edited_llm_output_path, "r") as f_json:
+                    fields["user_edited_llm_output"] = json.load(f_json)
+
             images.append(ImageInfo(**fields))
     return {"batch_id": batch_id, "images": images}
 
@@ -206,8 +213,16 @@ async def crop_and_infer(batch_id: str, image_id: str, ops: CropOperation):
         except json.JSONDecodeError:
             # leave llm_output = None if the file isn't valid JSON
             print(f"Warning: {dest} is not valid JSON")
-    else:
-        llm_output = None
+
+    # add user_edited_llm_output if it exists
+    user_edited_llm_output = None
+    user_edited_path = image_dir / "user_edited_llm_output.json"
+    if user_edited_path.exists():
+        try:
+            with user_edited_path.open("r", encoding="utf-8") as f:
+                user_edited_llm_output = json.load(f)
+        except json.JSONDecodeError:
+            print(f"Warning: {user_edited_path} is not valid JSON")
 
     # Build updated image info
     info_path = image_dir / "info.json"
@@ -224,6 +239,49 @@ async def crop_and_infer(batch_id: str, image_id: str, ops: CropOperation):
             else ""
         ),
         "llm_output": llm_output,
+        "user_edited_llm_output": user_edited_llm_output,
+    }
+
+    return fields
+
+
+@router.post("/{batch_id}/save_label_edits/{image_id}")
+async def save_label_edits(batch_id: str, image_id: str, labels: Dict[str, Any]):
+    job_dir = TMP_DIR / f"batch_{batch_id}"
+    images_dir = job_dir / "images"
+    if not images_dir.exists():
+        raise HTTPException(status_code=404, detail="Batch not found")
+
+    image_dir = images_dir / image_id
+    if not image_dir.exists():
+        raise HTTPException(status_code=404, detail="Image not found")
+    print("liann 1")
+    llm_json_path = image_dir / "llm_output.json"
+    user_edited_llm_json_path = image_dir / "user_edited_llm_output.json"
+    user_edited_llm_json_path.write_text(json.dumps(labels, indent=2))
+    print("liann 2")
+    # Build updated image info
+    info_path = image_dir / "info.json"
+    info = json.loads(info_path.read_text()) if info_path.exists() else {}
+    llm_json = json.loads(llm_json_path.read_text()) if llm_json_path.exists() else None
+    user_edited_llm_json = (
+        json.loads(user_edited_llm_json_path.read_text())
+        if user_edited_llm_json_path.exists()
+        else None
+    )
+    fields = {
+        "id": info.get("id", image_id),
+        "name": info.get("original_name", "pre_crop.jpg"),
+        "pre_crop_url": f"/tmp/batch_{batch_id}/images/{image_id}/pre_crop.jpg",
+        "url": f"/tmp/batch_{batch_id}/images/{image_id}/pre_crop.jpg",
+        "post_crop_url": f"/tmp/batch_{batch_id}/images/{image_id}/post_crop.jpg",
+        "ocr_bounding_url": (
+            f"/tmp/batch_{batch_id}/images/{image_id}/ocr_bounding.jpg"
+            if (image_dir / "ocr_bounding.jpg").exists()
+            else ""
+        ),
+        "llm_output": llm_json,
+        "user_edited_llm_output": user_edited_llm_json,
     }
 
     return fields

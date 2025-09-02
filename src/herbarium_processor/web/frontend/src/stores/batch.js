@@ -20,6 +20,8 @@ import { defineStore } from "pinia";
  * @property {string} [post_crop_url]
  * @property {string} [ocr_bounding_url]
  * @property {any} [llm_output]
+ * @property {any} [user_edited_llm_output]
+
  */
 
 /**
@@ -83,29 +85,30 @@ export const useBatchStore = defineStore("batches", {
     getItemsInEachState(id) {
       const batch = this.batches[id];
       if (!batch?.specimens?.length)
-        return { cropping: 0, digitizing: 0, ready: 0 };
+        return { cropping: 0, digitizing: 0, ready: 0, reviewed: 0 };
 
       let cropping = 0,
         digitizing = 0,
-        ready = 0;
+        ready = 0,
+        reviewed = 0;
       for (const item of batch.specimens) {
         const img = item.image_info;
-        const waiting = !!item.waiting_on_llm;
         if (!img?.post_crop_url) {
           cropping++;
-        } else if (!img?.llm_output || waiting) {
+        } else if (!img?.llm_output || item.waiting_on_llm) {
           digitizing++;
-        } else {
+        } else if (!img?.user_edited_llm_output) {
           ready++;
+        } else {
+          reviewed++;
         }
       }
-      return { cropping, digitizing, ready };
-    }
+      return { cropping, digitizing, ready, reviewed };
+    },
     /**
      * @param {string} id
      * @returns {"cropping"|"digitizing"}
-     */,
-    getBatchState(id) {
+     */ getBatchState(id) {
       if (this.getItemsInEachState(id).cropping > 0) return "cropping";
       return "labeling";
     },
@@ -180,6 +183,37 @@ export const useBatchStore = defineStore("batches", {
       } finally {
         // Clear waiting flag regardless of success/failure
         this._mergeSpecimenRecord(batchId, imageId, { waiting_on_llm: false });
+      }
+
+      return updated;
+    },
+
+    async postUserUpdatedLlmLabels(batchId, imageId, labels) {
+      const url = `/api/batches/${batchId}/save_label_edits/${imageId}`;
+
+      let updated = null;
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(labels),
+        });
+        if (!res.ok) throw new Error(`Crop/infer failed: ${res.status}`);
+
+        // Backend may return JSON object with updated fields; guard empty body
+        try {
+          updated = await res.json();
+        } catch (_) {
+          updated = null;
+        }
+
+        // Merge returned fields into the item's image_info
+        this._mergeSpecimenRecord(batchId, imageId, {
+          image_info: updated || {},
+        });
+      } finally {
+        // Clear waiting flag regardless of success/failure
+        console.log("saved user edits");
       }
 
       return updated;
