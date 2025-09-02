@@ -61,7 +61,7 @@
 
 <script setup>
 
-import { ref, computed, watchEffect } from "vue"
+import { watch, reactive } from "vue"
 import { useBatchStore } from "@/stores/batch"
 import ImageExplorer from "@/components/ImageExplorer.vue"
 
@@ -72,21 +72,47 @@ const props = defineProps({
 
 const batchStore = useBatchStore();
 
-const form = ref(
-  JSON.parse(JSON.stringify(props.specimen?.image_info?.llm_output))
-);
+const form = reactive({
+  ...(props.specimen?.image_info?.llm_output || {})
+})
+
+// Helper to reset form from a source object (keeps reactivity)
+function setFormFrom(obj) {
+  // remove keys that no longer exist
+  for (const k of Object.keys(form)) {
+    if (!(obj && Object.prototype.hasOwnProperty.call(obj, k))) {
+      delete form[k]
+    }
+  }
+  // copy over current keys
+  if (obj) {
+    for (const [k, v] of Object.entries(obj)) {
+      form[k] = v
+    }
+  }
+}
+
 function revert() {
-  form.value = JSON.parse(JSON.stringify(props.specimen?.image_info?.llm_output))
+  setFormFrom(props.specimen?.image_info?.llm_output || {})
 }
 
 async function saveLabel() {
+    // send a plain object (avoid serializing proxies)
+  const payload = JSON.parse(JSON.stringify(form))
+
   const updated_specimen = await batchStore.postUserUpdatedLlmLabels(
     props.batchId,
     props.specimen.image_info.id,
-    form.value
+    payload
   );
-  console.log("saving!", form.value)
+  console.log("saving!", payload)
 }
+watch(
+  () => props.specimen?.image_info?.llm_output,
+  (newVal) => setFormFrom(newVal || {}),
+  { immediate: true, deep: true }
+)
+
 </script>
 
 <style scoped>

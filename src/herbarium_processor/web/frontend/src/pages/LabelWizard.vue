@@ -35,7 +35,6 @@ import { useBatchStore } from "@/stores/batch"   // our Pinia store
 
 const props = defineProps({
   id: { type: String, required: true },
-  do_not_redirect: { type: Boolean, default: false },
 })
 
 const router = useRouter()
@@ -52,7 +51,7 @@ onMounted(async () => {
 
     // Auto-navigate to CropWizard if the stage is "cropping"
     const stage = batchStore.getBatchState(props.id)
-    if (!props.do_not_redirect && stage === "cropping") {
+    if (stage === "cropping") {
       router.replace({ name: "cropWizard", params: { id: props.id } })
       return
     }

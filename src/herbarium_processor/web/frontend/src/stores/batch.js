@@ -93,9 +93,12 @@ export const useBatchStore = defineStore("batches", {
         reviewed = 0;
       for (const item of batch.specimens) {
         const img = item.image_info;
-        if (!img?.post_crop_url) {
+
+        if (item.waiting_on_llm) {
+          digitizing++;
+        } else if (!img?.post_crop_url) {
           cropping++;
-        } else if (!img?.llm_output || item.waiting_on_llm) {
+        } else if (!img?.llm_output) {
           digitizing++;
         } else if (!img?.user_edited_llm_output) {
           ready++;

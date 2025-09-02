@@ -80,7 +80,6 @@ import StatusBar from "@/components/StatusBar.vue";
 
 const props = defineProps({
   id: { type: String, required: true },
-    do_not_redirect: { type: Boolean, default: false },
 
 });
 
@@ -118,7 +117,7 @@ onBeforeUpdate(() => {
 onMounted(async () => {
   try {
     const batch = await batchStore.getBatch(props.id); // use store
-    if (!props.do_not_redirect && batchStore.getBatchState(props.id) !== "cropping") {
+    if (batchStore.getBatchState(props.id) !== "cropping") {
       router.push({ name: "batch", params: { id: props.id } });
     }
     specimens.value = batch.specimens ?? [];
@@ -169,7 +168,7 @@ async function handleUpload() {
       currentIndex.value++;
     } else {
       console.log("Done cropping; go to labeling");
-      router.push({ name: "labelWizard", params: { id: props.id, do_not_redirect: true } });
+      router.push({ name: "labelWizard", params: { id: props.id } });
     }
   } catch (err) {
     error.value = err?.message || "Unknown error";
