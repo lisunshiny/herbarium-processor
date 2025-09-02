@@ -1,66 +1,71 @@
 <template>
-  <StatusBar :id="id" />
-  <div class="">
-    <div v-if="loading">Loading batch…</div>
-    <div v-else-if="error" class="text-red-500">
-      Failed to load batch: {{ error }}
-    </div>
-    <div v-else>
-      <BaseCard class="max-w-5xl mx-auto">
-        <!-- Constrain height and width -->
-        <div class="flex gap-6">
-          <!-- Left: crop views, scrollable if tall -->
-          <div class="flex-1 overflow-y-auto max-h-[70vh] pr-2">
-            <SpecimenCropView
-              v-if="currentSpecimen"
-              :key="currentSpecimen?.id ?? currentIndex"
-              :specimen="currentSpecimen"
-              :ref="setCropperRef"
-              class="mb-4"
-            />
-          </div>
+  <WizardLayout :batchId="id">
+    <!-- Main content: make it fill and scroll *inside* the middle pane if needed -->
+    <!-- Middle: fills between top/bottom bars; page itself won't scroll -->
+    <main class="h-full flex-1 overflow-hidden">
+      <!-- States -->
+      <div v-if="loading" class="h-full grid place-items-center">
+        Loading batch…
+      </div>
 
-          <!-- Right: instructions, fixed narrow width -->
-          <aside class="w-64 text-sm text-gray-300 border-l border-base-300 pl-4">
-            <h2 class="text-lg font-semibold tracking-tight text-base-content">
-              Crop · {{ currentSpecimen.image_info.name }}
-            </h2>
-            <p class="mt-2 text-sm text-base-content/80">
-              Draw the crop box around the label. Use the handles to resize.
-              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eum
-              perspiciatis totam corporis ratione delectus nisi repellendus
-              maxime! Ex magnam exercitationem maxime aut nemo consequuntur
-              saepe vero voluptas earum consequatur? Sed.
-            </p>
+      <div v-else-if="error" class="h-full grid place-items-center text-error">
+        Failed to load batch: {{ error }}
+      </div>
 
-            <p class="mt-3 text-xs leading-snug text-base-content/60">
-              Guidelines: include barcode; exclude mounting board edges.
-            </p>
-          </aside>
-        </div>
+      <!-- Two-panel workspace -->
+      <div
+        v-else
+        class="h-full grid grid-cols-1 md:grid-cols-[1fr_280px]"
+      >
+        <!-- Left: work area (scrolls internally if needed) -->
+        <section class="h-full overflow-auto p-4 bg-black">
+          <SpecimenCropView
+            v-if="currentSpecimen"
+            :key="currentSpecimen?.id ?? currentIndex"
+            :specimen="currentSpecimen"
+            :ref="setCropperRef"
+            class=""
+          />
+        </section>
 
-        <template #actions>
-          <button
-            class="btn btn-primary"
-            :disabled="isUploading"
-            @click="handleUpload"
-          >
-            <span
-              v-if="isUploading"
-              class="loading loading-spinner mr-2"
-            ></span>
-            {{
-              isUploading
-                ? "Uploading…"
-                : currentIndex < specimens.length - 1
-                ? "Process label & next"
-                : "Finish & proceed to labeling"
-            }}
-          </button>
-        </template>
-      </BaseCard>
-    </div>
-  </div>
+        <!-- Right: inspector/notes (fixed narrow pane, internal scroll) -->
+        <aside class="h-full overflow-auto border-l border-base-300 p-4">
+          <h2 class="text-lg font-semibold tracking-tight text-base-content">
+            Crop · {{ currentSpecimen.image_info.name }}
+          </h2>
+
+          <p class="mt-2 text-sm text-base-content/80">
+            Draw the crop box around the label. Use the handles to resize.
+            Placeholder copy lorem ipsum dolor sit amet…
+          </p>
+
+          <p class="mt-3 text-xs leading-snug text-base-content/60">
+            Guidelines: include barcode; exclude mounting board edges.
+          </p>
+        </aside>
+      </div>
+    </main>
+
+    <!-- Bottom bar content -->
+    <template #bottom-left> bottom left goes here </template>
+
+    <template #bottom-right>
+      <button
+        class="btn btn-primary"
+        :disabled="isUploading"
+        @click="handleUpload"
+      >
+        <span v-if="isUploading" class="loading loading-spinner mr-2"></span>
+        {{
+          isUploading
+            ? "Uploading…"
+            : currentIndex < specimens.length - 1
+            ? "Process label & next"
+            : "Finish & proceed to labeling"
+        }}
+      </button>
+    </template>
+  </WizardLayout>
 </template>
 
 <script setup>
@@ -73,14 +78,12 @@ import {
   onBeforeUnmount,
 } from "vue";
 import { useRouter } from "vue-router";
+import WizardLayout from "@/components/WizardLayout.vue";
 import SpecimenCropView from "@/components/SpecimenCropView.vue";
 import { useBatchStore } from "@/stores/batch";
-import BaseCard from "@/components/ui/BaseCard.vue";
-import StatusBar from "@/components/StatusBar.vue";
 
 const props = defineProps({
   id: { type: String, required: true },
-
 });
 
 const router = useRouter();

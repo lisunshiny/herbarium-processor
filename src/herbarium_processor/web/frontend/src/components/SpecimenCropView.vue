@@ -1,5 +1,5 @@
 <template>
-  <div class="p-8 card bg-base-300 shadow">
+  <div class="p-8 h-full">
     <Cropper
       ref="cropper"
       class="cropper"
@@ -49,5 +49,4 @@ defineExpose({ getCropOperation });
 </script>
 
 <style scoped>
-/* ... */
 </style>

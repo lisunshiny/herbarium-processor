@@ -1,17 +1,12 @@
 <template>
-  <!-- Full-screen, no page scroll -->
-  <div class="fixed inset-0 flex flex-col bg-base-100">
-    <!-- Top bar stays the same across steps -->
+  <!-- 3 rows: header | content | footer -->
+  <div class="fixed inset-0 grid grid-rows-[auto_1fr_auto] bg-base-100">
+    <!-- Top bar -->
     <StatusBar :id="batchId" />
 
-    <!-- Middle content fills the space between bars -->
-    <div class="flex-1 overflow-hidden">
-      <!-- Force children to be able to 100% height -->
+    <!-- Middle slot fills exactly between bars -->
+    <div class="overflow-hidden">
       <div class="h-full">
-        <!-- Optional top-of-content area (e.g., title, alerts) -->
-        <slot name="header" />
-
-        <!-- Main step content goes here -->
         <slot />
       </div>
     </div>

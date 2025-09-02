@@ -1,10 +1,9 @@
 <template>
   <div
-    class="mx-auto p-6 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 h-screen"
+    class="mx-auto grid grid-cols-1 md:grid-cols-[1fr_auto] h-full"
   >
     <!-- Left card (stretches) -->
-    <div class="card bg-base-100 shadow-xl overflow-hidden">
-      <div class="card-body">
+    <div class=" bg-base-100 h-full">
         <h2 class="card-title">{{ specimen.image_info.name }}
         </h2>
         <ImageExplorer
@@ -12,11 +11,10 @@
           :image_url="specimen.image_info.ocr_bounding_url"
           class="h-[70vh]"
         />
-      </div>
     </div>
 
     <!-- Right card (fixed w-64, scrollable) -->
-    <div class="card bg-base-100 shadow-xl w-64 overflow-y-auto">
+    <div class="card bg-base-100 w-64 h-full overflow-y-auto">
       <div class="card-body">
         <h2 class="card-title">Digitized fields
                     <div v-if="!specimen.image_info.user_edited_llm_output" class="badge badge-xs badge-outline badge-warning">Needs review</div>
