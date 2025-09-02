@@ -18,7 +18,7 @@
         class="h-full grid grid-cols-1 md:grid-cols-[1fr_280px]"
       >
         <!-- Left: work area (scrolls internally if needed) -->
-        <section class="h-full overflow-auto p-4 bg-black">
+        <section class="h-full overflow-auto bg-black">
           <SpecimenCropView
             v-if="currentSpecimen"
             :key="currentSpecimen?.id ?? currentIndex"
@@ -47,7 +47,7 @@
     </main>
 
     <!-- Bottom bar content -->
-    <template #bottom-left> bottom left goes here </template>
+    <template #bottom-left></template>
 
     <template #bottom-right>
       <button

@@ -38,7 +38,7 @@ const zoomOut = () => panzoomInstance?.zoomOut();
 onMounted(() => {
   panzoomInstance = Panzoom(imgRef.value, {
     maxScale: 5,
-    minScale: 1,
+    minScale: -2,
   });
   containerRef.value.addEventListener("wheel", panzoomInstance.zoomWithWheel);
 });
