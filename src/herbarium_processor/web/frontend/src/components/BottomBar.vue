@@ -1,54 +1,47 @@
+<!-- src/components/BottomBar.vue -->
 <template>
   <div
-    class="progress-header px-6 py-2 bg-base-100 border-y border-base-300 top-0 sticky z-30"
+    class="progress-footer px-6 py-2 bg-base-100/95 backdrop-blur border-t border-base-300 bottom-0 fixed w-full z-30"
   >
     <div class="flex justify-between items-center">
-<a href="/" class="flex items-center gap-3 min-w-0">
-  <span class="text-xl leading-none">🌿</span>
-  <span class="truncate">
-    <div class="font-extrabold truncate">Parsely Digitizer</div>
-    <div class="text-xs text-base-content/60 truncate">
-      Batch created Sep 2, 2025
-    </div>
-  </span>
-</a>
-      <div class="breadcrumbs text-sm">
-        <ul>
-          <li>Prepare</li>
-          <li>Validate</li>
-          <li>Export</li>
-        </ul>
-      </div>
-          <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-base-200 border border-base-300">
-      v0.1 • Pre-alpha
-    </span>
-
-      <!-- <div claass="flex flex-wrap items-center gap-2">
+        <div>
+          <slot name="left" />
+        </div>
+        <div>
+          <slot name="right" />
+        </div>
+        <!-- <div class="flex flex-wrap items-center gap-2">
         <span
           class="inline-flex items-center gap-1 rounded-full bg-neutral/10 text-neutral px-2.5 py-0.5 text-xs font-medium cursor-default"
         >
-          <span class="w-1.5 h-1.5 rounded-full bg-neutral"></span> Crop
+          <span class="w-1.5 h-1.5 rounded-full bg-neutral"></span>
+          Crop
           <span class="opacity-60">({{ states.cropping }})</span>
         </span>
+
         <span
           class="inline-flex items-center gap-1 rounded-full bg-primary/10 text-primary px-2.5 py-0.5 text-xs font-medium cursor-default"
         >
-          <span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Parse
+          <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+          Parse
           <span class="opacity-60">({{ states.digitizing }})</span>
         </span>
+
         <span
           class="inline-flex items-center gap-1 rounded-full bg-warning/10 text-warning px-2.5 py-0.5 text-xs font-medium cursor-default"
         >
-          <span class="w-1.5 h-1.5 rounded-full bg-warning"></span> Needs review
+          <span class="w-1.5 h-1.5 rounded-full bg-warning"></span>
+          Needs review
           <span class="opacity-60">({{ states.ready }})</span>
         </span>
+
         <span
           class="inline-flex items-center gap-1 rounded-full bg-success/10 text-success px-2.5 py-0.5 text-xs font-medium cursor-default"
         >
-          <span class="w-1.5 h-1.5 rounded-full bg-success"></span> Ready
+          <span class="w-1.5 h-1.5 rounded-full bg-success"></span>
+          Ready
           <span class="opacity-60">({{ states.reviewed }})</span>
-        </span>
-      </div> -->
+        </span> -->
     </div>
   </div>
 </template>
@@ -66,12 +59,12 @@ const specimens = ref([]);
 const loading = ref(true);
 const error = ref(null);
 
-// Make counts reactive to store changes
+// Keep counts reactive to store changes
 const states = computed(() => batchStore.getItemsInEachState(props.id));
 
 onMounted(async () => {
   try {
-    const batch = await batchStore.getBatch(props.id); // use store
+    const batch = await batchStore.getBatch(props.id);
     specimens.value = batch.specimens ?? [];
   } catch (err) {
     error.value = err?.message || "Unknown error";

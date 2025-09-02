@@ -23,6 +23,7 @@
       </div>
     </div>
   </div>
+  <BottomBar :id="id"  />
 </template>
 
 <script setup>
@@ -30,6 +31,8 @@ import { ref, onMounted } from "vue"
 import { useRouter } from "vue-router"
 import SpecimenLabelView from "@/components/SpecimenLabelView.vue"
 import StatusBar from "@/components/StatusBar.vue"
+import BottomBar from "@/components/BottomBar.vue"
+
 import BaseCard from "@/components/ui/BaseCard.vue"
 import { useBatchStore } from "@/stores/batch"   // our Pinia store
 
