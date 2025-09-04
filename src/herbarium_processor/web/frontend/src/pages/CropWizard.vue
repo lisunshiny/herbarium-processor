@@ -121,7 +121,7 @@ onMounted(async () => {
   try {
     const batch = await batchStore.getBatch(props.id); // use store
     if (batchStore.getBatchState(props.id) !== "cropping") {
-      router.push({ name: "batch", params: { id: props.id } });
+      router.push({ name: "home" });
     }
     specimens.value = batch.specimens ?? [];
     cropperRefs.value = Array(specimens.value.length).fill(null); // ensure array length matches specimens
