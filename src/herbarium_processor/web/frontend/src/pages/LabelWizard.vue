@@ -15,8 +15,18 @@
         No images in this batch.
       </div>
       <div v-else class="h-full">
+        <div v-if="true || !currentSpecimen?.image_info?.llm_output">
+          <div class="flex h-full items-center justify-center">
+            <div class="flex flex-col items-center space-y-3 pt-24">
+              <span class="loading loading-spinner loading-lg"></span>
+              <p class="text-sm text-base-content/60">
+                Waiting for response from the AI model…
+              </p>
+            </div>
+          </div>
+        </div>
         <div
-          v-if="currentSpecimen"
+          v-else
           :key="currentSpecimen?.image_info?.id ?? currentIndex"
           class="mx-auto grid grid-cols-1 md:grid-cols-[1fr_auto] h-full"
         >
@@ -28,18 +38,7 @@
 
           <!-- Right card (fixed w-64, scrollable) -->
           <div class="w-64 h-full overflow-y-auto border-l border-base-300 p-4">
-            <h2>
-              Digitized fields
-              <div
-                v-if="!currentSpecimen.image_info.user_edited_llm_output"
-                class="badge badge-xs badge-outline badge-warning"
-              >
-                Needs review
-              </div>
-              <div v-else class="badge badge-xs badge-outline badge-success">
-                Reviewed
-              </div>
-            </h2>
+            <h2>Digitized fields</h2>
             <p
               v-if="!currentSpecimen.image_info.user_edited_llm_output"
               class="text-xs leading-snug text-base-content/60"
@@ -47,12 +46,6 @@
               These fields were autocompleted by an AI model and may contain
               errors. Please review and correct before finalizing.
             </p>
-            <div
-              v-if="!currentSpecimen.image_info.llm_output"
-              class="text-sm text-base-content/60"
-            >
-              No extracted fields yet.
-            </div>
             <div v-else>
               <div
                 v-for="(val, key) in form"
@@ -79,19 +72,14 @@
 
     <template #bottom-right>
       <button class="btn btn-primary" @click="saveLabel">
-        <span v-if="!currentSpecimen?.image_info?.user_edited_llm_output"
-          >Mark as reviewed</span
-        >
+        <span v-if="!currentSpecimen?.image_info?.user_edited_llm_output">
+          {{
+            currentIndex < specimens.length - 1
+              ? "Save & next"
+              : "Download as CSV"
+          }}
+        </span>
         <span v-else>Update</span>
-      </button>
-      <button class="btn" @click="revert">Revert</button>
-
-      <button
-        class="btn btn-primary"
-        :disabled="!currentSpecimen"
-        @click="handleNext"
-      >
-        {{ currentIndex < specimens.length - 1 ? "Next specimen" : "Finish" }}
       </button>
     </template>
   </WizardLayout>

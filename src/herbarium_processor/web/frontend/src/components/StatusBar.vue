@@ -3,15 +3,7 @@
     class="progress-header px-6 py-2 bg-base-100 border-y border-base-300 top-0 sticky z-30"
   >
     <div class="flex justify-between items-center">
-<a href="/" class="flex items-center gap-3 min-w-0">
-  <span class="text-xl leading-none">🌿</span>
-  <span class="truncate">
-    <div class="font-extrabold truncate">Parsely Digitizer</div>
-    <div class="text-xs text-base-content/60 truncate">
-      Batch created Sep 2, 2025
-    </div>
-  </span>
-</a>
+      <a href="/" class="text-xl cursor-pointer">🌿 Parsely</a>
       <div class="breadcrumbs text-sm">
         <ul>
           <li>Prepare</li>
@@ -19,9 +11,6 @@
           <li>Export</li>
         </ul>
       </div>
-          <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-base-200 border border-base-300">
-      v0.1 • Pre-alpha
-    </span>
 
       <!-- <div claass="flex flex-wrap items-center gap-2">
         <span

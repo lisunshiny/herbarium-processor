@@ -60,8 +60,8 @@
           isUploading
             ? "Uploading…"
             : currentIndex < specimens.length - 1
-            ? "Process label & next"
-            : "Finish & proceed to labeling"
+            ? "Save & next"
+            : "Save & move to validation"
         }}
       </button>
     </template>
