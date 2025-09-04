@@ -157,7 +157,8 @@ async def crop_and_infer(batch_id: str, image_id: str, ops: CropOperation):
 
     # Crop and rotate
     crop = (ops.x, ops.y, ops.width, ops.height)
-    angle = ops.rotate
+    # the rotation angle is in degrees clockwise, but our function expects counterclockwise
+    angle = (360 - ops.rotate) % 360
     post_crop_path = image_dir / "post_crop.jpg"
     crop_rotate_and_resize(path, crop, angle, post_crop_path)
     print("test 1")
