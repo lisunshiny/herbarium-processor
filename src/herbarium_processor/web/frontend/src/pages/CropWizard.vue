@@ -13,10 +13,7 @@
       </div>
 
       <!-- Two-panel workspace -->
-      <div
-        v-else
-        class="h-full grid grid-cols-1 md:grid-cols-[1fr_280px]"
-      >
+      <div v-else class="h-full grid grid-cols-1 md:grid-cols-[1fr_280px]">
         <!-- Left: work area (scrolls internally if needed) -->
         <section class="h-full overflow-auto bg-black">
           <SpecimenCropView
@@ -50,6 +47,9 @@
     <template #bottom-left></template>
 
     <template #bottom-right>
+      <span class="text-gray-700 mr-4"
+        >{{ currentIndex + 1 }} of {{ specimens.length }}</span
+      >
       <button
         class="btn btn-primary"
         :disabled="isUploading"

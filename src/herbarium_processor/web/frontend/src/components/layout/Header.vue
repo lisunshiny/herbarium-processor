@@ -1,11 +1,9 @@
 <template>
-  <header class="navbar bg-base-100 shadow-md">
+  <header class="navbar bg-base-100 border-y border-base-300">
     <!-- Left: brand -->
     <div class="flex-1">
-      <a href="/" class="p-2 text-xl cursor-pointer">🌿 Parsely</a>           <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-base-200 border border-base-300">
-      v0.1 • Pre-alpha
-    </span>
-
+      <a href="/" class="pl-2 pr-2 text-xl cursor-pointer">🌿 Parsely</a
+      ><span class="badge badge-outline badge-xs badge-error translate-y-[-2px]"> Pre-alpha </span>
     </div>
 
     <!-- Right: nav items -->

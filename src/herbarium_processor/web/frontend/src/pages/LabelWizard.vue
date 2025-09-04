@@ -15,7 +15,7 @@
         No images in this batch.
       </div>
       <div v-else class="h-full">
-        <div v-if="true || !currentSpecimen?.image_info?.llm_output">
+        <div v-if="!currentSpecimen?.image_info?.llm_output">
           <div class="flex h-full items-center justify-center">
             <div class="flex flex-col items-center space-y-3 pt-24">
               <span class="loading loading-spinner loading-lg"></span>
@@ -40,29 +40,24 @@
           <!-- Right card (fixed w-64, scrollable) -->
           <div class="w-64 h-full overflow-y-auto border-l border-base-300 p-4">
             <h2>Digitized fields</h2>
-            <p
-              v-if="!currentSpecimen.image_info.user_edited_llm_output"
-              class="text-xs leading-snug text-base-content/60"
-            >
+            <p class="text-xs leading-snug text-base-content/60">
               These fields were autocompleted by an AI model and may contain
               errors. Please review and correct before finalizing.
             </p>
-            <div v-else>
-              <div
-                v-for="(val, key) in form"
-                :key="key"
-                class="form-control mb-3"
+            <div
+              v-for="(val, key) in form"
+              :key="key"
+              class="form-control mb-3"
+            >
+              <label class="label py-1">
+                <span class="label-text text-xs">{{ key }}</span>
+              </label>
+              <textarea
+                v-model="form[key]"
+                rows="1"
+                class="textarea textarea-bordered textarea-sm w-full overflow-hidden max-h-60 [field-sizing:content] min-h-0 py-1"
               >
-                <label class="label py-1">
-                  <span class="label-text text-xs">{{ key }}</span>
-                </label>
-                <textarea
-                  v-model="form[key]"
-                  rows="1"
-                  class="textarea textarea-bordered textarea-sm w-full overflow-hidden max-h-60 [field-sizing:content] min-h-0 py-1"
-                >
-                </textarea>
-              </div>
+              </textarea>
             </div>
           </div>
         </div>
@@ -71,13 +66,19 @@
     <!-- Bottom bar content -->
     <template #bottom-left></template>
 
-    <template v-if="!currentSpecimen?.image_info?.user_edited_llm_output" #bottom-right>
+    <template
+      v-if="!currentSpecimen?.image_info?.user_edited_llm_output"
+      #bottom-right
+    >
+      <span class="text-gray-700 mr-4"
+        >{{ currentIndex + 1 }}/{{ specimens.length }}
+      </span>
       <button class="btn btn-primary" @click="saveLabel">
-          {{
-            currentIndex < specimens.length - 1
-              ? "Save & next"
-              : "Download as CSV"
-          }}
+        {{
+          currentIndex < specimens.length - 1
+            ? "Save & next"
+            : "Download as CSV"
+        }}
       </button>
     </template>
   </WizardLayout>
