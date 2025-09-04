@@ -9,8 +9,8 @@
     <!-- Right: nav items -->
     <div class="flex-none">
       <ul class="menu menu-horizontal px-1">
-        <li><a>Home</a></li>
-        <li><a>About</a></li>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About</a></li>
       </ul>
     </div>
   </header>
