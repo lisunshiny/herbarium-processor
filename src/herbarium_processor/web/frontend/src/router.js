@@ -1,0 +1,31 @@
+import { createRouter, createWebHistory } from 'vue-router'
+import Home from './pages/Home.vue'
+
+const routes = [
+  { path: '/', name: "home", component: Home },
+  {
+    path: "/batches/:id",
+    name: "batch",
+    component: () => import("@/pages/BatchView.vue"), // your crop/review UI
+    props: true,
+  },
+  {
+    path: "/batches/:id/crop",
+    name: "cropWizard",
+    component: () => import("@/pages/CropWizard.vue"), // your crop/review UI
+    props: true,
+  },
+  {
+    path: "/batches/:id/label",
+    name: "labelWizard",
+    component: () => import("@/pages/LabelWizard.vue"), // the side by side label UI
+    props: true,
+  },
+
+  // Add more routes here as needed
+]
+
+export default createRouter({
+  history: createWebHistory(), // history mode
+  routes,
+})

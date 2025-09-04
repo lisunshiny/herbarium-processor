@@ -15,7 +15,7 @@ ENV_DOCKER ?= .env
 PORT ?= 8000
 LOCAL_NAME := $(SERVICE)-local
 
-.PHONY: help build run stop logs gcp-init gcp-build gcp-deploy gcp-url deploy gcp-set gcp-logs
+.PHONY: help build run stop logs gcp-init gcp-build gcp-deploy gcp-url deploy gcp-set gcp-logs dev
 
 help: ## List commands
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) | \
@@ -61,3 +61,6 @@ gcp-logs: ## Stream Cloud Run logs
 	gcloud  beta run services logs tail $(SERVICE) --region $(REGION)
 
 deploy: gcp-build gcp-deploy gcp-url ## Build, deploy, print URL
+
+dev:
+	poetry run dev

@@ -8,6 +8,7 @@ from fastapi import Body, FastAPI, File, HTTPException, UploadFile, Request
 from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+from .routers import batches
 
 from herbarium_processor.config import ROOT_DIR, TMP_DIR
 from herbarium_processor.core.image.image_utils import (
@@ -27,6 +28,9 @@ app = FastAPI(title="Herbarium Processor Web")
 STATIC_DIR = Path(__file__).parent / "static"
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 app.mount("/tmp", StaticFiles(directory=TMP_DIR), name="tmp")
+
+# Routers
+app.include_router(batches.router, prefix="/api")
 
 MAX_FILES = 30
 

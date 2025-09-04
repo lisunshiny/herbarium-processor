@@ -24,12 +24,19 @@ class OcrClient:
         self.client = vision.ImageAnnotatorClient()
         self.preprocessor = ImagePreprocessor()
 
-    def extract_text_json(self, image_path):
+    def extract_text_json(
+        self,
+        image_path,
+        preprocessed_path=None,
+        ocr_annotated_path=None,
+        llm_json_path=None,
+    ):
         image_path = ROOT_DIR / image_path
         # Get the base name of the file without extension
         base_name = os.path.splitext(os.path.basename(image_path))[0]
-        preprocessed_path = TMP_DIR / f"ocr_preprocessed_{base_name}.jpg"
-        preprocessed_path = os.path.normpath(preprocessed_path)
+        if preprocessed_path is None:
+            preprocessed_path = TMP_DIR / f"ocr_preprocessed_{base_name}.jpg"
+            preprocessed_path = os.path.normpath(preprocessed_path)
         self.preprocessor.preprocess_and_save(image_path, preprocessed_path)
 
         with io.open(preprocessed_path, "rb") as image_file:
@@ -45,12 +52,15 @@ class OcrClient:
 
         lines = self.parse_google_ocr_response(response)
         merged_lines = self.merge_to_lines(lines)
-        self.visualize_bounding_boxes(
-            merged_lines, image_path, TMP_DIR / f"ocr_bounding_{base_name}.jpg"
-        )
-        ai_input_path = TMP_DIR / f"ocr_ai_input_{base_name}.json"
-        ai_input_path = os.path.normpath(ai_input_path)
-        with open(ai_input_path, "w", encoding="utf-8") as f:
+        if ocr_annotated_path is None:
+            ocr_annotated_path = TMP_DIR / f"ocr_bounding_{base_name}.jpg"
+            ocr_annotated_path = os.path.normpath(ocr_annotated_path)
+        self.visualize_bounding_boxes(merged_lines, image_path, ocr_annotated_path)
+        if llm_json_path is None:
+            llm_json_path = TMP_DIR / f"ocr_ai_input_{base_name}.json"
+            llm_json_path = os.path.normpath(llm_json_path)
+        print(merged_lines)
+        with open(llm_json_path, "w", encoding="utf-8") as f:
             json.dump(merged_lines, f, ensure_ascii=False, indent=2)
         return merged_lines
 
@@ -191,7 +201,10 @@ class ImagePreprocessor:
         self.last_resize_fx = 1.0
         self.last_resize_fy = 1.0
 
-    def preprocess_for_ocr(self, image_path):
+    def preprocess_for_ocr(
+        self,
+        image_path,
+    ):
         image_path = ROOT_DIR / image_path
         if not os.path.exists(image_path):
             raise FileNotFoundError(f"Image not found: {image_path}")
@@ -200,7 +213,11 @@ class ImagePreprocessor:
         if img is None:
             raise ValueError(f"Unable to load image: {image_path}")
 
-        img = self._apply_perspective_correction(img)
+        # img = self._apply_perspective_correction(img)
+        # No correction; set identity transforms
+        self.last_perspective_transform = np.eye(3, dtype=np.float32)
+        self.last_inverse_transform = np.eye(3, dtype=np.float32)
+        return img
 
         # Step 1: Convert to grayscale
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)

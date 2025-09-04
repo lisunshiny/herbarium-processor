@@ -35,6 +35,9 @@ pre-commit = "^4.3.0"
 black = {extras = ["jupyter"], version = "^25.1.0"}
 httpx = "*"
 
+[tool.poetry.scripts]
+dev = "scripts.dev:main"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
