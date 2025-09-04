@@ -67,7 +67,7 @@
     <template #bottom-left></template>
 
     <template
-      v-if="!currentSpecimen?.image_info?.user_edited_llm_output"
+      v-if="currentSpecimen?.image_info?.llm_output"
       #bottom-right
     >
       <span class="text-gray-700 mr-4"
@@ -77,7 +77,7 @@
         {{
           currentIndex < specimens.length - 1
             ? "Save & next"
-            : "Download as CSV"
+            : "Save & download CSV"
         }}
       </button>
     </template>
@@ -147,7 +147,8 @@ async function saveLabel() {
   if (currentIndex.value < specimens.value.length - 1) {
     currentIndex.value++;
   } else {
-    router.push({ name: "batch", params: { id: props.id } });
+    batchStore.downloadCsv(props.id);
+    router.push({ name: "home" });// Go back to home after downloading
   }
 }
 

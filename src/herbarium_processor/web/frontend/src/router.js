@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from './pages/Home.vue'
 
 const routes = [
-  { path: '/', component: Home },
+  { path: '/', name: "home", component: Home },
   {
     path: "/batches/:id",
     name: "batch",

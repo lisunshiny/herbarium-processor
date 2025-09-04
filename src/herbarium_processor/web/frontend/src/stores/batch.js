@@ -221,5 +221,34 @@ export const useBatchStore = defineStore("batches", {
 
       return updated;
     },
+
+    /**
+     * Fetch CSV export for the batch and trigger a browser download.
+     * @param {string} batchId
+     * @returns {Promise<void>}
+     */
+    async downloadCsv(batchId) {
+      const url = `/api/batches/${batchId}/get_csv`;
+
+      const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error(`CSV download failed: ${res.status}`);
+      }
+
+      const blob = await res.blob();
+
+      const disposition = res.headers.get("content-disposition") || "";
+      const match = disposition.match(/filename="?([^";]+)"?/i);
+      const filename = match ? match[1] : `parsely_export_${Date.now()}.csv`;
+
+      const link = document.createElement("a");
+      const blobUrl = URL.createObjectURL(blob);
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(blobUrl);
+    },
   },
 });

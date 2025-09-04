@@ -1,9 +1,12 @@
 import json
+import csv
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from herbarium_processor.config import ROOT_DIR, TMP_DIR
@@ -244,6 +247,46 @@ async def crop_and_infer(batch_id: str, image_id: str, ops: CropOperation):
     }
 
     return fields
+
+
+@router.get("/{batch_id}/get_csv")
+async def get_csv(batch_id: str):
+    job_dir = TMP_DIR / f"batch_{batch_id}"
+    images_dir = job_dir / "images"
+    if not images_dir.exists():
+        raise HTTPException(status_code=404, detail="Batch not found")
+
+    rows: List[Dict[str, Any]] = []
+    fieldnames: set[str] = set()
+    for subdir in images_dir.iterdir():
+        if not subdir.is_dir():
+            continue
+        user_json = subdir / "user_edited_llm_output.json"
+        if user_json.exists():
+            try:
+                with user_json.open("r", encoding="utf-8") as f:
+                    data = json.load(f)
+                rows.append(data)
+                fieldnames.update(data.keys())
+            except json.JSONDecodeError:
+                continue
+
+    if not rows:
+        raise HTTPException(status_code=404, detail="No label data found")
+
+    field_list = sorted(fieldnames)
+    timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    num_specimens = len(rows)
+    filename = f"parsely_export_{num_specimens}_{timestamp}.csv"
+    csv_path = job_dir / filename
+
+    with csv_path.open("w", newline="", encoding="utf-8") as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=field_list)
+        writer.writeheader()
+        for row in rows:
+            writer.writerow(row)
+
+    return FileResponse(csv_path, media_type="text/csv", filename=filename)
 
 
 @router.post("/{batch_id}/save_label_edits/{image_id}")
