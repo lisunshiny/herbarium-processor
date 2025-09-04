@@ -16,13 +16,8 @@
       <div v-else class="h-full grid grid-cols-1 md:grid-cols-[1fr_280px]">
         <!-- Left: work area (scrolls internally if needed) -->
         <section class="h-full overflow-auto bg-black">
-          <SpecimenCropView
-            v-if="currentSpecimen"
-            :key="currentSpecimen?.id ?? currentIndex"
-            :specimen="currentSpecimen"
-            :ref="setCropperRef"
-            class=""
-          />
+          <SpecimenCropView v-if="currentSpecimen" :key="currentSpecimen?.id ?? currentIndex"
+            :specimen="currentSpecimen" :ref="setCropperRef" class="" />
         </section>
 
         <!-- Right: inspector/notes (fixed narrow pane, internal scroll) -->
@@ -32,8 +27,8 @@
           </h2>
 
           <p class="mt-2 text-sm text-base-content/80">
-            Draw the crop box around the label. Use the handles to resize.
-            Placeholder copy lorem ipsum dolor sit amet…
+            Click and drag the borders of the cropping tool so that it only captures the specimen label. Do not include
+            barcodes, color palettes, rulers, and the specimens themselves.
           </p>
 
           <p class="mt-3 text-xs leading-snug text-base-content/60">
@@ -47,23 +42,13 @@
     <template #bottom-left></template>
 
     <template #bottom-right>
-      <span class="text-gray-700 mr-4"
-        >{{ currentIndex + 1 }} of {{ specimens.length }}</span
-      >
-      <button
-        class="btn btn-primary"
-        :disabled="isUploading"
-        @click="handleUpload"
-      >
+      <span class="text-gray-700 mr-4">{{ currentIndex + 1 }} of {{ specimens.length }}</span>
+      <button class="btn btn-primary" :disabled="isUploading" @click="handleUpload">
         <span v-if="isUploading" class="loading loading-spinner mr-2"></span>
         {{
           isUploading
             ? "Uploading…"
-            : currentIndex < specimens.length - 1
-            ? "Save & next"
-            : "Save & move to validation"
-        }}
-      </button>
+            : currentIndex < specimens.length - 1 ? "Save & next" : "Save & move to validation" }} </button>
     </template>
   </WizardLayout>
 </template>

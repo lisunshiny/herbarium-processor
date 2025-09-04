@@ -8,12 +8,7 @@
         class="w-full mb-6 rounded shadow"
       />
       <p class="mb-4">
-        Parsely aims to make digitizing herbarium specimen labels faster and more
-        accurate. It uses AI, computer vision, and human verification to automate
-        the process of reading labels and parsing their text, which can then be
-        downloaded as a .csv file. Our goal is to help herbaria digitize their
-        specimens so that biodiversity data can move out of herbarium cabinets and
-        into open access, online databases.
+        We are a team of a software engineer and a scientist who have joined forces to build a tool that makes herbarium specimen digitization faster and more accurate. Our goal is to help herbaria digitize their specimens so that biodiversity data can move out of herbarium cabinets and into open access, online databases. 
       </p>
       <div class="flex items-center space-x-4">
         <img src="https://via.placeholder.com/80" alt="Placeholder bio" class="w-20 h-20 rounded-full object-cover" />
