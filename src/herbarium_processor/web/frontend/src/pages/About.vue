@@ -6,8 +6,8 @@
       <p class="mb-4">
         We are a software engineer and a scientist who teamed up to build a tool that makes herbarium
         specimen digitization faster and more accurate. Our goal is to support herbaria in bringing their collections
-        online, so that
-        biodiversity data can move out of herbarium cabinets and into open access, online databases to be discovered and
+        online, so that biodiversity data can move out of herbarium cabinets and into open access, online databases to
+        be discovered and
         used worldwide.
       </p>
       <div class="flex items-center space-x-4">
