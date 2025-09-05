@@ -31,9 +31,6 @@
             barcodes, color palettes, rulers, and the specimens themselves.
           </p>
 
-          <p class="mt-3 text-xs leading-snug text-base-content/60">
-            Guidelines: include barcode; exclude mounting board edges.
-          </p>
         </aside>
       </div>
     </main>

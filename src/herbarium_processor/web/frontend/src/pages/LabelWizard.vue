@@ -20,8 +20,7 @@
             <div class="flex flex-col items-center space-y-3 pt-24">
               <span class="loading loading-spinner loading-lg"></span>
               <p class="text-sm text-base-content/60">
-                Waiting for response from the AI model. This may take up to a
-                minute…
+                Parsely is assigning label text to fields. This may take up to a minute...
               </p>
             </div>
           </div>
