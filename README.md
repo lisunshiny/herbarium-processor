@@ -35,10 +35,12 @@ poetry run pre-commit install
 From here you have two options to use the processor, either the **web interface** or the **Python notebook**.
 
 #### Web app
-1. Start the server with `poetry run uvicorn herbarium_processor.web.main:app --reload`.
+1. Start the server:
+   - For development with hot reload, use `poetry run dev`.
+   - For a faster demo without hot reload and with eight worker processes so GET requests don't hang, run `poetry run demo`.
 2. Visit `http://localhost:8000/` to upload images. After processing, predicted fields can be edited in the browser alongside the OCR annotated image.
 3. Click **Finalize CSV** to save your edits and then download the CSV.
-6. Note that the info is all stored in the /tmp folder.
+4. Note that the info is all stored in the /tmp folder.
 
 #### Notebook
 1. Open the notebook located at notebooks/herbarium_processor.ipynb

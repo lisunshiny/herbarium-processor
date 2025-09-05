@@ -37,6 +37,7 @@ httpx = "*"
 
 [tool.poetry.scripts]
 dev = "scripts.dev:main"
+demo = "scripts.demo:main"
 
 [build-system]
 requires = ["poetry-core"]
