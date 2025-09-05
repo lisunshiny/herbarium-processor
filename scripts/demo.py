@@ -1,32 +1,38 @@
-import subprocess
 import sys
 from .common import (
     FRONTEND_DIR,
     BACKEND_APP,
     HOST,
     BACKEND_PORT,
+    FRONTEND_PORT,
     PKG,
-    get_env,
     run_processes,
 )
 
 
 def main():
-    env = get_env()
-    subprocess.run([PKG, "run", "build"], cwd=str(FRONTEND_DIR), env=env, check=True)
-    backend_cmd = [
-        "poetry",
-        "run",
-        "uvicorn",
-        BACKEND_APP,
-        "--host",
-        HOST,
-        "--port",
-        BACKEND_PORT,
-        "--workers",
-        "8",
+    processes = [
+        (
+            [
+                "poetry",
+                "run",
+                "uvicorn",
+                BACKEND_APP,
+                "--workers",
+                "8",
+                "--host",
+                HOST,
+                "--port",
+                BACKEND_PORT,
+            ],
+            {},
+        ),
+        (
+            [PKG, "run", "dev", "--", "--host", HOST, "--port", FRONTEND_PORT],
+            {"cwd": str(FRONTEND_DIR)},
+        ),
     ]
-    run_processes([(backend_cmd, {})], env=env)
+    run_processes(processes)
 
 
 if __name__ == "__main__":

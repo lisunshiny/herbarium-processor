@@ -66,10 +66,7 @@
     <!-- Bottom bar content -->
     <template #bottom-left></template>
 
-    <template
-      v-if="currentSpecimen?.image_info?.llm_output"
-      #bottom-right
-    >
+    <template v-if="currentSpecimen?.image_info?.llm_output" #bottom-right>
       <span class="text-gray-700 mr-4"
         >{{ currentIndex + 1 }}/{{ specimens.length }}
       </span>
@@ -90,6 +87,7 @@ import { useRouter } from "vue-router";
 import WizardLayout from "@/components/WizardLayout.vue";
 import ImageExplorer from "@/components/ImageExplorer.vue";
 import { useBatchStore } from "@/stores/batch"; // our Pinia store
+import { useAlertStore } from "@/stores/alerts";
 
 const props = defineProps({
   id: { type: String, required: true },
@@ -100,6 +98,7 @@ const loading = ref(true);
 const error = ref(null);
 const currentIndex = ref(0);
 const batchStore = useBatchStore();
+const alertStore = useAlertStore();
 const hasSpecimens = computed(() => specimens.value.length > 0);
 const currentSpecimen = computed(() =>
   hasSpecimens.value ? specimens.value[currentIndex.value] : null
@@ -147,8 +146,14 @@ async function saveLabel() {
   if (currentIndex.value < specimens.value.length - 1) {
     currentIndex.value++;
   } else {
-    batchStore.downloadCsv(props.id);
-    router.push({ name: "home" });// Go back to home after downloading
+    try {
+      await batchStore.downloadCsv(props.id);
+      alertStore.addAlert("Your CSV export was successful!", "success");
+    } catch (err) {
+      alertStore.addAlert("CSV download failed", "error");
+    } finally {
+      router.push({ name: "home" }); // Go back to home after downloading
+    }
   }
 }
 

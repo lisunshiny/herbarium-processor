@@ -1,26 +1,28 @@
 <template>
-  <BaseCard class="m-4">
-    <template #header>Upload images</template>
-    Upload up to 10 images at a time.
-    <!-- File input -->
-    <input
-      ref="fileInput"
-      type="file"
-      multiple
-      accept="image/*"
-      class="file-input file-input-bordered w-full max-w-xs mb-4"
-    />
-    <template #actions>
-      <button
-        class="btn btn-primary"
-        :disabled="isUploading"
-        @click="handleUpload"
-      >
-        <span v-if="isUploading" class="loading loading-spinner mr-2"></span>
-        {{ isUploading ? "Uploading…" : "Next" }}
-      </button>
-    </template>
-  </BaseCard>
+  <div class="m-4 space-y-4">
+    <BaseCard>
+      <template #header>Upload images</template>
+      Upload up to 10 images at a time.
+      <!-- File input -->
+      <input
+        ref="fileInput"
+        type="file"
+        multiple
+        accept="image/*"
+        class="file-input file-input-bordered w-full max-w-xs mb-4"
+      />
+      <template #actions>
+        <button
+          class="btn btn-primary"
+          :disabled="isUploading"
+          @click="handleUpload"
+        >
+          <span v-if="isUploading" class="loading loading-spinner mr-2"></span>
+          {{ isUploading ? "Uploading…" : "Next" }}
+        </button>
+      </template>
+    </BaseCard>
+  </div>
 </template>
 
 <script setup>
@@ -57,7 +59,7 @@ const handleUpload = async () => {
     if (!batchId) throw new Error("Batch ID missing in response.");
 
     // Navigate to the first step, cropping
-    router.replace({ name: "cropWizard", params: { id: batchId } })
+    router.replace({ name: "cropWizard", params: { id: batchId } });
   } catch (err) {
     console.error("❌ Error uploading:", err);
     alert("Upload failed. Check console for details.");
