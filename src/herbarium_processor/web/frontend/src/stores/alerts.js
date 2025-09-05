@@ -15,7 +15,7 @@ export const useAlertStore = defineStore("alerts", {
      * @param {number} [timeout=5000]
      * @returns {number} id of the alert
      */
-    addAlert(message, type = "success", timeout = 5000) {
+    addAlert(message, type = "success", timeout = 10000) {
       const id = nextId++;
       this.items.push({ id, message, type });
       if (timeout) {

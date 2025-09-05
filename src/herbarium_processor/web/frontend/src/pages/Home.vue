@@ -4,15 +4,10 @@
     <div
       v-for="alert in alertStore.items"
       :key="alert.id"
-      :class="['alert', `alert-${alert.type}`, 'shadow-lg']"
+      role="alert"
+      :class="['alert', `alert-${alert.type}`]"
     >
       <span>{{ alert.message }}</span>
-      <button
-        class="btn btn-ghost btn-xs"
-        @click="alertStore.removeAlert(alert.id)"
-      >
-        ✕
-      </button>
     </div>
 
     <BaseCard>

@@ -148,7 +148,7 @@ async function saveLabel() {
   } else {
     try {
       await batchStore.downloadCsv(props.id);
-      alertStore.addAlert("Your CSV import was successful", "success");
+      alertStore.addAlert("Your CSV export was successful", "success");
     } catch (err) {
       alertStore.addAlert("CSV download failed", "error");
     } finally {
