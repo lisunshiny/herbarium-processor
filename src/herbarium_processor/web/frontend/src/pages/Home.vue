@@ -1,15 +1,5 @@
 <template>
   <div class="m-4 space-y-4">
-    <!-- Alert container -->
-    <div
-      v-for="alert in alertStore.items"
-      :key="alert.id"
-      role="alert"
-      :class="['alert', `alert-${alert.type}`]"
-    >
-      <span>{{ alert.message }}</span>
-    </div>
-
     <BaseCard>
       <template #header>Upload images</template>
       Upload up to 10 images at a time.
@@ -39,12 +29,10 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import BaseCard from "@/components/ui/BaseCard.vue";
-import { useAlertStore } from "@/stores/alerts";
 
 const router = useRouter();
 const fileInput = ref(null);
 const isUploading = ref(false);
-const alertStore = useAlertStore();
 
 const handleUpload = async () => {
   if (!fileInput.value.files.length) {
