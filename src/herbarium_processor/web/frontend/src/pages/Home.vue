@@ -1,5 +1,21 @@
 <template>
   <div class="m-4 space-y-4">
+    <div
+      class="w-full rounded-lg bg-gradient-to-r from-info to-blue-500 text-white py-3 px-6 text-center shadow-md"
+    >
+      <span class="font-bold"
+        >✨ Parsely Studio is just getting started! ✨</span
+      ><br/>
+      <span class="ml-2"
+        >Help shape the journey — reach us at
+        <a
+          href="mailto:danielleward@berkeley.edu"
+          class="underline font-semibold"
+          >danielleward@berkeley.edu</a
+        >.
+      </span>
+    </div>
+
     <BaseCard>
       <template #header>Upload images</template>
       Upload up to 10 images at a time.
