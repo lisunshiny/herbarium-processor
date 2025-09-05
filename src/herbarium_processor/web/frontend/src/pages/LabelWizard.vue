@@ -81,7 +81,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, reactive, watch } from "vue";
+import { ref, provide, computed, onMounted, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import WizardLayout from "@/components/WizardLayout.vue";
 import ImageExplorer from "@/components/ImageExplorer.vue";
@@ -96,6 +96,9 @@ const specimens = ref([]);
 const loading = ref(true);
 const error = ref(null);
 const currentIndex = ref(0);
+// add progressPercent to provide/inject the status bar
+const progressPercent = ref(66)
+provide('progressPercent', progressPercent)
 const batchStore = useBatchStore();
 const alertStore = useAlertStore();
 const hasSpecimens = computed(() => specimens.value.length > 0);
@@ -107,12 +110,6 @@ const progressText = computed(() =>
     ? `${currentIndex.value + 1}/${specimens.value.length}`
     : "0/0"
 );
-const progressPercent = computed(() =>
-  hasSpecimens.value
-    ? Math.round(((currentIndex.value + 1) / specimens.value.length) * 100)
-    : 0
-);
-
 const form = reactive({
   ...(currentSpecimen.value?.image_info?.llm_output || {}),
 });

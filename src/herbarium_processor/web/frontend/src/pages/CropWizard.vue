@@ -54,6 +54,7 @@
 import {
   ref,
   computed,
+  provide,
   onMounted,
   onBeforeUpdate,
   onMounted as vueOnMounted,
@@ -75,6 +76,10 @@ const error = ref(null);
 const cropperRefs = ref([]);
 const isUploading = ref(false);
 const currentIndex = ref(0);
+// add progressPercent to provide/inject the status bar
+const progressPercent = ref(33)
+provide('progressPercent', progressPercent)
+
 
 const batchStore = useBatchStore();
 
@@ -87,11 +92,6 @@ const progressText = computed(() =>
   hasSpecimens.value
     ? `${currentIndex.value + 1}/${specimens.value.length}`
     : "0/0"
-);
-const progressPercent = computed(() =>
-  hasSpecimens.value
-    ? Math.round(((currentIndex.value + 1) / specimens.value.length) * 100)
-    : 0
 );
 
 // Avoid stale element refs between patches
