@@ -12,12 +12,19 @@
         v-for="alert in alertStore.items"
         :key="alert.id"
         role="alert"
-        :class="['alert', `alert-${alert.type}`]"
+        :class="[
+          'alert', // base class always
+          {
+            'alert-success': alert.type === 'success',
+            'alert-info': alert.type === 'info',
+            'alert-warning': alert.type === 'warning',
+            'alert-error': alert.type === 'error',
+          },
+        ]"
       >
         <span>{{ alert.message }}</span>
       </div>
-      <div class="alert-success alert"><span>blah</span></div>
-      </div>
+    </div>
   </div>
 </template>
 
@@ -27,7 +34,6 @@ import Footer from "./components/layout/Footer.vue";
 import { useAlertStore } from "@/stores/alerts";
 
 const alertStore = useAlertStore();
-
 </script>
 
 <style scoped></style>
