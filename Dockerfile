@@ -1,3 +1,15 @@
+FROM node:20 AS frontend
+WORKDIR /web
+
+# Copy only files needed to install and build (for better caching)
+# Adjust the path to your actual frontend root
+COPY src/herbarium_processor/web/frontend/package*.json ./
+RUN npm ci
+
+COPY src/herbarium_processor/web/frontend/ ./
+RUN npm run build
+# Result: /web  /dist (index.html + assets)
+
 # Use official Python base image
 FROM python:3.11-slim
 

@@ -12,7 +12,7 @@ REPO ?= app
 TAG ?= $(shell date +%Y%m%d-%H%M%S)
 IMAGE := $(REGION)-docker.pkg.dev/$(PROJECT_ID)/$(REPO)/$(SERVICE):$(TAG)
 ENV_DOCKER ?= .env
-PORT ?= 8000
+PORT ?= 8080
 LOCAL_NAME := $(SERVICE)-local
 
 .PHONY: help build run stop logs gcp-init gcp-build gcp-deploy gcp-url deploy gcp-set gcp-logs dev

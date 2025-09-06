@@ -1,24 +1,42 @@
 from pathlib import Path
-
 from fastapi import FastAPI, Request
-from fastapi.responses import PlainTextResponse, RedirectResponse
+from fastapi.responses import FileResponse, PlainTextResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
-
-from herbarium_processor.config import TMP_DIR
-
 from .routers import batches
+from herbarium_processor.config import TMP_DIR
 
 app = FastAPI(title="Herbarium Processor Web")
 
 STATIC_DIR = Path(__file__).parent / "static"
-FRONTEND_DIST = (
-    STATIC_DIR / "frontend" / "dist"
-)  # e.g., Docker copies Vite dist -> this path
+FRONTEND_DIST = STATIC_DIR / "frontend" / "dist"
+ASSETS_DIR = FRONTEND_DIST / "assets"
 
-# Routers
+# API first
 app.include_router(batches.router, prefix="/api")
 
+# Debug artifacts
+TMP_DIR.mkdir(parents=True, exist_ok=True)
+app.mount("/tmp", StaticFiles(directory=TMP_DIR), name="tmp")
 
+
+# Optional robots
+@app.get("/robots.txt")
+async def robots():
+    path = FRONTEND_DIST / "robots.txt"
+    return (
+        FileResponse(path, media_type="text/plain")
+        if path.exists()
+        else PlainTextResponse("User-agent: *\nDisallow:\n")
+    )
+
+
+# Health
+@app.get("/healthz")
+async def healthz():
+    return {"ok": True}
+
+
+# www -> apex
 @app.middleware("http")
 async def redirect_www_to_apex(request: Request, call_next):
     host = request.headers.get("host", "")
@@ -28,19 +46,39 @@ async def redirect_www_to_apex(request: Request, call_next):
     return await call_next(request)
 
 
-@app.get("/healthz")
-async def healthz():
-    return {"ok": True}
+# Serve built assets directly (hashed files)
+if ASSETS_DIR.exists():
+    app.mount("/assets", StaticFiles(directory=ASSETS_DIR), name="assets")
 
+# Favicon/manifest convenience (optional)
+for fname, mtype in [
+    ("favicon.ico", "image/x-icon"),
+    ("favicon.svg", "image/svg+xml"),
+    ("manifest.webmanifest", "application/manifest+json"),
+]:
+    fpath = FRONTEND_DIST / fname
+    if fpath.exists():
+        app.get(f"/{fname}")(
+            lambda fpath=fpath, mtype=mtype: FileResponse(fpath, media_type=mtype)
+        )
 
+# Catch-all SPA fallback (must be last)
 if FRONTEND_DIST.exists():
-    app.mount("/", StaticFiles(directory=FRONTEND_DIST, html=True), name="frontend")
+    INDEX_HTML = FRONTEND_DIST / "index.html"
+
+    @app.get("/", include_in_schema=False)
+    @app.get("/{full_path:path}", include_in_schema=False)
+    async def spa_catch_all(full_path: str = ""):
+        # Don’t hijack API/tmp paths
+        if full_path.startswith(("api/", "tmp/")):
+            return PlainTextResponse("Not Found", status_code=404)
+        return FileResponse(INDEX_HTML)
+
 else:
-    # Helpful local fallback if you run the server without building the frontend
-    @app.get("/")
-    async def _no_frontend():
+
+    @app.get("/", include_in_schema=False)
+    async def no_frontend():
         return PlainTextResponse(
-            "Frontend build not found. Run `npm run build` and ensure dist/ is copied to "
-            f"{FRONTEND_DIST}",
+            f"Frontend build not found at {FRONTEND_DIST}. Run `npm run build` and copy dist/ there.",
             status_code=503,
         )
