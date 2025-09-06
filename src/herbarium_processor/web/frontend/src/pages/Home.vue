@@ -9,9 +9,9 @@
       <span class="ml-2"
         >Help shape the journey — reach us at
         <a
-          href="mailto:danielleward@berkeley.edu"
+          href="mailto:hello@parselystudio.com"
           class="underline font-semibold"
-          >danielleward@berkeley.edu</a
+          >hello@parselystudio.com</a
         >.
       </span>
     </div>

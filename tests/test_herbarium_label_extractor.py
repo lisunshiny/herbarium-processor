@@ -17,18 +17,19 @@ class DummyBuilder:
 
 
 class DummyAPI:
-    def generate_content(self, contents):
+    async def generate_content(self, contents):
         return '```json\n{"result": 1}\n```'
 
 
-def test_classify_creates_output(tmp_path):
+@pytest.mark.asyncio
+async def test_classify_creates_output(tmp_path):
     builder = DummyBuilder(["text part"])
     api = DummyAPI()
     extractor = LabelExtractor(llm_api=api, prompt_builder=builder, output_dir=tmp_path)
     extractor.session_timestamp = 123
 
     target = SimpleNamespace(id="foo", img_path="foo.jpg", ocr_path="foo.json")
-    result = extractor.classify(target)
+    result = await extractor.classify(target)
 
     assert builder.called_with is target
     assert result == {"result": 1}

@@ -1,3 +1,15 @@
+FROM node:20 AS frontend
+WORKDIR /web
+
+# Copy only files needed to install and build (for better caching)
+# Adjust the path to your actual frontend root
+COPY src/herbarium_processor/web/frontend/package*.json ./
+RUN npm ci
+
+COPY src/herbarium_processor/web/frontend/ ./
+RUN npm run build
+# Result: /web  /dist (index.html + assets)
+
 # Use official Python base image
 FROM python:3.11-slim
 
@@ -27,6 +39,8 @@ RUN poetry config virtualenvs.create false \
 
 # Now copy the rest of the project
 COPY . /app
+COPY --from=frontend /static/frontend/dist \
+    /app/src/herbarium_processor/web/static/frontend/dist
 
 # Set the port for Cloud Run
 ENV PORT=8080

@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
+from anyio import to_thread
 from fastapi import APIRouter, File, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -173,11 +174,12 @@ async def crop_and_infer(batch_id: str, image_id: str, ops: CropOperation):
     preprocessed_path = image_dir / "post_ocr.jpg"
     ocr_annotated_path = image_dir / "ocr_bounding.jpg"
     llm_json_path = image_dir / "llm_input.json"
-    ocr.extract_text_json(
+    await to_thread.run_sync(
+        ocr.extract_text_json,
         str(post_crop_path),
-        preprocessed_path=preprocessed_path,
-        ocr_annotated_path=ocr_annotated_path,
-        llm_json_path=llm_json_path,
+        preprocessed_path,
+        ocr_annotated_path,
+        llm_json_path,
     )
     print("test 2")
     targets = [
@@ -196,8 +198,10 @@ async def crop_and_infer(batch_id: str, image_id: str, ops: CropOperation):
         system_instructions_path="prompts/ocr_system_instructions_no_citations.md",
         prompt_builder=builder,
         targets=targets,
+        max_inflight=60,  # tune for cost/throughput
+        rpm_limit=140,
     )
-    runner.run()
+    await runner.run_async()
 
     # find the first file that starts with "processed_output"
     src = next((p for p in image_dir.glob("processed_output*") if p.is_file()), None)
