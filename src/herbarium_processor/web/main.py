@@ -14,20 +14,8 @@ ASSETS_DIR = FRONTEND_DIST / "assets"
 # API first
 app.include_router(batches.router, prefix="/api")
 
-# Debug artifacts
 TMP_DIR.mkdir(parents=True, exist_ok=True)
 app.mount("/tmp", StaticFiles(directory=TMP_DIR), name="tmp")
-
-
-# Optional robots
-@app.get("/robots.txt")
-async def robots():
-    path = FRONTEND_DIST / "robots.txt"
-    return (
-        FileResponse(path, media_type="text/plain")
-        if path.exists()
-        else PlainTextResponse("User-agent: *\nDisallow:\n")
-    )
 
 
 # Health
@@ -49,18 +37,6 @@ async def redirect_www_to_apex(request: Request, call_next):
 # Serve built assets directly (hashed files)
 if ASSETS_DIR.exists():
     app.mount("/assets", StaticFiles(directory=ASSETS_DIR), name="assets")
-
-# Favicon/manifest convenience (optional)
-for fname, mtype in [
-    ("favicon.ico", "image/x-icon"),
-    ("favicon.svg", "image/svg+xml"),
-    ("manifest.webmanifest", "application/manifest+json"),
-]:
-    fpath = FRONTEND_DIST / fname
-    if fpath.exists():
-        app.get(f"/{fname}")(
-            lambda fpath=fpath, mtype=mtype: FileResponse(fpath, media_type=mtype)
-        )
 
 # Catch-all SPA fallback (must be last)
 if FRONTEND_DIST.exists():

@@ -39,6 +39,8 @@ RUN poetry config virtualenvs.create false \
 
 # Now copy the rest of the project
 COPY . /app
+COPY --from=frontend /static/frontend/dist \
+    /app/src/herbarium_processor/web/static/frontend/dist
 
 # Set the port for Cloud Run
 ENV PORT=8080

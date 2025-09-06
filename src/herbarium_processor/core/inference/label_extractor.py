@@ -17,11 +17,11 @@ class LabelExtractor:
         self.output_dir = ROOT_DIR / output_dir
         os.makedirs(self.output_dir, exist_ok=True)
 
-    def classify(self, target):
+    async def classify(self, target):
         """Extract structured data from a new label image."""
         image_basename = os.path.splitext(os.path.basename(target.img_path))[0]
         contents = self.prompt_builder.generate_contents(target)
-        raw = self.llm_api.generate_content(contents)
+        raw = await self.llm_api.generate_content(contents)
         json_text = re.sub(r"^```json\s*|```$", "", raw)
 
         try:

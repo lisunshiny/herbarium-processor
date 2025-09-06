@@ -3,10 +3,8 @@ import os
 from abc import ABC, abstractmethod
 from typing import List, Union
 
-import requests
-import google.generativeai as genai
 from dotenv import load_dotenv
-from openai import OpenAI
+from openai import AsyncOpenAI
 
 
 class BaseLLMAPI(ABC):
@@ -17,24 +15,8 @@ class BaseLLMAPI(ABC):
         self.model_name = model_name
 
     @abstractmethod
-    def generate_content(self, contents: List[Union[str, dict]]) -> str:
+    async def generate_content(self, contents: List[Union[str, dict]]) -> str:
         """Generate text from the given contents."""
-
-
-class GeminiAPI(BaseLLMAPI):
-    """Direct access to Google's Gemini API."""
-
-    def __init__(self, system_instructions: str, model_name: str = "gemini-2.5-pro"):
-        super().__init__(system_instructions, model_name)
-        load_dotenv()
-        genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-        self.model = genai.GenerativeModel(
-            model_name, system_instruction=system_instructions
-        )
-
-    def generate_content(self, contents: List[Union[str, dict]]) -> str:
-        response = self.model.generate_content(contents=contents)
-        return response.candidates[0].content.parts[0].text.strip()
 
 
 class OpenRouterAPI(BaseLLMAPI):
@@ -47,7 +29,8 @@ class OpenRouterAPI(BaseLLMAPI):
     ):
         super().__init__(system_instructions, model_name)
         load_dotenv()
-        self.client = OpenAI(
+        # Async client with HTTP/2 and connection reuse under the hood
+        self.client = AsyncOpenAI(
             base_url="https://openrouter.ai/api/v1",
             api_key=os.getenv("OPENROUTER_API_KEY"),
         )
@@ -71,13 +54,16 @@ class OpenRouterAPI(BaseLLMAPI):
                 user_content.append({"type": "image_url", "image_url": data_url})
         return user_content
 
-    def generate_content(self, contents: List[Union[str, dict]]) -> str:
-        completion = self.client.chat.completions.create(
-            extra_body={},
+    async def generate_content(self, contents: List[Union[str, dict]]) -> str:
+        """
+        Async text+image generation. Returns the model's text string.
+        """
+        resp = await self.client.chat.completions.create(
             model=self.model_name,
             messages=[
                 {"role": "system", "content": self.system_instructions},
                 {"role": "user", "content": self._prepare_user_content(contents)},
             ],
         )
-        return completion.choices[0].message.content
+        # Defensive: sometimes content can be None; normalize to ""
+        return resp.choices[0].message.content or ""
