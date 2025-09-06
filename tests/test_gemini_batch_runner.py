@@ -1,6 +1,7 @@
 import csv
 import os
 import random
+import asyncio
 from types import SimpleNamespace
 
 import pytest
@@ -34,7 +35,7 @@ def test_run_extraction(monkeypatch, tmp_path):
             self.prompt_builder = prompt_builder
             self.output_dir = output_dir
 
-        def classify(self, target):
+        async def classify(self, target):
             calls.append(target)
             return {"value": target.img_path}
 
@@ -58,7 +59,7 @@ def test_run_extraction(monkeypatch, tmp_path):
     t2 = SpecimenLabel(id="b", img_path=str(tmp_path / "b.jpg"), ocr_path="y")
     runner.targets = [t1, t2]
     runner.sys_instr = "SYS"
-    runner.run_extraction()
+    asyncio.run(runner.run_extraction_async())
 
     assert calls == [t1, t2]
     assert [r["value"] for r in runner.results] == [t1.img_path, t2.img_path]
@@ -88,7 +89,11 @@ def test_run_calls_all_methods(monkeypatch):
         output_csv_path="out.csv", prompt_builder=None, targets=[]
     )
     monkeypatch.setattr(runner, "load_prompts", lambda: order.append("load"))
-    monkeypatch.setattr(runner, "run_extraction", lambda: order.append("extract"))
+
+    async def fake_run_extraction_async():
+        order.append("extract")
+
+    monkeypatch.setattr(runner, "run_extraction_async", fake_run_extraction_async)
     monkeypatch.setattr(runner, "save_csv", lambda: order.append("save"))
     runner.run()
     assert order == ["load", "extract", "save"]
