@@ -3,7 +3,12 @@
 
 **Herbarium Specimen Digitization Platform**
 
-Parsely Studio + Core makes it easier for herbaria, museums, and researchers to digitize large volumes of specimen labels with modern AI and a clean, intuitive workflow.
+Parsely Core + Studio help herbaria, museums, and researchers digitize large volumes of specimen labels with modern AI in a clean, intuitive workflow.
+
+🔗 **Live demo (pre-alpha): [parselystudio.com](https://parselystudio.com)**
+
+> ⚠️ This demo is a **pre-alpha release**. Features are incomplete and downtime is expected.
+> For stable local use, see the [Getting Started](#-getting-started) section below.
 
 ## ✨ What it does
 
