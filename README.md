@@ -5,8 +5,6 @@
 
 Parsely Studio + Core makes it easier for herbaria, museums, and researchers to digitize large volumes of specimen labels with modern AI and a clean, intuitive workflow.
 
----
-
 ## ✨ What it does
 
 Given a set of specimen label images, Parsely can:
@@ -15,8 +13,6 @@ Given a set of specimen label images, Parsely can:
 - **Run OCR** — call Google Vision OCR (or other engines) to extract text from images.  
 - **Extract structured data** — send OCR + images to an LLM (currently Gemini 2.5 Pro) to parse into specimen fields (e.g., catalog number, taxon, collector).  
 - **Edit + review** — provide a simple web UI for curators to view images, edit predictions, and export results to CSV.  
-
----
 
 ## 🚀 Getting Started
 
@@ -43,8 +39,6 @@ Optional: install pre-commit hooks (we use this to strip notebook metadata):
 poetry run pre-commit install
 ```
 
----
-
 ## 🖥️ Usage
 
 ### Option A: Web App
@@ -61,8 +55,6 @@ poetry run pre-commit install
 
 1. Open [`notebooks/herbarium_processor.ipynb`](notebooks/herbarium_processor.ipynb).
 2. Point it to a directory of images (`img/bucket`).
-
----
 
 ## 📜 License
 
