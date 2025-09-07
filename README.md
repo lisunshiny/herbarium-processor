@@ -61,6 +61,3 @@ poetry run pre-commit install
 This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
 See [LICENSE](LICENSE) for details.
 See [NOTICE](NOTICE) and [COPYRIGHT](COPYRIGHT) for attribution and trademark information.
-
-Parsely 🌿 and the Parsely leaf logo are trademarks of Parsely Labs.
-Commercial licenses and hosted services are available — contact **[info@parselylabs.org](mailto:info@parselylabs.org)**.
