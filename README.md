@@ -3,7 +3,7 @@
 
 **Herbarium Specimen Digitization Platform**
 
-Parsely Core + Studio help herbaria, museums, and researchers digitize large volumes of specimen labels with modern AI in a clean, intuitive workflow.
+Parsely Core + Studio help herbaria, museums, and researchers digitize large volumes of specimen labels with the latest AI models in a clean, intuitive workflow.
 
 🔗 **Live demo (pre-alpha): [parselystudio.com](https://parselystudio.com)**
 
@@ -16,7 +16,7 @@ Given a set of specimen label images, Parsely can:
 
 - **Preprocess images** — crop, deskew, and auto-rotate to prepare for AI extraction.  
 - **Run OCR** — call Google Vision OCR (or other engines) to extract text from images.  
-- **Extract structured data** — send OCR + images to an LLM (currently Gemini 2.5 Pro) to parse into specimen fields (e.g., catalog number, taxon, collector).  
+- **Extract structured data** — send OCR + images to an LLM (currently Gemini 2.5 Pro) to parse into specimen fields (e.g., catalog number, taxon, collector) according to Darwin Core schema.  
 - **Edit + review** — provide a simple web UI for curators to view images, edit predictions, and export results to CSV.  
 
 ## 🚀 Getting Started
