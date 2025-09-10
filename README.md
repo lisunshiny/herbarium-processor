@@ -16,7 +16,7 @@ Given a set of specimen label images, Parsely can:
 
 - **Preprocess images** — crop, deskew, and auto-rotate to prepare for AI extraction.  
 - **Run OCR** — call Google Vision OCR (or other engines) to extract text from images.  
-- **Extract structured data** — send OCR + images to an LLM (currently Gemini 2.5 Pro) to parse into specimen fields (e.g., catalog number, taxon, collector) according to Darwin Core schema.  
+- **Extract structured data** — send OCR + images to an LLM via OpenRouter (currently Gemini 2.5 Pro) to parse into specimen fields (e.g., catalog number, taxon, collector) according to Darwin Core schema.
 - **Edit + review** — provide a simple web UI for curators to view images, edit predictions, and export results to CSV.  
 
 ## 🚀 Getting Started
@@ -34,7 +34,7 @@ pip3 install poetry
 Create a `.env` file in the project root with:
 
 ```bash
-GOOGLE_API_KEY=your_key_here
+OPENROUTER_API_KEY=your_openrouter_key_here
 GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/credentials.json"
 ```
 
