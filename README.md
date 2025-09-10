@@ -21,7 +21,17 @@ Given a set of specimen label images, Parsely can:
 
 ## 🚀 Getting Started
 
-### 1. Clone and install
+### 1. Prerequisites
+
+Make sure the following are installed on your system:
+
+- **Python 3.11**
+- **Node.js 20** and `npm`
+- System packages required by OpenCV and HEIF support. On Debian/Ubuntu:
+
+  ```bash
+  sudo apt-get install -y libgl1 libglib2.0-0 libheif1 libde265-0
+  ```
 
 If you don’t have Poetry yet:
 
@@ -29,7 +39,18 @@ If you don’t have Poetry yet:
 pip3 install poetry
 ```
 
-### 2. Configure environment
+### 2. Clone and install
+
+```bash
+git clone https://github.com/<your-user>/herbarium-processor.git
+cd herbarium-processor
+poetry install
+cd src/herbarium_processor/web/frontend
+npm ci
+cd -
+```
+
+### 3. Configure environment
 
 Create a `.env` file in the project root with:
 
@@ -52,9 +73,10 @@ poetry run pre-commit install
      ```bash
      poetry run dev
      ```
-2. Open [http://localhost:8000/](http://localhost:8000/)
-3. Upload images → edit predictions → finalize CSV.
-4. Processed files are stored in `/tmp`.
+2. Open the frontend at [http://localhost:5173/](http://localhost:5173/)
+3. The API server runs at [http://localhost:8000/](http://localhost:8000/)
+4. Upload images → edit predictions → finalize CSV.
+5. Processed files are stored in `/tmp`.
 
 ### Option B: Notebook
 
