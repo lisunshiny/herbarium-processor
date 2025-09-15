@@ -11,21 +11,17 @@
         <span class="font-semibold text-base-content">increase herbarium digitization by 5% in 2026</span>.
       </p>
     </section>
-    <!-- 5% impact plan -->
+    <!-- 5% more specimens digitized -->
     <section class="mx-auto max-w-4xl px-4 pb-10">
       <section
         class="mt-8 rounded-2xl border border-base-300 bg-gradient-to-br from-base-200 via-base-100 to-base-200 shadow-sm backdrop-blur p-6 sm:p-10">
-        <h2 class="text-2xl font-bold mb-3">Our 5% Impact Plan</h2>
+        <h2 class="text-2xl font-bold mb-3">Our Vision</h2>
         <p class="mt-3 text-base sm:text-lg text-base-content/80 max-w-3xl leading-relaxed">
-          <span class="font-semibold text-base-content">Digitizing with Parsely represents a step change for the global
+          <span class="font-semibold text-base-content">Digitizing with Parsely represents a transformative change for
+            the global
             herbarium community.</span><br /><br />
-          Based on early results, a
-          <span class="font-semibold text-primary">3× throughput multiplier</span>
-          is a conservative estimate —<br />
-          a collection processing
-          <span class="font-medium">10,000 specimens a year</span> could reach
-          <span class="font-medium">30,000</span> with Parsely. Because this
-          shift applies worldwide, we believe a
+          Based on early results, Parsely has the potential to make the current digitization rates 3 times faster. We
+          believe a
           <span class="font-semibold text-secondary">5% global uplift in 2026 is entirely within
             reach</span>.<br /><br />
           And the cost isn’t borne by any one herbarium: our
@@ -135,10 +131,10 @@
         <h2 class="text-2xl font-bold mb-3 pl-4 sm:pl-0">Sustainability</h2>
         <!-- Intro -->
         <p class="text-base sm:text-lg text-base-content/80 leading-relaxed">
-          We’ve proven the idea by getting Parsely this far as a side project.
-          To carry it from a promising tool to real global impact, the challenge
-          now is covering the marginal compute/hosting costs and ensuring the
-          ongoing maintenance a reliable service requires.
+          We’ve proven the idea by getting Parsely this far as a side project. With no extra training or onboarding
+          required, it’s ready to be used by herbaria today. To carry it from a promising tool to real global impact,
+          the challenge now is covering the marginal compute/hosting costs and ensuring the ongoing maintenance required
+          for a reliable service.
         </p>
 
         <!-- Callout card with two rows -->
@@ -146,11 +142,10 @@
           <div>
             <h3 class="font-semibold text-base-content">Compute & hosting</h3>
             <p class="mt-1 text-sm text-base-content/80">
-              Running Parsely at global scale requires tens of thousands of
-              LLM+OCR calls and image operations each month. These are the
-              recurring, per-specimen costs that scale with adoption. We built
-              Parsely for free and we remain committed to providing it at no
-              cost to herbaria, but these costs need a stable funding source.
+              It costs 10 cents per specimen to run Parsely's AI and image processing technology. These costs add up
+              quickly when we imagine scaling it up to process thousands of specimens each month. We built
+              Parsely for free and remain committed to providing it at no cost to herbaria, but these expenses need a
+              stable funding source.
             </p>
           </div>
           <div class="border-t border-base-300 pt-6">
