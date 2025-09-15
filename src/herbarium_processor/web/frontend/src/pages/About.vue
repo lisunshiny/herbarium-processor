@@ -80,8 +80,15 @@
         expenses. It does not include overhead, which are currently covered by
         volunteer time but would need support for long-term sustainability.<br />
         ‡ Baseline throughput is modeled on recent GBIF growth in
-        <em>plant</em> preserved-specimen records (~6.1M/yr), a standard proxy
-        for global digitization. Source: New Phytologist (2024).
+        <em>plant</em> preserved-specimen records (~6.1M/yr), a proxy for global
+        digitization. Source:
+        <a
+          href="https://doi.org/10.1111/nph.70178"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="link link-primary"
+          >New Phytologist (2025)</a
+        >.
       </p>
     </section>
     <!-- About section -->
@@ -231,7 +238,6 @@ import TeamMember from "@/components/ui/TeamMember.vue";
 
 import danielleImg from "@/assets/team/danielle.jpg";
 import liannImg from "@/assets/team/liann.jpg";
-
 </script>
 
 <style scoped></style>
