@@ -1,7 +1,7 @@
 <template>
-  <div class="m-4 space-y-4">
+  <div class="m-4 space-y-4 max-w-5xl mx-auto">
     <div
-      class="w-full rounded-lg bg-gradient-to-r from-info to-blue-500 text-white py-3 px-6 text-center shadow-md"
+      class="w-full rounded-lg bg-gradient-to-r from-primary/90 to-primary/70 text-white py-3 px-6 text-center shadow-md"
     >
       <span class="font-bold"
         >✨ Parsely Studio is just getting started! ✨</span

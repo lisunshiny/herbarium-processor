@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@panzoom/panzoom": "^4.6.0",
+    "@tailwindcss/typography": "^0.5.16",
     "@tailwindcss/vite": "^4.1.12",
     "daisyui": "^5.0.54",
     "pinia": "^3.0.3",
