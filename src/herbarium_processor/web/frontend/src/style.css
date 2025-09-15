@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 @plugin "daisyui";
 @import 'vue-advanced-cropper/dist/style.css';
 
