@@ -16,10 +16,10 @@
     <div class="flex-none">
       <ul class="menu menu-horizontal px-1">
         <li>
-          <RouterLink class="rounded-btn" to="/how-to-use">How to Use</RouterLink>
+          <RouterLink class="rounded-btn" to="/how-it-works">How it works</RouterLink>
         </li>
         <li>
-          <RouterLink class="rounded-btn" to="/about">About</RouterLink>
+          <RouterLink class="rounded-btn" to="/about">Our mission</RouterLink>
         </li>
       </ul>
     </div>

@@ -1,28 +1,25 @@
 <template>
-  <div class="m-4 space-y-4 max-w-5xl mx-auto">
+  <div class="m-4 mt-8 space-y-4 max-w-5xl mx-auto">
     <div
       class="w-full rounded-lg bg-gradient-to-r from-primary/90 to-primary/70 text-white py-3 px-6 text-center shadow-md"
     >
       <span class="font-bold"
         >✨ Parsely Studio is just getting started! ✨</span
-      ><br/>
+      ><br />
       <span class="ml-2"
         >Help shape the journey — reach us at
-        <a
-          href="mailto:hello@parselystudio.com"
-          class="underline font-semibold"
+        <a href="mailto:hello@parselystudio.com" class="underline font-semibold"
           >hello@parselystudio.com</a
         >.
       </span>
     </div>
-
     <BaseCard>
       <template #header>Upload photos of specimens</template>
       <!-- Drop zone -->
       <div
         :class="[
           'border-2 border-dashed rounded p-12 text-center cursor-pointer',
-          isDragging ? 'border-primary bg-base-200' : 'border-base-300'
+          isDragging ? 'border-primary bg-base-200' : 'border-base-300',
         ]"
         @click="triggerFileSelect"
         @dragover.prevent="onDragEnter"
@@ -76,6 +73,9 @@
         </button>
       </template>
     </BaseCard>
+    <BaseCard class="mt-6 mb-12">
+      <HowItWorksStrip />
+    </BaseCard>
   </div>
 </template>
 
@@ -83,6 +83,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import BaseCard from "@/components/ui/BaseCard.vue";
+import HowItWorksStrip from "../components/HowItWorksStrip.vue";
 
 const router = useRouter();
 const fileInput = ref(null);
@@ -140,7 +141,7 @@ const handleUpload = async () => {
 
   const formData = new FormData();
   for (const { file } of uploads.value) {
-      formData.append("files", file); // match the parameter name in FastAPI
+    formData.append("files", file); // match the parameter name in FastAPI
   }
 
   try {
