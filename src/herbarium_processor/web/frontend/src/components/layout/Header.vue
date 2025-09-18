@@ -15,14 +15,19 @@
     <!-- Right: nav items -->
     <div class="flex-none">
       <ul class="menu menu-horizontal px-1">
-        <li><a href="/about">About</a></li>
+        <li>
+          <RouterLink class="rounded-btn" to="/how-it-works">How it works</RouterLink>
+        </li>
+        <li>
+          <RouterLink class="rounded-btn" to="/about">Our mission</RouterLink>
+        </li>
       </ul>
     </div>
   </header>
 </template>
 
 <script setup>
-/* ... */
+import { RouterLink } from "vue-router"
 </script>
 
 <style scoped>
