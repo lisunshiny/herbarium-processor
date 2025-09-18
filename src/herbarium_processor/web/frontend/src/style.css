@@ -9,20 +9,4 @@
   default: true;
   prefersdark: false;
   color-scheme: light;
-
-  /* Primary: strong botanical green */
-  --color-primary: oklch(45% 0.15 140);
-  --color-primary-content: oklch(98% 0.01 140);
-
-  /* Secondary: muted sepia-brown (archival ink) */
-  --color-secondary: oklch(55% 0.07 75);
-  --color-secondary-content: oklch(98% 0.01 75);
-
-  /* Accent: sage / mossy muted green */
-  --color-accent: oklch(70% 0.08 135);
-  --color-accent-content: oklch(25% 0.04 135);
-
-  /* Neutral: charcoal gray */
-  --color-neutral: oklch(30% 0.03 260);
-  --color-neutral-content: oklch(95% 0.01 260);
 }

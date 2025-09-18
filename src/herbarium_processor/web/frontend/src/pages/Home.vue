@@ -1,19 +1,19 @@
 <template>
   <div class="m-4 mt-8 space-y-4 max-w-4xl mx-auto">
     <div
-      class="mx-4 rounded-lg bg-gradient-to-r from-primary/90 to-primary/70 text-white py-3 px-6 text-center shadow-md"
+      class="mx-4 rounded-lg bg-gradient-to-r from-blue-500 to-info to text-white py-3 px-6 text-center shadow-md"
     >
-      <span class="font-bold"
-        >✨ Parsely Studio is just getting started! ✨</span
-      ><br />
-      <span class=""
-        >Help shape the journey — reach us at
-        <a href="mailto:hello@parselystudio.com" class="underline font-semibold"
-          >hello@parselystudio.com</a
-        >.
-      </span>
+      <span class="font-bold">
+        👋🏼 New here?</span> Parsely Studio turns specimen labels into digital records
+        in 4 quick steps — 
+      <a
+        href="/how-it-works"
+        class="underline font-medium hover:text-green-100"
+      >
+        see how it works</a
+      >.
     </div>
-    <BaseCard  class="mx-4">
+    <BaseCard class="mx-4">
       <template #header>Upload photos of specimens</template>
       <!-- Drop zone -->
       <div

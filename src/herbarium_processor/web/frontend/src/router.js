@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from './pages/Home.vue'
 import About from './pages/About.vue'
 import HowItWorks from './pages/HowItWorks.vue'
+import NotFound from './pages/NotFound.vue'
 
 const routes = [
   { path: '/', name: "home", component: Home },
@@ -24,6 +25,12 @@ const routes = [
     name: "labelWizard",
     component: () => import("@/pages/LabelWizard.vue"), // the side by side label UI
     props: true,
+  },
+
+  {
+    path: "/:pathMatch(.*)*",
+    name: "notFound",
+    component: NotFound,
   },
 
   // Add more routes here as needed

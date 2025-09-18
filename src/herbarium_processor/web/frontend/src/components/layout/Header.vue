@@ -28,6 +28,7 @@
 
 <script setup>
 import { RouterLink } from "vue-router"
+import blob from "@/assets/blob.svg";
 </script>
 
 <style scoped>
