@@ -1,19 +1,19 @@
 <template>
-  <div class="m-4 mt-8 space-y-4 max-w-5xl mx-auto">
+  <div class="m-4 mt-8 space-y-4 max-w-4xl mx-auto">
     <div
-      class="w-full rounded-lg bg-gradient-to-r from-primary/90 to-primary/70 text-white py-3 px-6 text-center shadow-md"
+      class="mx-4 rounded-lg bg-gradient-to-r from-primary/90 to-primary/70 text-white py-3 px-6 text-center shadow-md"
     >
       <span class="font-bold"
         >✨ Parsely Studio is just getting started! ✨</span
       ><br />
-      <span class="ml-2"
+      <span class=""
         >Help shape the journey — reach us at
         <a href="mailto:hello@parselystudio.com" class="underline font-semibold"
           >hello@parselystudio.com</a
         >.
       </span>
     </div>
-    <BaseCard>
+    <BaseCard  class="mx-4">
       <template #header>Upload photos of specimens</template>
       <!-- Drop zone -->
       <div
@@ -73,7 +73,7 @@
         </button>
       </template>
     </BaseCard>
-    <BaseCard class="mt-6 mb-12">
+    <BaseCard class="mt-6 mb-12 mx-4">
       <HowItWorksStrip />
     </BaseCard>
   </div>

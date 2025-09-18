@@ -1,6 +1,6 @@
 <template>
   <footer class="bg-slate-900 text-slate-200">
-    <div class="max-w-5xl lg:mx-auto mx-6 py-12 grid gap-8 md:grid-cols-3">
+    <div class="max-w-4xl mx-4 md:mx-auto my-12 grid gap-8 md:grid-cols-3 md:px-4">
       <!-- Left: Open source + version -->
       <div>
         <p class="text-sm text-slate-400 max-w-xs">
@@ -59,22 +59,23 @@
       </div>
 
       <!-- Right: Contact CTA -->
-      <div>
-        <h4
-          class="text-sm font-semibold uppercase tracking-wide text-slate-300"
-        >
-          Get in touch
-        </h4>
-        <p class="mt-3 text-sm text-slate-400">
-          Have questions, ideas, or feedback? We’d love to hear from you.
-        </p>
-        <a
-          href="mailto:hello@parselystudio.com"
-          class="mt-4 inline-flex items-center justify-center btn btn-md btn-neutral rounded-lg"
-        >
-          Reach us at hello@parselystudio.com
-        </a>
-      </div>
+<div>
+  <h4 class="text-sm font-semibold uppercase tracking-wide text-slate-300">
+    Get in touch
+  </h4>
+  <p class="mt-3 text-sm text-slate-400">
+    Have questions, ideas, or feedback? We’d love to hear from you.
+  </p>
+  <p class="mt-4 text-sm text-slate-400">
+    Reach us at
+    <a
+      href="mailto:hello@parselystudio.com"
+      class="ml-1 font-medium text-emerald-400 hover:text-emerald-300 underline decoration-dotted underline-offset-4"
+    >
+      hello@parselystudio.com
+    </a>.
+  </p>
+</div>
     </div>
   </footer>
 </template>
