@@ -52,7 +52,7 @@
             <a href="/how-it-works" class="hover:text-white">How it works</a>
           </li>
           <li>
-            <a href="/our-mission" class="hover:text-white">Our mission</a>
+            <a href="/about" class="hover:text-white">Our mission</a>
           </li>
           <li><a href="/" class="hover:text-white">Upload specimens</a></li>
         </ul>
