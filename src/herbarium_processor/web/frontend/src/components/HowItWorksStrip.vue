@@ -39,8 +39,8 @@
         Let the AI do the heavy lifting
       </h3>
       <p class="mt-1 text-sm text-slate-600">
-        We’ll pull out the details for you — collector, date, location, catalog
-        number, taxon, and more — so you don’t have to type them in.
+        We’ll pull out the details for you — collector, date, location,
+        scientific name, and more — so you don’t have to type them in.
       </p>
     </div>
     <div class="text-center">
@@ -60,7 +60,6 @@
 
 <script setup>
 import { Upload, Crop, ScanText, FileDown } from "lucide-vue-next";
-
 </script>
 
 <style scoped></style>
