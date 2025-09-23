@@ -47,4 +47,4 @@ ENV PORT=8080
 EXPOSE 8080
 
 # Start the web server
-CMD ["sh", "-c", "uvicorn herbarium_processor.web.main:app --host 0.0.0.0 --port ${PORT}"]
+CMD ["sh", "-c", "hypercorn -c hypercorn.toml herbarium_processor.web.main:app --bind 0.0.0.0:${PORT}"]

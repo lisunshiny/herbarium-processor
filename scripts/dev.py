@@ -1,11 +1,10 @@
 import sys
 from .common import (
     FRONTEND_DIR,
-    BACKEND_APP,
     HOST,
-    BACKEND_PORT,
     FRONTEND_PORT,
     PKG,
+    hypercorn_args,
     run_processes,
 )
 
@@ -13,17 +12,7 @@ from .common import (
 def main():
     processes = [
         (
-            [
-                "poetry",
-                "run",
-                "uvicorn",
-                BACKEND_APP,
-                "--reload",
-                "--host",
-                HOST,
-                "--port",
-                BACKEND_PORT,
-            ],
+            hypercorn_args("--reload"),
             {},
         ),
         (

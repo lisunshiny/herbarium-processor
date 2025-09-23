@@ -1,0 +1,5 @@
+# Shared Hypercorn configuration for development and production.
+# These extended timeouts keep slow clients from being dropped mid-upload.
+keep_alive_timeout = 300
+read_timeout = 300
+graceful_timeout = 300
