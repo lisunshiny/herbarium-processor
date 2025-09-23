@@ -6,17 +6,34 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]  # repo root
 FRONTEND_DIR = ROOT / "src" / "herbarium_processor" / "web" / "frontend"
-BACKEND_APP = "herbarium_processor.web.main:app"  # uvicorn import path
+BACKEND_APP = "herbarium_processor.web.main:app"
 HOST = os.environ.get("HOST", "0.0.0.0")
 BACKEND_PORT = os.environ.get("BACKEND_PORT", "8000")
 FRONTEND_PORT = os.environ.get("FRONTEND_PORT", "5173")
 PKG = os.environ.get("PKG", "npm")  # or pnpm/yarn
+HYPERCORN_CONFIG = os.environ.get("HYPERCORN_CONFIG", str(ROOT / "hypercorn.toml"))
 
 
 def get_env():
     env = os.environ.copy()
     env["PYTHONPATH"] = str(ROOT / "src")
     return env
+
+
+def hypercorn_args(*extra):
+    """Base Hypercorn invocation with consistent timeout settings."""
+
+    return [
+        "poetry",
+        "run",
+        "hypercorn",
+        "-c",
+        HYPERCORN_CONFIG,
+        "--bind",
+        f"{HOST}:{BACKEND_PORT}",
+        *extra,
+        BACKEND_APP,
+    ]
 
 
 def run_processes(processes, env=None):
