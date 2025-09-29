@@ -2,7 +2,8 @@
   <header class="navbar bg-base-100 top-0 sticky z-30">
     <div class="flex-1">
       <a href="/" class="pl-2 pr-2 text-xl cursor-pointer">
-        🌿 <span class="font-semibold">Parsely</span>
+        <img class="w-13 inline pr-2" :src="blob"></img> 
+        <span class="font-semibold">Parsely</span>
         <span class="font-light"> Studio</span>
       </a>
       <span class="badge badge-outline badge-xs badge-error translate-y-[-2px]">
@@ -22,6 +23,8 @@
 <script setup>
 import { ref, onMounted, computed, inject } from "vue";
 import { useBatchStore } from "@/stores/batch";
+import blob from "@/assets/blob.svg";
+
 
 const props = defineProps({
   id: { type: [String, Number], default: null },
