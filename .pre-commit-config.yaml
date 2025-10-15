@@ -14,3 +14,18 @@ repos:
       - id: ruff
         args: ["--fix"]
       - id: ruff-format
+  # Vue linting (npm plugin)
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v9.37.0
+    hooks:
+      - id: eslint
+        name: ESLint (frontend)
+        # Run ESLint from repo root, target the frontend dir explicitly:
+        entry: eslint --ext .js,.vue,.json src/herbarium_processor/web/frontend
+        language: node
+        pass_filenames: false
+        additional_dependencies:
+          - eslint
+          - eslint-plugin-vue
+          - "@vue/eslint-config-standard"
+          - eslint-plugin-jsonc
