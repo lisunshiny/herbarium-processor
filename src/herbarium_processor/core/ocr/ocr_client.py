@@ -1,13 +1,13 @@
+from collections import defaultdict
 import io
 import json
 import os
-from collections import defaultdict
 
 import cv2
-import numpy as np
 from google.cloud import vision
 from google.protobuf.json_format import MessageToDict
-from PIL import ExifTags, Image, ImageDraw, ImageFont
+import numpy as np
+from PIL import Image, ImageDraw, ImageFont
 
 from herbarium_processor.config import ROOT_DIR, TMP_DIR
 
@@ -77,7 +77,6 @@ class OcrClient:
 
         for page_idx, page in enumerate(pages):
             for block_idx, block in enumerate(page.get("blocks", [])):
-
                 for para_idx, para in enumerate(block.get("paragraphs", [])):
                     for word_idx, word in enumerate(para.get("words", [])):
                         word_text = "".join([s["text"] for s in word["symbols"]])
@@ -145,7 +144,7 @@ class OcrClient:
 
             result.append(
                 {
-                    "id": f"1.1.{i+1}",
+                    "id": f"1.1.{i + 1}",
                     "text": text,
                     "bounding_box": merged_box,
                     "average_confidence": avg_confidence,
@@ -158,13 +157,13 @@ class OcrClient:
         draw = ImageDraw.Draw(image)
 
         try:
-            font = ImageFont.truetype("arial.ttf", 12)
-        except:
-            font = ImageFont.load_default()
+            ImageFont.truetype("arial.ttf", 12)
+        except Exception:
+            ImageFont.load_default()
 
         for word in words:
             bbox = word.get("bounding_box", [])
-            source = word.get("id", "")
+            word.get("id", "")
             if len(bbox) == 4:
                 points = [tuple((v.get("x", 0), v.get("y", 0))) for v in bbox]
                 draw.line(points + [points[0]], fill="red", width=2)

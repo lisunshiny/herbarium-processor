@@ -1,9 +1,12 @@
 from pathlib import Path
+
 from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse, PlainTextResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from .routers import batches
+
 from herbarium_processor.config import TMP_DIR
+
+from .routers import batches
 
 app = FastAPI(title="Herbarium Processor Web")
 

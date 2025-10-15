@@ -1,11 +1,11 @@
 import os
 from typing import Optional
 
+from PIL import ExifTags, Image
 import pillow_heif
 import pytesseract
-from PIL import ExifTags, Image
 
-from herbarium_processor.config import ROOT_DIR, resolve_path
+from herbarium_processor.config import resolve_path
 
 # Configuration constants
 TARGET_MAX_DIMENSION = 1000  # Resize long edge to 1000px

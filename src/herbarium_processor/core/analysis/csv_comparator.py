@@ -1,11 +1,10 @@
-import re
 from difflib import SequenceMatcher, ndiff
+import re
 
+from IPython.display import HTML, display
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import seaborn as sns
-from IPython.display import HTML, display
 
 from herbarium_processor.config import ROOT_DIR
 
@@ -109,7 +108,7 @@ class CsvComparator:
         )
 
         if verbose:
-            print(f"\n🧠 Model Similarity Summary")
+            print("\n🧠 Model Similarity Summary")
             print(
                 f"✅ Percentage of identical fields: {self.total_accuracy * 100:.1f}%\n"
             )
@@ -276,7 +275,7 @@ function toggleDiffView() {
     def calculate_html_parts(self):
         self.evaluate(verbose=False)
         html_parts = [
-            f"<h2>Model Similarity Summary</h2>",
+            "<h2>Model Similarity Summary</h2>",
             f"<p>Total Identical Fields: {self.total_accuracy * 100:.1f}%</p>",
             "<h3>Identical Entries Per-Field</h3>",
             self.summary_df.rename(columns={"accuracy": "identical"}).to_html(border=1),
