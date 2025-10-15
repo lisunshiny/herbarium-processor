@@ -33,13 +33,27 @@ pytest = "*"
 ipykernel = "^6.29.5"
 nbstripout = "^0.8.1"
 pre-commit = "^4.3.0"
-black = {extras = ["jupyter"], version = "^25.1.0"}
 httpx = "*"
 pytest-asyncio = "^1.1.0"
+ruff = "^0.14.0"
 
 [tool.poetry.scripts]
 dev = "scripts.dev:main"
 demo = "scripts.demo:main"
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+# Basic linting + import sorting
+select = ["E", "F", "I"]
+fixable = ["ALL"]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+force-sort-within-sections = true
+known-first-party = ["herbarium_processor"]
 
 [build-system]
 requires = ["poetry-core"]
