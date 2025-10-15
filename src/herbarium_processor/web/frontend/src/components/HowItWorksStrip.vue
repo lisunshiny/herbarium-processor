@@ -10,7 +10,9 @@
       >
         <Upload class="h-5 w-5 text-slate-700" />
       </div>
-      <h3 class="font-medium text-slate-900">Upload your specimen</h3>
+      <h3 class="font-medium text-slate-900">
+        Upload your specimen
+      </h3>
       <p class="mt-1 text-sm text-slate-600">
         Snap a quick photo on your phone or drop in any image with the label
         showing. Don’t worry about the angle — we’ll fix the rotation and
@@ -23,7 +25,9 @@
       >
         <Crop class="h-5 w-5 text-slate-700" />
       </div>
-      <h3 class="font-medium text-slate-900">Adjust the view</h3>
+      <h3 class="font-medium text-slate-900">
+        Adjust the view
+      </h3>
       <p class="mt-1 text-sm text-slate-600">
         If needed, rotate the image or trim the edges so that it's just the
         label.
@@ -49,7 +53,9 @@
       >
         <FileDown class="h-5 w-5 text-slate-700" />
       </div>
-      <h3 class="font-medium text-slate-900">Review & export</h3>
+      <h3 class="font-medium text-slate-900">
+        Review & export
+      </h3>
       <p class="mt-1 text-sm text-slate-600">
         Give everything a quick once-over, make edits right on the page, and
         then export your data as CSV to use however you like.

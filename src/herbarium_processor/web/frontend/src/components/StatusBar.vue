@@ -1,9 +1,12 @@
 <template>
-  <AppBar :sticky="true" :progress-percent="progressPercent" />
+  <AppBar
+    :sticky="true"
+    :progress-percent="progressPercent"
+  />
 </template>
 
 <script setup>
-import { ref, onMounted, computed, inject } from "vue";
+import { ref, onMounted, inject } from "vue";
 import { useBatchStore } from "@/stores/batch";
 import AppBar from "@/components/layout/AppBar.vue";
 
@@ -16,9 +19,6 @@ const specimens = ref([]);
 const loading = ref(true);
 const error = ref(null);
 const progressPercent = inject('progressPercent')
-
-// Make counts reactive to store changes
-const states = computed(() => batchStore.getItemsInEachState(props.id));
 
 onMounted(async () => {
   try {

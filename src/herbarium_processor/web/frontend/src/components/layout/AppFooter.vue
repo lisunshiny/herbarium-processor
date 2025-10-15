@@ -36,7 +36,7 @@
           </a>
         </div>
         <p class="mt-6 text-sm text-slate-500">
-          © 2025 Parsely Project. All rights reserved.
+          © {{ year }} Parsely Project. All rights reserved.
         </p>
       </div>
 
@@ -49,33 +49,44 @@
         </h4>
         <ul class="mt-3 space-y-2 text-sm">
           <li>
-            <a href="/how-it-works" class="hover:text-white">How it works</a>
+            <a
+              href="/how-it-works"
+              class="hover:text-white"
+            >How it works</a>
           </li>
           <li>
-            <a href="/about" class="hover:text-white">Our mission</a>
+            <a
+              href="/about"
+              class="hover:text-white"
+            >Our mission</a>
           </li>
-          <li><a href="/" class="hover:text-white">Upload specimens</a></li>
+          <li>
+            <a
+              href="/"
+              class="hover:text-white"
+            >Upload specimens</a>
+          </li>
         </ul>
       </div>
 
       <!-- Right: Contact CTA -->
-<div>
-  <h4 class="text-sm font-semibold uppercase tracking-wide text-slate-300">
-    Get in touch
-  </h4>
-  <p class="mt-3 text-sm text-slate-400">
-    Have questions, ideas, or feedback? We’d love to hear from you.
-  </p>
-  <p class="mt-4 text-sm text-slate-400">
-    Reach us at
-    <a
-      href="mailto:hello@parselystudio.com"
-      class="ml-1 font-medium text-emerald-400 hover:text-emerald-300 underline decoration-dotted underline-offset-4"
-    >
-      hello@parselystudio.com
-    </a>.
-  </p>
-</div>
+      <div>
+        <h4 class="text-sm font-semibold uppercase tracking-wide text-slate-300">
+          Get in touch
+        </h4>
+        <p class="mt-3 text-sm text-slate-400">
+          Have questions, ideas, or feedback? We’d love to hear from you.
+        </p>
+        <p class="mt-4 text-sm text-slate-400">
+          Reach us at
+          <a
+            href="mailto:hello@parselystudio.com"
+            class="ml-1 font-medium text-emerald-400 hover:text-emerald-300 underline decoration-dotted underline-offset-4"
+          >
+            hello@parselystudio.com
+          </a>.
+        </p>
+      </div>
     </div>
   </footer>
 </template>

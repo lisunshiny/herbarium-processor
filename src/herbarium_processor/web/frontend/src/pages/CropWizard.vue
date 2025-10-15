@@ -1,23 +1,37 @@
 <template>
-  <WizardLayout :batchId="id">
+  <WizardLayout :batch-id="id">
     <!-- Main content: make it fill and scroll *inside* the middle pane if needed -->
     <!-- Middle: fills between top/bottom bars; page itself won't scroll -->
     <main class="h-full flex-1 overflow-hidden">
       <!-- States -->
-      <div v-if="loading" class="h-full grid place-items-center">
+      <div
+        v-if="loading"
+        class="h-full grid place-items-center"
+      >
         Loading batch…
       </div>
 
-      <div v-else-if="error" class="h-full grid place-items-center text-error">
+      <div
+        v-else-if="error"
+        class="h-full grid place-items-center text-error"
+      >
         Failed to load batch: {{ error }}
       </div>
 
       <!-- Two-panel workspace -->
-      <div v-else class="h-full grid grid-cols-1 md:grid-cols-[1fr_280px]">
+      <div
+        v-else
+        class="h-full grid grid-cols-1 md:grid-cols-[1fr_280px]"
+      >
         <!-- Left: work area (scrolls internally if needed) -->
         <section class="h-full overflow-auto bg-black">
-          <SpecimenCropView v-if="currentSpecimen" :key="currentSpecimen?.id ?? currentIndex"
-            :specimen="currentSpecimen" :ref="setCropperRef" class="" />
+          <SpecimenCropView
+            v-if="currentSpecimen"
+            :key="currentSpecimen?.id ?? currentIndex"
+            :ref="setCropperRef"
+            :specimen="currentSpecimen"
+            class=""
+          />
         </section>
 
         <!-- Right: inspector/notes (fixed narrow pane, internal scroll) -->
@@ -30,22 +44,29 @@
             Click and drag the borders of the cropping tool so that it only captures the specimen label. Do not include
             barcodes, color palettes, rulers, and the specimens themselves.
           </p>
-
         </aside>
       </div>
     </main>
 
     <!-- Bottom bar content -->
-    <template #bottom-left></template>
+    <template #bottom-left />
 
     <template #bottom-right>
       <span class="text-gray-700 mr-4">{{ currentIndex + 1 }} of {{ specimens.length }}</span>
-      <button class="btn btn-primary" :disabled="isUploading" @click="handleUpload">
-        <span v-if="isUploading" class="loading loading-spinner mr-2"></span>
+      <button
+        class="btn btn-primary"
+        :disabled="isUploading"
+        @click="handleUpload"
+      >
+        <span
+          v-if="isUploading"
+          class="loading loading-spinner mr-2"
+        />
         {{
           isUploading
             ? "Uploading…"
-            : currentIndex < specimens.length - 1 ? "Save & next" : "Save & move to validation" }} </button>
+            : currentIndex < specimens.length - 1 ? "Save & next" : "Save & move to validation" }}
+      </button>
     </template>
   </WizardLayout>
 </template>
@@ -57,8 +78,6 @@ import {
   provide,
   onMounted,
   onBeforeUpdate,
-  onMounted as vueOnMounted,
-  onBeforeUnmount,
 } from "vue";
 import { useRouter } from "vue-router";
 import WizardLayout from "@/components/WizardLayout.vue";
@@ -86,12 +105,6 @@ const batchStore = useBatchStore();
 const hasSpecimens = computed(() => specimens.value.length > 0);
 const currentSpecimen = computed(() =>
   hasSpecimens.value ? specimens.value[currentIndex.value] : null
-);
-console.log(currentSpecimen);
-const progressText = computed(() =>
-  hasSpecimens.value
-    ? `${currentIndex.value + 1}/${specimens.value.length}`
-    : "0/0"
 );
 
 // Avoid stale element refs between patches

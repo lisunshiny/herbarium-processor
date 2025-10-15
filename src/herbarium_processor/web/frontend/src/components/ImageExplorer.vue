@@ -5,13 +5,23 @@
   >
     <img
       ref="imgRef"
-      :src="image_url"
+      :src="imageUrl"
       :alt="specimen.name || 'specimen'"
       class="absolute inset-0 m-auto max-w-full max-h-full object-contain block"
-    />
+    >
     <div class="absolute top-2 right-2 z-10 flex flex-col gap-2">
-      <button class="btn bg-base-100 btn-md btn-circle" @click="zoomIn">+</button>
-      <button class="btn bg-base-100 btn-md btn-circle" @click="zoomOut">-</button>
+      <button
+        class="btn bg-base-100 btn-md btn-circle"
+        @click="zoomIn"
+      >
+        +
+      </button>
+      <button
+        class="btn bg-base-100 btn-md btn-circle"
+        @click="zoomOut"
+      >
+        -
+      </button>
     </div>
   </div>
 </template>
@@ -23,7 +33,7 @@ import Panzoom from "@panzoom/panzoom";
 const props = defineProps({
   specimen: { type: Object, required: true }, // {id, url, name, status?, fields?, image_info: {url}}
   // the url to use, not necessarily specimen.image_info.url
-  image_url: { type: String, required: true },
+  imageUrl: { type: String, required: true },
 });
 
 const specimen = props.specimen;

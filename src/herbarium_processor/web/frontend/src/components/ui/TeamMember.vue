@@ -6,17 +6,25 @@
           <div
             class="w-24 sm:w-28 rounded-full ring ring-secondary/30 ring-offset-base-100 ring-offset-2"
           >
-            <img :src="img" :alt="`Portrait of ${name}`" />
+            <img
+              :src="img"
+              :alt="`Portrait of ${name}`"
+            >
           </div>
         </div>
         <div class="min-w-0">
           <h3 class="text-xl font-semibold leading-tight">
             {{ name }}
-            <span v-if="pronouns" class="ml-2 align-middle badge badge-neutral badge-sm">
+            <span
+              v-if="pronouns"
+              class="ml-2 align-middle badge badge-neutral badge-sm"
+            >
               {{ pronouns }}
             </span>
           </h3>
-          <p class="text-sm text-base-content/70">{{ title }}</p>
+          <p class="text-sm text-base-content/70">
+            {{ title }}
+          </p>
         </div>
       </div>
       <p class="mt-4">
@@ -28,9 +36,9 @@
 
 <script setup>
 defineProps({
-  name: String,
-  pronouns: String,
-  title: String,
-  img: String,
+  name: { type: String, required: true },
+  pronouns: { type: String, default: '' },
+  title: { type: String, required: true },
+  img: { type: String, required: true },
 })
 </script>

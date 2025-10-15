@@ -4,7 +4,7 @@
     <main class="flex-1">
       <router-view />
     </main>
-    <Footer />
+    <AppFooter />
 
     <!-- Alert container -->
     <div class="toast">
@@ -30,7 +30,7 @@
 
 <script setup>
 import Header from "./components/layout/Header.vue";
-import Footer from "./components/layout/Footer.vue";
+import AppFooter from "./components/layout/AppFooter.vue";
 import { useAlertStore } from "@/stores/alerts";
 
 const alertStore = useAlertStore();

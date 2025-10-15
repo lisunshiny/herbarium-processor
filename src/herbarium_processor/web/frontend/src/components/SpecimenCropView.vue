@@ -12,8 +12,8 @@
     <div class="absolute top-4 right-4 flex gap-3">
       <button
         class="btn bg-base-100 btn-sm btn-circle"
-        @click="rotate(-90)"
         aria-label="Rotate left"
+        @click="rotate(-90)"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -33,8 +33,8 @@
       </button>
       <button
         class="btn bg-base-100 btn-sm btn-circle"
-        @click="rotate(90)"
         aria-label="Rotate right"
+        @click="rotate(90)"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -60,6 +60,7 @@
 import { ref } from "vue";
 import { Cropper } from "vue-advanced-cropper";
 
+// eslint-disable-next-line no-unused-vars
 const props = defineProps({
   specimen: { type: Object, required: true }, // {id, url, name, status?, fields?}
 });

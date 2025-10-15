@@ -20,12 +20,14 @@ repos:
     hooks:
       - id: eslint
         name: ESLint (frontend)
-        # Run ESLint from repo root, target the frontend dir explicitly:
-        entry: eslint --ext .js,.vue,.json src/herbarium_processor/web/frontend
+        entry: eslint --config src/herbarium_processor/web/frontend/eslint.config.js --ext .js,.vue,.json src/herbarium_processor/web/frontend
         language: node
         pass_filenames: false
         additional_dependencies:
           - eslint
+          - "@eslint/js"
           - eslint-plugin-vue
-          - "@vue/eslint-config-standard"
+          - vue-eslint-parser
           - eslint-plugin-jsonc
+          - jsonc-eslint-parser
+          - globals

@@ -5,16 +5,17 @@
     >
       <span class="font-bold">
         👋🏼 New here?</span> Parsely Studio turns specimen labels into digital records
-        in 4 quick steps — 
+      in 4 quick steps — 
       <a
         href="/how-it-works"
         class="underline font-medium hover:text-green-100"
       >
-        see how it works</a
-      >.
+        see how it works</a>.
     </div>
     <BaseCard class="mx-4">
-      <template #header>Upload photos of specimens</template>
+      <template #header>
+        Upload photos of specimens
+      </template>
       <!-- Drop zone -->
       <div
         :class="[
@@ -38,10 +39,13 @@
         accept="image/*"
         class="hidden"
         @change="onFileSelect"
-      />
+      >
 
       <!-- Thumbnails -->
-      <div v-if="uploads.length" class="flex flex-wrap gap-4 mt-4">
+      <div
+        v-if="uploads.length"
+        class="flex flex-wrap gap-4 mt-4"
+      >
         <div
           v-for="(upload, index) in uploads"
           :key="index"
@@ -51,7 +55,7 @@
             :src="upload.url"
             alt="preview"
             class="object-cover w-full h-full rounded"
-          />
+          >
           <button
             type="button"
             class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
@@ -68,7 +72,10 @@
           :disabled="isUploading || !uploads.length"
           @click="handleUpload"
         >
-          <span v-if="isUploading" class="loading loading-spinner mr-2"></span>
+          <span
+            v-if="isUploading"
+            class="loading loading-spinner mr-2"
+          />
           {{ isUploading ? "Uploading…" : "Next" }}
         </button>
       </template>

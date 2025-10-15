@@ -4,9 +4,7 @@
       <!-- Hero header -->
       <div class="max-w-4xl mx-auto px-6 pt-12 pb-6">
         <h1 class="text-4xl font-bold tracking-tight mb-4">
-          From photo to structured data—<span class="text-slate-600"
-            >in less than a minute</span
-          >.
+          From photo to structured data—<span class="text-slate-600">in less than a minute</span>.
         </h1>
 
         <p class="text-lg text-slate-600">
@@ -16,7 +14,9 @@
       </div>
       <div class="">
         <div class="max-w-4xl mx-auto px-6 pb-12">
-          <h2 class="text-xl mb-4 font-medium">See it in action</h2>
+          <h2 class="text-xl mb-4 font-medium">
+            See it in action
+          </h2>
           <SampleLabelSelector />
         </div>
       </div>
@@ -47,13 +47,11 @@
           </div>
         </div>
       </section>
-
     </main>
   </div>
 </template>
 <script setup>
 import SampleLabelSelector from "../components/SampleLabelSelector.vue";
 import HowItWorksStrip from "../components/HowItWorksStrip.vue";
-import BaseCard from "@/components/ui/BaseCard.vue";
 </script>
 ``

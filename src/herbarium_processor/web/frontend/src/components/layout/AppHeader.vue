@@ -3,10 +3,20 @@
     <template #right>
       <ul class="menu menu-horizontal px-1">
         <li>
-          <RouterLink class="rounded-btn" to="/how-it-works">How it works</RouterLink>
+          <RouterLink
+            class="rounded-btn"
+            to="/how-it-works"
+          >
+            How it works
+          </RouterLink>
         </li>
         <li>
-          <RouterLink class="rounded-btn" to="/about">Our mission</RouterLink>
+          <RouterLink
+            class="rounded-btn"
+            to="/about"
+          >
+            Our mission
+          </RouterLink>
         </li>
       </ul>
     </template>
