@@ -42,7 +42,7 @@
           <!-- Left card (stretches) -->
           <ImageExplorer
             :specimen="currentSpecimen"
-            :image_url="currentSpecimen.image_info.ocr_bounding_url"
+            :image-url="currentSpecimen.image_info.ocr_bounding_url"
           />
 
           <!-- Right card (fixed w-64, scrollable) -->
