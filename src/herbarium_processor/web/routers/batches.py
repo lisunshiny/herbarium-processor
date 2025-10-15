@@ -1,7 +1,8 @@
-import json
 import csv
 from datetime import datetime
+import json
 from pathlib import Path
+import shutil
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
@@ -10,7 +11,7 @@ from fastapi import APIRouter, File, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
-from herbarium_processor.config import ROOT_DIR, TMP_DIR
+from herbarium_processor.config import TMP_DIR
 from herbarium_processor.core.image.image_utils import (
     convert_heic_to_jpg_no_resize,
     crop_rotate_and_resize,
@@ -22,8 +23,6 @@ from herbarium_processor.core.inference.label_extraction_batch_runner import (
 )
 from herbarium_processor.core.ocr.ocr_client import OcrClient
 from herbarium_processor.core.types.specimen_label import SpecimenLabel
-
-import shutil
 
 
 class CropOperation(BaseModel):

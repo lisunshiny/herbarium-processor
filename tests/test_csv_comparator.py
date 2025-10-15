@@ -1,6 +1,3 @@
-import os
-import tempfile
-
 import pandas as pd
 
 from herbarium_processor.core.analysis.csv_comparator import CsvComparator
@@ -11,7 +8,6 @@ def make_csv(path, rows):
 
 
 def test_csv_comparator_basic(tmp_path):
-
     canonical = [
         {"id": "1", "taxon": "A", "date": "2020-01-01"},
         {"id": "2", "taxon": "B", "date": "2020-01-02"},

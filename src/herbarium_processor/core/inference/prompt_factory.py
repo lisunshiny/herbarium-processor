@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import yaml
 
 from herbarium_processor.config import ROOT_DIR

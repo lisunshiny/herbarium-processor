@@ -1,8 +1,8 @@
 import os
+from pathlib import Path
 import signal
 import subprocess
 import time
-from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]  # repo root
 FRONTEND_DIR = ROOT / "src" / "herbarium_processor" / "web" / "frontend"

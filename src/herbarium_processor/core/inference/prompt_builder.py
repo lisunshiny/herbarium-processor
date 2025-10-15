@@ -3,8 +3,8 @@ import os
 import re
 from typing import Dict, List, Tuple
 
-import pandas as pd
 from jinja2 import Environment, FileSystemLoader
+import pandas as pd
 
 from herbarium_processor.config import ROOT_DIR
 from herbarium_processor.core.types.specimen_label import SpecimenLabel

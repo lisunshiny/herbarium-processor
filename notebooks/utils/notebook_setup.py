@@ -1,7 +1,7 @@
 def setup_project():
     import os
-    import sys
     from pathlib import Path
+    import sys
 
     root = Path(__file__).resolve().parents[2]
     os.chdir(root)

@@ -1,6 +1,6 @@
+from abc import ABC, abstractmethod
 import base64
 import os
-from abc import ABC, abstractmethod
 from typing import List, Union
 
 from dotenv import load_dotenv

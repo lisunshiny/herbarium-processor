@@ -1,12 +1,7 @@
-import csv
-import os
-import random
 import asyncio
+import csv
 from types import SimpleNamespace
 
-import pytest
-
-from herbarium_processor.config import ROOT_DIR, TMP_DIR
 from herbarium_processor.core.inference.label_extraction_batch_runner import (
     LabelExtractionBatchRunner,
 )
