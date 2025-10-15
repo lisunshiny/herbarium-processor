@@ -175,7 +175,7 @@ export const useBatchStore = defineStore("batches", {
         // Backend may return JSON object with updated fields; guard empty body
         try {
           updated = await res.json();
-        } catch (_) {
+        } catch {
           updated = null;
         }
 
@@ -206,7 +206,7 @@ export const useBatchStore = defineStore("batches", {
         // Backend may return JSON object with updated fields; guard empty body
         try {
           updated = await res.json();
-        } catch (_) {
+        } catch {
           updated = null;
         }
 

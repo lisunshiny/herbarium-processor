@@ -16,7 +16,10 @@
           </button>
         </div>
 
-        <img :src="options[selected].src" alt="Sample label" />
+        <img
+          :src="options[selected].src"
+          alt="Sample label"
+        >
         <p class="mt-3 text-xs text-slate-500">
           {{ options[selected].desc }}
         </p>
@@ -24,12 +27,21 @@
 
       <!-- Right: sample structured output (varies a bit by selection) -->
       <div class="">
-        <h4 class="font-semibold mb-3">Sample output</h4>
+        <h4 class="font-semibold mb-3">
+          Sample output
+        </h4>
         <dl class="grid gap-2 text-sm md:max-h-[32rem] md:overflow-auto">
-          <template v-for="(val, key) in options[selected].fields" :key="key">
+          <template
+            v-for="(val, key) in options[selected].fields"
+            :key="key"
+          >
             <div v-if="val !== null && String(val).trim() !== ''">
-              <dt class="text-slate-500 text-xs">{{ prettyKey(key) }}</dt>
-              <dd class="font-medium">{{ val }}</dd>
+              <dt class="text-slate-500 text-xs">
+                {{ prettyKey(key) }}
+              </dt>
+              <dd class="font-medium">
+                {{ val }}
+              </dd>
             </div>
           </template>
         </dl>

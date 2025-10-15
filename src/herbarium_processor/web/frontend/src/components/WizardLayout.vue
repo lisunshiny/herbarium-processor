@@ -27,6 +27,7 @@
 import StatusBar from "@/components/StatusBar.vue"
 import BottomBar from "@/components/BottomBar.vue"
 
+// eslint-disable-next-line no-unused-vars
 const props = defineProps({
   batchId: { type: String, required: true },
 })

@@ -1,11 +1,17 @@
 <template>
-  <WizardLayout :batchId="id">
+  <WizardLayout :batch-id="id">
     <main class="h-full flex-1 overflow-hidden">
-      <div v-if="loading" class="h-full grid place-items-center">
+      <div
+        v-if="loading"
+        class="h-full grid place-items-center"
+      >
         Loading batch…
       </div>
 
-      <div v-else-if="error" class="h-full grid place-items-center text-error">
+      <div
+        v-else-if="error"
+        class="h-full grid place-items-center text-error"
+      >
         Failed to load batch: {{ error }}
       </div>
       <div
@@ -14,11 +20,14 @@
       >
         No images in this batch.
       </div>
-      <div v-else class="h-full">
+      <div
+        v-else
+        class="h-full"
+      >
         <div v-if="!currentSpecimen?.image_info?.llm_output">
           <div class="flex h-full items-center justify-center">
             <div class="flex flex-col items-center space-y-3 pt-24">
-              <span class="loading loading-spinner loading-lg"></span>
+              <span class="loading loading-spinner loading-lg" />
               <p class="text-sm text-base-content/60">
                 Parsely is assigning label text to fields. This may take up to a minute...
               </p>
@@ -55,21 +64,25 @@
                 v-model="form[key]"
                 rows="1"
                 class="textarea textarea-bordered textarea-sm w-full overflow-hidden max-h-60 [field-sizing:content] min-h-0 py-1"
-              >
-              </textarea>
+              />
             </div>
           </div>
         </div>
       </div>
     </main>
     <!-- Bottom bar content -->
-    <template #bottom-left></template>
+    <template #bottom-left />
 
-    <template v-if="currentSpecimen?.image_info?.llm_output" #bottom-right>
-      <span class="text-gray-700 mr-4"
-        >{{ currentIndex + 1 }}/{{ specimens.length }}
+    <template
+      v-if="currentSpecimen?.image_info?.llm_output"
+      #bottom-right
+    >
+      <span class="text-gray-700 mr-4">{{ currentIndex + 1 }}/{{ specimens.length }}
       </span>
-      <button class="btn btn-primary" @click="saveLabel">
+      <button
+        class="btn btn-primary"
+        @click="saveLabel"
+      >
         {{
           currentIndex < specimens.length - 1
             ? "Save & next"
@@ -105,11 +118,6 @@ const hasSpecimens = computed(() => specimens.value.length > 0);
 const currentSpecimen = computed(() =>
   hasSpecimens.value ? specimens.value[currentIndex.value] : null
 );
-const progressText = computed(() =>
-  hasSpecimens.value
-    ? `${currentIndex.value + 1}/${specimens.value.length}`
-    : "0/0"
-);
 const form = reactive({
   ...(currentSpecimen.value?.image_info?.llm_output || {}),
 });
@@ -127,10 +135,6 @@ function setFormFrom(obj) {
   }
 }
 
-function revert() {
-  setFormFrom(currentSpecimen.value?.image_info?.llm_output || {});
-}
-
 async function saveLabel() {
   if (!currentSpecimen.value) return;
   const payload = JSON.parse(JSON.stringify(form));
@@ -145,7 +149,7 @@ async function saveLabel() {
     try {
       await batchStore.downloadCsv(props.id);
       alertStore.addAlert("Your CSV export was successful!", "success");
-    } catch (err) {
+    } catch {
       alertStore.addAlert("CSV download failed", "error");
     } finally {
       router.push({ name: "home" }); // Go back to home after downloading

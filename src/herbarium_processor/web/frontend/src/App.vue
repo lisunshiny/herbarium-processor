@@ -1,10 +1,10 @@
 <template>
   <div class="min-h-screen bg-base-200 flex flex-col">
-    <Header />
+    <AppHeader />
     <main class="flex-1">
       <router-view />
     </main>
-    <Footer />
+    <AppFooter />
 
     <!-- Alert container -->
     <div class="toast">
@@ -29,8 +29,8 @@
 </template>
 
 <script setup>
-import Header from "./components/layout/Header.vue";
-import Footer from "./components/layout/Footer.vue";
+import AppHeader from "./components/layout/AppHeader.vue";
+import AppFooter from "./components/layout/AppFooter.vue";
 import { useAlertStore } from "@/stores/alerts";
 
 const alertStore = useAlertStore();
