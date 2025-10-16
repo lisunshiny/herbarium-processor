@@ -3,9 +3,8 @@
     <div
       class="mx-4 rounded-lg bg-gradient-to-r from-blue-500 to-info to text-white py-3 px-6 text-center shadow-md"
     >
-      <span class="font-bold">
-        👋🏼 New here?</span> Parsely Studio turns specimen labels into digital records
-      in 4 quick steps — 
+      <span class="font-bold"> 👋🏼 New here?</span> Parsely Studio turns specimen
+      labels into digital records in 4 quick steps —
       <a
         href="/how-it-works"
         class="underline font-medium hover:text-green-100"
@@ -63,6 +62,29 @@
           >
             &times;
           </button>
+        </div>
+      </div>
+      <div class="collapse collapse-plus bg-base-200">
+        <input
+          type="checkbox"
+          class="peer"
+        >
+        <div class="collapse-title font-medium text-base-content">
+          Advanced settings
+        </div>
+        <div class="collapse-content text-sm text-base-content/80 space-y-3">
+          <label class="label cursor-pointer justify-start gap-3 p-0">
+            <input
+              v-model="skipCrop"
+              type="checkbox"
+              class="checkbox checkbox-primary"
+            >
+            <span class="label-text text-base-content">Skip crop step</span>
+          </label>
+          <p class="text-xs leading-relaxed text-base-content/70">
+            When enabled, you can bypass manual cropping and move straight to
+            inference.
+          </p>
         </div>
       </div>
 
