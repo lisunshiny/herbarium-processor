@@ -95,7 +95,7 @@
 
 <script setup>
 import { ref, provide, computed, onMounted, reactive, watch } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import WizardLayout from "@/components/WizardLayout.vue";
 import ImageExplorer from "@/components/ImageExplorer.vue";
 import { useBatchStore } from "@/stores/batch"; // our Pinia store
@@ -105,6 +105,7 @@ const props = defineProps({
   id: { type: String, required: true },
 });
 const router = useRouter();
+const route = useRoute();
 const specimens = ref([]);
 const loading = ref(true);
 const error = ref(null);
@@ -169,8 +170,11 @@ onMounted(async () => {
     specimens.value = batch.specimens ?? [];
 
     // Auto-navigate to CropWizard if the stage is "cropping"
+    const skipCroppingGuard = ["true", "1", "yes"].includes(
+      String(route.query.skipCrop || "").toLowerCase()
+    );
     const stage = batchStore.getBatchState(props.id);
-    if (stage === "cropping") {
+    if (stage === "cropping" && !skipCroppingGuard) {
       router.replace({ name: "cropWizard", params: { id: props.id } });
       return;
     }

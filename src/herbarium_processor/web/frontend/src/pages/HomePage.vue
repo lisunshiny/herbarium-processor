@@ -3,9 +3,8 @@
     <div
       class="mx-4 rounded-lg bg-gradient-to-r from-blue-500 to-info to text-white py-3 px-6 text-center shadow-md"
     >
-      <span class="font-bold">
-        👋🏼 New here?</span> Parsely Studio turns specimen labels into digital records
-      in 4 quick steps — 
+      <span class="font-bold"> 👋🏼 New here?</span> Parsely Studio turns specimen
+      labels into digital records in 4 quick steps —
       <a
         href="/how-it-works"
         class="underline font-medium hover:text-green-100"
@@ -65,6 +64,29 @@
           </button>
         </div>
       </div>
+      <div class="collapse collapse-plus bg-base-200">
+        <input
+          type="checkbox"
+          class="peer"
+        >
+        <div class="collapse-title font-medium text-base-content">
+          Advanced settings
+        </div>
+        <div class="collapse-content text-sm text-base-content/80 space-y-3">
+          <label class="label cursor-pointer justify-start gap-3 p-0">
+            <input
+              v-model="skipCrop"
+              type="checkbox"
+              class="checkbox checkbox-primary"
+            >
+            <span class="label-text text-base-content">Skip crop step</span>
+          </label>
+          <p class="text-xs leading-relaxed text-base-content/70">
+            When enabled, you can bypass manual cropping and move straight to
+            inference.
+          </p>
+        </div>
+      </div>
 
       <template #actions>
         <button
@@ -91,12 +113,15 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import BaseCard from "@/components/ui/BaseCard.vue";
 import HowItWorksStrip from "../components/HowItWorksStrip.vue";
+import { useBatchStore } from "@/stores/batch";
 
 const router = useRouter();
 const fileInput = ref(null);
 const uploads = ref([]); // [{ file: File, url: string }]
 const isUploading = ref(false);
 const isDragging = ref(false);
+const skipCrop = ref(false);
+const batchStore = useBatchStore();
 
 const triggerFileSelect = () => {
   fileInput.value?.click();
@@ -162,15 +187,69 @@ const handleUpload = async () => {
     const data = await res.json();
     const batchId = data?.batch_id ?? data?.id ?? data?.uuid;
     if (!batchId) throw new Error("Batch ID missing in response.");
-
-    // Navigate to the first step, cropping
-    router.replace({ name: "cropWizard", params: { id: batchId } });
+    if (skipCrop.value) {
+      queueAutoCropAndInfer(batchId);
+      router.replace({
+        name: "labelWizard",
+        params: { id: batchId },
+        query: { skipCrop: "true" },
+      });
+    } else {
+      // Navigate to the first step, cropping
+      router.replace({ name: "cropWizard", params: { id: batchId } });
+    }
   } catch (err) {
     console.error("❌ Error uploading:", err);
     alert("Upload failed. Check console for details.");
   } finally {
     isUploading.value = false;
   }
+};
+
+const loadImageDimensions = (url) =>
+  new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      resolve({ width: img.naturalWidth, height: img.naturalHeight });
+    };
+    img.onerror = (err) => reject(err);
+    img.src = url;
+  });
+
+const queueAutoCropAndInfer = (batchId) => {
+  // Fire-and-forget background processing; errors are logged but do not block navigation
+  (async () => {
+    try {
+      const batch = await batchStore.getBatch(batchId);
+      const specimens = batch?.specimens ?? [];
+
+      await Promise.all(
+        specimens.map(async (specimen) => {
+          try {
+            const info = specimen?.image_info ?? {};
+            const sourceUrl = info.pre_crop_url || info.url;
+            if (!specimen?.id || !sourceUrl) return;
+
+            const { width, height } = await loadImageDimensions(sourceUrl);
+            await batchStore.cropAndInfer(batchId, specimen.id, {
+              x: 0,
+              y: 0,
+              width,
+              height,
+              rotate: 0,
+            });
+          } catch (specimenErr) {
+            console.error(
+              `Auto crop_and_infer failed for specimen ${specimen?.id}`,
+              specimenErr
+            );
+          }
+        })
+      );
+    } catch (err) {
+      console.error("Auto crop_and_infer failed", err);
+    }
+  })();
 };
 </script>
 
