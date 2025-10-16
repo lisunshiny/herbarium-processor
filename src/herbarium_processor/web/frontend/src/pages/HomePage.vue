@@ -113,12 +113,15 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import BaseCard from "@/components/ui/BaseCard.vue";
 import HowItWorksStrip from "../components/HowItWorksStrip.vue";
+import { useBatchStore } from "@/stores/batch";
 
 const router = useRouter();
 const fileInput = ref(null);
 const uploads = ref([]); // [{ file: File, url: string }]
 const isUploading = ref(false);
 const isDragging = ref(false);
+const skipCrop = ref(false);
+const batchStore = useBatchStore();
 
 const triggerFileSelect = () => {
   fileInput.value?.click();
@@ -184,15 +187,69 @@ const handleUpload = async () => {
     const data = await res.json();
     const batchId = data?.batch_id ?? data?.id ?? data?.uuid;
     if (!batchId) throw new Error("Batch ID missing in response.");
-
-    // Navigate to the first step, cropping
-    router.replace({ name: "cropWizard", params: { id: batchId } });
+    if (skipCrop.value) {
+      queueAutoCropAndInfer(batchId);
+      router.replace({
+        name: "labelWizard",
+        params: { id: batchId },
+        query: { skipCrop: "true" },
+      });
+    } else {
+      // Navigate to the first step, cropping
+      router.replace({ name: "cropWizard", params: { id: batchId } });
+    }
   } catch (err) {
     console.error("❌ Error uploading:", err);
     alert("Upload failed. Check console for details.");
   } finally {
     isUploading.value = false;
   }
+};
+
+const loadImageDimensions = (url) =>
+  new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      resolve({ width: img.naturalWidth, height: img.naturalHeight });
+    };
+    img.onerror = (err) => reject(err);
+    img.src = url;
+  });
+
+const queueAutoCropAndInfer = (batchId) => {
+  // Fire-and-forget background processing; errors are logged but do not block navigation
+  (async () => {
+    try {
+      const batch = await batchStore.getBatch(batchId);
+      const specimens = batch?.specimens ?? [];
+
+      await Promise.all(
+        specimens.map(async (specimen) => {
+          try {
+            const info = specimen?.image_info ?? {};
+            const sourceUrl = info.pre_crop_url || info.url;
+            if (!specimen?.id || !sourceUrl) return;
+
+            const { width, height } = await loadImageDimensions(sourceUrl);
+            await batchStore.cropAndInfer(batchId, specimen.id, {
+              x: 0,
+              y: 0,
+              width,
+              height,
+              rotate: 0,
+            });
+          } catch (specimenErr) {
+            console.error(
+              `Auto crop_and_infer failed for specimen ${specimen?.id}`,
+              specimenErr
+            );
+          }
+        })
+      );
+    } catch (err) {
+      console.error("Auto crop_and_infer failed", err);
+    }
+  })();
 };
 </script>
 
