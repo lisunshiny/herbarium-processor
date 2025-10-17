@@ -81,6 +81,23 @@
           <div class="form-control w-full mt-2">
             <label class="label justify-between mb-2">
               <span class="label-text text-base-content font-medium">Google API key</span>
+              <span
+                v-if="validatingKey"
+                class="loading loading-spinner loading-xs text-primary"
+              />
+              <span
+                v-else-if="isKeyValid === true"
+                class="text-success text-xs font-medium"
+              >
+                Valid ✅
+              </span>
+              <span
+                v-else-if="isKeyValid === false"
+                class="text-error text-xs font-medium"
+              >
+                Invalid ❌
+              </span>
+
             </label>
             <input
               v-model="apiKey"
@@ -90,12 +107,19 @@
               spellcheck="false"
               placeholder="AIzaSy..."
               class="input input-bordered input-sm font-mono tracking-tight w-full"
+              @blur="validateApiKey"
             >
             <label class="label">
               <span class="label-text-alt text-base-content/70 text-xs">
                 Providing your own key raises the upload limit to 25 images.
               </span>
             </label>
+            <p
+              v-if="keyError"
+              class="text-xs text-error mt-1"
+            >
+              {{ keyError }}
+            </p>
           </div>
           <!-- Skip Crop Checkbox -->
           <div class="form-control w-full mt-6">
@@ -155,6 +179,52 @@ const batchStore = useBatchStore();
 
 const trimmedApiKey = computed(() => apiKey.value.trim());
 const maxUploadCount = computed(() => (trimmedApiKey.value ? 25 : 5));
+const validatingKey = ref(false);
+const isKeyValid = ref(null); // true / false / null
+const keyError = ref("");
+
+const validateApiKey = async () => {
+  if (!trimmedApiKey.value) return;
+  validatingKey.value = true;
+  isKeyValid.value = null;
+  keyError.value = "";
+
+  try {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models?key=${trimmedApiKey.value}`
+    );
+    if (res.status === 200) {
+      const data = await res.json();
+      const modelIds = (data.models || []).map((m) => m.name || m.id || "");
+      const hasGemini25 = modelIds.some((id) =>
+        id.includes("gemini-2.5-pro")
+      );
+      if (hasGemini25) {
+        isKeyValid.value = true;
+      } else {
+        isKeyValid.value = false;
+        keyError.value =
+          "Key is valid but does not have access to Gemini 2.5 Pro.";
+      }
+    } else if (res.status === 403) {
+      isKeyValid.value = false;
+      keyError.value =
+        "API key is valid but unauthorized for the Gemini API (403).";
+    } else if (res.status === 400) {
+      isKeyValid.value = false;
+      keyError.value = "Invalid API key or malformed request (400).";
+    } else {
+      isKeyValid.value = false;
+      keyError.value = `Unexpected response: ${res.status}`;
+    }
+  } catch (err) {
+    console.error("Error validating key:", err);
+    isKeyValid.value = false;
+    keyError.value = "Network or validation error.";
+  } finally {
+    validatingKey.value = false;
+  }
+};
 
 const triggerFileSelect = () => {
   fileInput.value?.click();
@@ -202,6 +272,16 @@ const removeImage = (index) => {
 };
 
 const handleUpload = async () => {
+  if (trimmedApiKey.value) {
+    await validateApiKey();
+    if (!isKeyValid.value && trimmedApiKey.value) {
+      alert(
+        keyError.value ||
+          "Invalid or unauthorized Google API key. Please check it before continuing."
+      );
+      return;
+    }
+  }
   const limit = maxUploadCount.value;
   if (!uploads.value.length) {
     alert("Please choose a file first.");
