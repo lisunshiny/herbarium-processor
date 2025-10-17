@@ -86,13 +86,13 @@
                 class="loading loading-spinner loading-xs text-primary"
               />
               <span
-                v-else-if="isKeyValid === true"
+                v-else-if="isKeyValid === true && trimmedApiKey"
                 class="text-success text-xs font-medium"
               >
                 Valid ✅
               </span>
               <span
-                v-else-if="isKeyValid === false"
+                v-else-if="isKeyValid === false && trimmedApiKey"
                 class="text-error text-xs font-medium"
               >
                 Invalid ❌
@@ -115,7 +115,7 @@
               </span>
             </label>
             <p
-              v-if="keyError"
+              v-if="trimmedApiKey && keyError"
               class="text-xs text-error mt-1"
             >
               {{ keyError }}
@@ -134,7 +134,7 @@
               </span>
             </label>
             <p class="text-xs leading-relaxed text-base-content/70">
-              Labels pre-cropped and rotated? Choose this to automatically crop and infer
+              Labels pre-cropped and rotated? Choose this to infer
               all images as-is, skipping the manual cropping step.
             </p>
           </div>

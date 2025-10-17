@@ -31,6 +31,7 @@ class LabelExtractionBatchRunner:
         *,
         max_inflight: int = 60,  # cap concurrent LLM calls per container
         rpm_limit: int = 140,  # safety below 150 RPM provider cap
+        llm_api_key: str | None = None,
     ):
         self.output_csv_path = (
             ROOT_DIR / output_csv_path if output_csv_path else TMP_DIR / "results.csv"
@@ -42,6 +43,7 @@ class LabelExtractionBatchRunner:
         self.targets = targets or []
         self.results: List[Dict[str, Any]] = []
         self.llm_api_cls = llm_api_cls
+        self.llm_api_key = llm_api_key
 
         # concurrency + rate limiting
         self._sem = asyncio.Semaphore(max_inflight)
@@ -56,7 +58,10 @@ class LabelExtractionBatchRunner:
             self.sys_instr = f.read()
 
     def _make_extractor(self) -> LabelExtractor:
-        api_client = self.llm_api_cls(system_instructions=self.sys_instr)
+        api_client = self.llm_api_cls(
+            system_instructions=self.sys_instr,
+            api_key=self.llm_api_key,
+        )
         return LabelExtractor(
             llm_api=api_client,
             prompt_builder=self.prompt_builder,

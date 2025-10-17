@@ -30,13 +30,14 @@ class BaseOpenAIAPI(BaseLLMAPI):
         self,
         system_instructions: str,
         model_name: Optional[str] = None,
+        api_key: Optional[str] = None,
     ):
         resolved_model = model_name or self.default_model_name
         super().__init__(system_instructions, resolved_model)
 
-        load_dotenv()
-        api_key = os.getenv(self.api_key_env_var)
-
+        if not api_key:
+            load_dotenv()
+            api_key = os.getenv(self.api_key_env_var)
         # Async client with HTTP/2 and connection reuse under the hood
         self.client = AsyncOpenAI(
             base_url=self.base_url,
