@@ -27,7 +27,12 @@
         @dragleave.prevent="onDragLeave"
         @drop.prevent="onDrop"
       >
-        <p>Drag & drop up to 10 images, or click to select</p>
+        <p>
+          Drag & drop images, or click to select
+        </p>
+        <p class="text-xs text-base-content/70">
+          Current upload limit: {{ maxUploadCount }} image{{ maxUploadCount === 1 ? '' : 's' }}
+        </p>
       </div>
 
       <!-- Hidden file input -->
@@ -72,19 +77,43 @@
         <div class="collapse-title font-medium text-base-content">
           Advanced settings
         </div>
-        <div class="collapse-content text-sm text-base-content/80 space-y-3">
-          <label class="label cursor-pointer justify-start gap-3 p-0">
+        <div class="collapse-content text-sm text-base-content/80 space-y-4">
+          <div class="form-control w-full mt-2">
+            <label class="label justify-between mb-2">
+              <span class="label-text text-base-content font-medium">Google API key</span>
+            </label>
             <input
-              v-model="skipCrop"
-              type="checkbox"
-              class="checkbox checkbox-primary"
+              v-model="apiKey"
+              type="text"
+              inputmode="text"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="AIzaSy..."
+              class="input input-bordered input-sm font-mono tracking-tight w-full"
             >
-            <span class="label-text text-base-content">Skip crop step</span>
-          </label>
-          <p class="text-xs leading-relaxed text-base-content/70">
-            When enabled, you can bypass manual cropping and move straight to
-            inference.
-          </p>
+            <label class="label">
+              <span class="label-text-alt text-base-content/70 text-xs">
+                Providing your own key raises the upload limit to 25 images.
+              </span>
+            </label>
+          </div>
+          <!-- Skip Crop Checkbox -->
+          <div class="form-control w-full mt-6">
+            <label class="label cursor-pointer justify-start gap-3 p-0">
+              <input
+                v-model="skipCrop"
+                type="checkbox"
+                class="checkbox checkbox-primary"
+              >
+              <span class="label-text text-base-content font-medium">
+                Skip cropping
+              </span>
+            </label>
+            <p class="text-xs leading-relaxed text-base-content/70">
+              Labels pre-cropped and rotated? Choose this to automatically crop and infer
+              all images as-is, skipping the manual cropping step.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -109,7 +138,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import BaseCard from "@/components/ui/BaseCard.vue";
 import HowItWorksStrip from "../components/HowItWorksStrip.vue";
@@ -121,7 +150,11 @@ const uploads = ref([]); // [{ file: File, url: string }]
 const isUploading = ref(false);
 const isDragging = ref(false);
 const skipCrop = ref(false);
+const apiKey = ref("");
 const batchStore = useBatchStore();
+
+const trimmedApiKey = computed(() => apiKey.value.trim());
+const maxUploadCount = computed(() => (trimmedApiKey.value ? 25 : 5));
 
 const triggerFileSelect = () => {
   fileInput.value?.click();
@@ -147,15 +180,19 @@ const onDrop = (e) => {
 };
 
 const handleFiles = (fileList) => {
-  const remaining = 10 - uploads.value.length;
+  const limit = maxUploadCount.value;
+  const remaining = Math.max(limit - uploads.value.length, 0);
   const files = Array.from(fileList).slice(0, remaining);
   for (const file of files) {
     if (file.type.startsWith("image/")) {
       uploads.value.push({ file, url: URL.createObjectURL(file) });
     }
   }
-  if (uploads.value.length >= 10 && fileList.length > remaining) {
-    alert("You can upload up to 10 images.");
+  if (uploads.value.length >= limit && fileList.length > remaining) {
+    const message = trimmedApiKey.value
+      ? "You can upload up to 25 images when providing an API key."
+      : "You can upload up to 5 images.";
+    alert(message);
   }
 };
 
@@ -165,8 +202,17 @@ const removeImage = (index) => {
 };
 
 const handleUpload = async () => {
+  const limit = maxUploadCount.value;
   if (!uploads.value.length) {
     alert("Please choose a file first.");
+    return;
+  }
+  if (uploads.value.length > limit) {
+    alert(
+      `Please remove ${uploads.value.length - limit} image${
+        uploads.value.length - limit === 1 ? "" : "s"
+      } to meet the ${limit}-image limit.`
+    );
     return;
   }
   isUploading.value = true;
@@ -177,10 +223,16 @@ const handleUpload = async () => {
   }
 
   try {
-    const res = await fetch("/api/batches", {
-      method: "POST",
-      body: formData,
-    });
+    const res = await fetch(
+      "/api/batches",
+      {
+        method: "POST",
+        body: formData,
+        ...(trimmedApiKey.value
+          ? { headers: { "X-API-Key": trimmedApiKey.value } }
+          : {}),
+      }
+    );
 
     if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
 
