@@ -55,7 +55,7 @@ class ImageInfo(BaseModel):
 
 router = APIRouter(prefix="/batches", tags=["batches"])
 BASE_UPLOAD_LIMIT = 10
-API_KEY_UPLOAD_LIMIT = 25
+API_KEY_UPLOAD_LIMIT = 50
 
 
 @router.post("", status_code=201)

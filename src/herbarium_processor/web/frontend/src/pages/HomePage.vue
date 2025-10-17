@@ -111,7 +111,7 @@
             >
             <label class="label">
               <span class="label-text-alt text-base-content/70 text-xs">
-                Providing your own key raises the upload limit to 25 images.
+                Providing your own key raises the upload limit to 50 images.
               </span>
             </label>
             <p
@@ -178,7 +178,7 @@ const apiKey = ref("");
 const batchStore = useBatchStore();
 
 const trimmedApiKey = computed(() => apiKey.value.trim());
-const maxUploadCount = computed(() => (trimmedApiKey.value ? 25 : 5));
+const maxUploadCount = computed(() => (trimmedApiKey.value ? 50 : 5));
 const validatingKey = ref(false);
 const isKeyValid = ref(null); // true / false / null
 const keyError = ref("");
@@ -260,7 +260,7 @@ const handleFiles = (fileList) => {
   }
   if (uploads.value.length >= limit && fileList.length > remaining) {
     const message = trimmedApiKey.value
-      ? "You can upload up to 25 images when providing an API key."
+      ? "You can upload up to 50 images when providing an API key."
       : "You can upload up to 5 images.";
     alert(message);
   }
