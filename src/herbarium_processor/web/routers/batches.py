@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
 from anyio import to_thread
-from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi import APIRouter, File, Header, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
@@ -21,6 +21,7 @@ from herbarium_processor.core.inference import create_prompt_builder_from_yaml
 from herbarium_processor.core.inference.label_extraction_batch_runner import (
     LabelExtractionBatchRunner,
 )
+from herbarium_processor.core.inference.llm_api import GoogleGeminiAPI
 from herbarium_processor.core.ocr.ocr_client import OcrClient
 from herbarium_processor.core.types.specimen_label import SpecimenLabel
 
@@ -53,17 +54,28 @@ class ImageInfo(BaseModel):
 
 
 router = APIRouter(prefix="/batches", tags=["batches"])
-MAX_FILES = 20
+BASE_UPLOAD_LIMIT = 10
+API_KEY_UPLOAD_LIMIT = 50
 
 
 @router.post("", status_code=201)
-async def create_batch(files: List[UploadFile] = File(...)):
-    if not files or len(files) > MAX_FILES:
-        raise HTTPException(status_code=400, detail=f"Upload 1..{MAX_FILES} images")
+async def create_batch(
+    files: List[UploadFile] = File(...),
+    api_key: Optional[str] = Header(default=None, alias="X-API-Key"),
+):
+    sanitized_key = (api_key or "").strip()
+    max_files = API_KEY_UPLOAD_LIMIT if sanitized_key else BASE_UPLOAD_LIMIT
+
+    if not files or len(files) > max_files:
+        raise HTTPException(status_code=400, detail=f"Upload 1..{max_files} images")
     batch_id = str(uuid4())
     job_dir = TMP_DIR / f"batch_{batch_id}"
     images_dir = job_dir / "images"
     images_dir.mkdir(parents=True, exist_ok=True)
+
+    if sanitized_key:
+        secret_path = job_dir / "api_key"
+        secret_path.write_text(sanitized_key)
 
     images = []
     for f in files:
@@ -158,6 +170,12 @@ async def crop_and_infer(batch_id: str, image_id: str, ops: CropOperation):
     if not path.exists():
         raise HTTPException(status_code=404, detail="Pre-crop image not found")
 
+    # Read api_key if exists
+    api_key_file = job_dir / "api_key"
+    api_key_value = None
+    if api_key_file.exists():
+        api_key_value = api_key_file.read_text().strip()
+
     # Crop and rotate
     crop = (ops.x, ops.y, ops.width, ops.height)
     # the rotation angle is in degrees clockwise, but our function expects counterclockwise
@@ -180,7 +198,6 @@ async def crop_and_infer(batch_id: str, image_id: str, ops: CropOperation):
         ocr_annotated_path,
         llm_json_path,
     )
-    print("test 2")
     targets = [
         SpecimenLabel(
             id=path.stem,
@@ -199,6 +216,8 @@ async def crop_and_infer(batch_id: str, image_id: str, ops: CropOperation):
         targets=targets,
         max_inflight=60,  # tune for cost/throughput
         rpm_limit=140,
+        llm_api_key=api_key_value,
+        llm_api_cls=GoogleGeminiAPI if api_key_value else None,
     )
     await runner.run_async()
 
