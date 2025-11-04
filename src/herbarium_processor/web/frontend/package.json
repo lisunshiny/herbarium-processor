@@ -27,7 +27,7 @@
     "eslint-plugin-jsonc": "^2.21.0",
     "eslint-plugin-vue": "^10.5.1",
     "jsonc-eslint-parser": "^2.4.1",
-    "vite": "^7.1.5",
+    "vite": "^7.1.11",
     "vue-eslint-parser": "^10.2.0"
   }
 }
