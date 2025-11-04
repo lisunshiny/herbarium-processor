@@ -21,7 +21,7 @@ from herbarium_processor.core.inference import create_prompt_builder_from_yaml
 from herbarium_processor.core.inference.label_extraction_batch_runner import (
     LabelExtractionBatchRunner,
 )
-from herbarium_processor.core.inference.llm_api import GoogleGeminiAPI
+from herbarium_processor.core.inference.llm_api import GoogleGeminiAPI, OpenRouterAPI
 from herbarium_processor.core.ocr.ocr_client import OcrClient
 from herbarium_processor.core.types.specimen_label import SpecimenLabel
 
@@ -217,7 +217,7 @@ async def crop_and_infer(batch_id: str, image_id: str, ops: CropOperation):
         max_inflight=60,  # tune for cost/throughput
         rpm_limit=140,
         llm_api_key=api_key_value,
-        llm_api_cls=GoogleGeminiAPI if api_key_value else None,
+        llm_api_cls=GoogleGeminiAPI if api_key_value else OpenRouterAPI,
     )
     await runner.run_async()
 
