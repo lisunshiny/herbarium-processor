@@ -82,9 +82,6 @@ async def create_batch(
         image_subdir = images_dir / image_id
         image_subdir.mkdir(parents=True, exist_ok=True)
 
-        # Save original uploaded bytes
-        uploaded_bytes = await f.read()
-
         # Detect HEIC by filename or content-type
         filename = f.filename.lower() if f.filename else ""
         is_heic = (
@@ -96,11 +93,11 @@ async def create_batch(
 
         if is_heic:
             heic_path = image_subdir / "pre_crop.heic"
-            heic_path.write_bytes(uploaded_bytes)
+            heic_path.write_bytes(await f.read())
 
             convert_heic_to_jpg_no_resize(heic_path)
         else:
-            pre_crop_path.write_bytes(uploaded_bytes)
+            pre_crop_path.write_bytes(await f.read())
 
         preprocess_image_file_no_resize(pre_crop_path)
 
