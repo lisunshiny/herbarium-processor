@@ -144,7 +144,7 @@ def convert_heic_to_jpg_no_resize(path: str) -> Optional[str]:
             "raw",
         )
         image = preprocess_image_no_resize(image, label=os.path.basename(path))
-        image = rotate_image_if_needed(image, label=os.path.basename(path))
+        image = apply_exif_rotation_and_strip(image, label=os.path.basename(path))
         jpg_path = os.path.splitext(path)[0] + ".jpg"
         image.save(jpg_path, "JPEG", dpi=TARGET_DPI)
         os.remove(path)

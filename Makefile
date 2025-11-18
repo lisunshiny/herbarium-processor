@@ -49,7 +49,7 @@ gcp-build: ## Build & push image via Cloud Build
 	gcloud builds submit --tag $(IMAGE)
 
 gcp-deploy: ## Deploy to Cloud Run
-	gcloud run deploy $(SERVICE) --image $(IMAGE) --region $(REGION) \
+	gcloud run deploy $(SERVICE) --image $(IMAGE) --region $(REGION) --memory=1Gi \
 		--allow-unauthenticated --port 8080
 
 gcp-url: ## Print service URL
@@ -58,7 +58,7 @@ gcp-url: ## Print service URL
 	)
 
 gcp-logs: ## Stream Cloud Run logs
-	gcloud  beta run services logs tail $(SERVICE) --region $(REGION)
+	gcloud  beta run services logs tail $(SERVICE) --region $(REGION) --verbosity=debug
 
 deploy: gcp-build gcp-deploy gcp-url ## Build, deploy, print URL
 
