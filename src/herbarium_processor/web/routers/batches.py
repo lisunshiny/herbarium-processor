@@ -1,7 +1,6 @@
 import csv
 from datetime import datetime
 import json
-from pathlib import Path
 import shutil
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
@@ -83,13 +82,26 @@ async def create_batch(
         image_subdir = images_dir / image_id
         image_subdir.mkdir(parents=True, exist_ok=True)
 
-        # Save original/preprocessed image as pre_crop.jpg
+        # Save original uploaded bytes
+        uploaded_bytes = await f.read()
+
+        # Detect HEIC by filename or content-type
+        filename = f.filename.lower() if f.filename else ""
+        is_heic = (
+            filename.endswith(".heic")
+            or filename.endswith(".heif")
+            or (f.content_type or "").lower() in {"image/heic", "image/heif"}
+        )
         pre_crop_path = image_subdir / "pre_crop.jpg"
-        pre_crop_path.write_bytes(await f.read())
-        if pre_crop_path.suffix.lower() == ".heic":
-            new_path = convert_heic_to_jpg_no_resize(pre_crop_path)
-            if new_path:
-                pre_crop_path = Path(new_path)
+
+        if is_heic:
+            heic_path = image_subdir / "pre_crop.heic"
+            heic_path.write_bytes(uploaded_bytes)
+
+            convert_heic_to_jpg_no_resize(heic_path)
+        else:
+            pre_crop_path.write_bytes(uploaded_bytes)
+
         preprocess_image_file_no_resize(pre_crop_path)
 
         # Save info.json
