@@ -18,7 +18,7 @@ You will be provided with two inputs per specimen:
 Use both the image and the OCR output to locate, validate, and support your extractions.
 
 ---
-
+  
 ### **Output Requirements**
 
 1. **Format**
@@ -44,9 +44,10 @@ Use both the image and the OCR output to locate, validate, and support your extr
 5. **Field-Specific Guidance:**
 
    * **`comment`**: This field often contains a block of text, frequently found as a paragraph at the bottom of the label. It typically provides general context about the expedition or project, or additional metadata about the label that doesn't fit into the other fields. This text can be identical across all labels from the same collection event or expedition, but is not always. Put specimen descriptions only in the comment field and not the habitat field. This includes observable plant characteristics: leaf shape, flowers, fruits, size, presence/absence of traits, condition of material.
-   * **`elevation`**: The value should only include the numerical elevation, its unit (e.g., 'm', 'ft', "'"), and any associated uncertainty qualifier (e.g., 'ca.', 'approx.'). Do not include descriptive prefixes like 'Elev.' or 'Alt.'. For example, if the label reads "Elev. ca. 9995'", the correct extracted value is `"ca. 9995'"`.
-   * **`state`,`country`, `county`**: The value should be the full geographic name of the state or country. For example, if a label says that a species was found in "CA", write California and if it was found in the "USA" write United States. The abbreviation "Co." should not be included in the county name.
-   * **`field_collection_date`, `identification_date`, `original_identification_date`**: Return dates in the format: **day number followed by full month name and 4-digit year**, with no commas. Examples: `12 April 1893`, `August 1997`, `2003`. Abbreviations (e.g., `Apr.`) and reversed order (e.g., `Apr. 12, 1893`) are not acceptable.
-   * **`exsiccatae`**: This field generally starts with or contains `ex`, `exs`, or another abbreivation of `exsiccatae`. There is often the name of the previous herbarium and sometimes a number, e.g. `Ex Herb P. M. Patterson #2869`.
-   * **`scientific_name`, `identifier`, `identification_date`**: If there is more than one identification, use information from the **latest re-identification label**, which is typically an addendum to the label with the most recent scientific name or identification date.
-   * **`old_scientific_name`, `old_identifier`, `old_identification_date`**: If there is more than one identification, put the oldest/original identifier here.
+   * **`verbatimElevation`**: The value should only include the numerical elevation, its unit (e.g., 'm', 'ft', "'"), and any associated uncertainty qualifier (e.g., 'ca.', 'approx.'). Do not include descriptive prefixes like 'Elev.' or 'Alt.'. For example, if the label reads "Elev. ca. 9995'", the correct extracted value is `"ca. 9995'"`.
+   * **`stateProvince`,`country`, `county`**: The value should be the full geographic name of the state or country explicitly listed on the label. For example, if a label says that a species was found in "CA", write California and if it was found in the "USA" write United States. The abbreviation "Co." should not be included in the county name. Municipality can go into the verbatimLocality field. 
+   * **`verbatimEventDate`**: Return dates in the exact format they are written.
+   * **`eventDate`, `dateIdentified`**: Return dates in format that conforms to ISO 8601-1:2019.
+   * **`otherCatalogNumbers`**: This field generally starts with or contains `ex`, `exs`, or another abbreivation of `exsiccatae`. There is often the name of the previous herbarium and sometimes a number, e.g. `Ex Herb P. M. Patterson #2869`.
+   * **`scientificName`, `identifiedBy`, `dateIdentified`**: If there is more than one identification, use information from the **latest re-identification label**, which is typically an addendum to the label with the most recent scientific name or identification date.
+   * **`associatedTaxa`**: This field may include other scientific names listed on the packet, especially if they are underlined and in the habitat/locality sections. This is the only field in which information can be included when it is also in another field. 
