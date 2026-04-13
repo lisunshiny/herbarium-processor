@@ -24,7 +24,7 @@ repos:
         language: node
         pass_filenames: false
         additional_dependencies:
-          - eslint
+          - eslint@9.37.0
           - "@eslint/js"
           - eslint-plugin-vue
           - vue-eslint-parser
