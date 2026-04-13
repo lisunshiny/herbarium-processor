@@ -59,7 +59,9 @@ class CsvComparator:
         val = re.sub(r"\bfeet\b", "ft", val)
         if normalize_more:
             val = val.lower()
-            val = re.sub(r"[\s\W_]+", "", val)
+            val = re.sub(
+                r"[\s\W_\u00ba]+", "", val
+            )  # \u00ba = º (masculine ordinal indicator, treated as word char in Unicode regex)
         return val
 
     def compare_fields(self, val1, val2):
