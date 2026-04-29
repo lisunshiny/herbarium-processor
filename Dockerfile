@@ -32,6 +32,7 @@ RUN pip install --no-cache-dir "poetry==$POETRY_VERSION"
 # TODO -- move data/cs_canonical.csv to the prompt directory
 COPY pyproject.toml poetry.lock* README.md data/cs_canonical.csv prompts/ /app/
 COPY src/ /app/src/
+COPY scripts/ /app/scripts/
 
 # Install dependencies only; do not install the project package
 RUN poetry config virtualenvs.create false \
