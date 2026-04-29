@@ -53,9 +53,7 @@ gcp-deploy: ## Deploy to Cloud Run
 		--allow-unauthenticated --port 8080
 
 gcp-url: ## Print service URL
-	@echo $$(
-		gcloud run services describe $(SERVICE) --region $(REGION) --format='value(status.url)'
-	)
+	@gcloud run services describe $(SERVICE) --region $(REGION) --format='value(status.url)'
 
 gcp-logs: ## Stream Cloud Run logs
 	gcloud  beta run services logs tail $(SERVICE) --region $(REGION) --verbosity=debug
