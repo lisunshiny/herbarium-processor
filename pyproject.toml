@@ -5,6 +5,10 @@ description = "Tools for processing herbarium specimen labels"
 readme = "README.md"
 authors = ["Liann Sun <lisunshiny@gmail.com>"]
 license = "AGPL-3.0-or-later"
+packages = [
+    { include = "herbarium_processor", from = "src" },
+    { include = "scripts" },
+]
 
 [tool.poetry.dependencies]
 python = ">=3.10"
