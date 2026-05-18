@@ -330,11 +330,9 @@ async def save_label_edits(batch_id: str, image_id: str, labels: Dict[str, Any])
     image_dir = images_dir / image_id
     if not image_dir.exists():
         raise HTTPException(status_code=404, detail="Image not found")
-    print("liann 1")
     llm_json_path = image_dir / "llm_output.json"
     user_edited_llm_json_path = image_dir / "user_edited_llm_output.json"
     user_edited_llm_json_path.write_text(json.dumps(labels, indent=2))
-    print("liann 2")
     # Build updated image info
     info_path = image_dir / "info.json"
     info = json.loads(info_path.read_text()) if info_path.exists() else {}

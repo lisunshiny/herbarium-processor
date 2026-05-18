@@ -6,8 +6,7 @@
         Accelerating digitization with research-informed AI.
       </h1>
       <p class="mt-6 max-w-3xl text-base sm:text-2xl text-base-content/70">
-        We are a software engineer and a scientist with a bold but concrete
-        goal:
+        REDACTED
         <span class="font-semibold text-base-content">increase herbarium digitization by 5% in 2026</span>.
       </p>
     </section>
@@ -85,39 +84,7 @@
       <h2 class="text-2xl sm:text-3xl font-bold mb-8 text-center">
         How It Started
       </h2>
-
-      <div class="grid md:grid-cols-3 gap-6">
-        <div class="rounded-xl border border-base-300 bg-base-100/70 p-6 shadow-sm">
-          <h3 class="font-semibold text-primary mb-2">
-            💬 The Conversation
-          </h3>
-          <p class="text-sm sm:text-base text-base-content/80">
-            Danielle, a scientist, described the bottlenecks and backlogs of
-            digitization. Liann, an engineer, envisioned how new AI could
-            address these issues.
-          </p>
-        </div>
-        <div class="rounded-xl border border-base-300 bg-base-100/70 p-6 shadow-sm">
-          <h3 class="font-semibold text-secondary mb-2">
-            🛠️ The Prototype
-          </h3>
-          <p class="text-sm sm:text-base text-base-content/80">
-            Together, we built a basic tool just to test our idea. The results
-            were striking: quality was high, workflows sped up dramatically, and
-            human judgment remained central.
-          </p>
-        </div>
-        <div class="rounded-xl border border-base-300 bg-base-100/70 p-6 shadow-sm">
-          <h3 class="font-semibold text-accent mb-2">
-            🚀 The Breakthrough
-          </h3>
-          <p class="text-sm sm:text-base text-base-content/80">
-            The mix of science and engineering made Parsely stand out. It
-            bridges the gap between research tools and polished apps. Parsely is
-            <span>practical, reliable, and scalable</span>.
-          </p>
-        </div>
-      </div>
+      REDACTED
     </section>
 
     <!-- Bio section -->
@@ -125,28 +92,7 @@
       <h2 class="text-3xl font-semibold mb-6">
         Who we are
       </h2>
-      <TeamMember
-        name="Danielle Ward"
-        title="Lead scientist"
-        :img="danielleImg"
-        class="mb-6"
-      >
-        Danielle is the scientist behind Parsely, contributing subject-matter
-        expertise in herbarium curation and biodiversity research. She has
-        experience across the entire herbarium pipeline, from field collections
-        to systematics publications, ensuring Parsely combines scientific rigor
-        with practical digitization workflows.
-      </TeamMember>
-      <TeamMember
-        name="Liann Sun"
-        title="Lead engineer"
-        :img="liannImg"
-      >
-        Liann is the software engineer behind Parsely, bringing deep expertise
-        in building polished, user-focused technology. She has over a decade of
-        experience at startups and major tech companies and now applies her
-        skills to creating tools that are intuitive, reliable, and impactful.
-      </TeamMember>
+      REDACTED
     </section>
     <!-- Sustainability -->
     <section class="mx-auto max-w-4xl px-4 pb-10">
@@ -225,10 +171,6 @@
 </template>
 
 <script setup>
-import TeamMember from "@/components/ui/TeamMember.vue";
-
-import danielleImg from "@/assets/team/danielle.jpg";
-import liannImg from "@/assets/team/liann.jpg";
 </script>
 
 <style scoped></style>

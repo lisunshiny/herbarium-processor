@@ -3,7 +3,7 @@ name = "herbarium-processor"
 version = "0.1.0"
 description = "Tools for processing herbarium specimen labels"
 readme = "README.md"
-authors = ["Liann Sun <lisunshiny@gmail.com>"]
+authors = ["John Doe <johndoe@gmail.com>"]
 license = "AGPL-3.0-or-later"
 packages = [
     { include = "herbarium_processor", from = "src" },

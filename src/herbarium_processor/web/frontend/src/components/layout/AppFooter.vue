@@ -4,14 +4,14 @@
       <!-- Left: Open source + version -->
       <div>
         <p class="text-sm text-slate-400 max-w-xs">
-          Parsely Studio is made with ❤️ in Oakland, CA and built to make
+          Parsely Studio is made with ❤️ in Anytown, Anywhere and built to make
           specimen digitization faster for everyone.
         </p>
 
         <!-- GitHub link -->
         <div class="mt-4">
           <a
-            href="https://github.com/lisunshiny/herbarium-processor"
+            href="https://google.com/"
             target="_blank"
             rel="noopener noreferrer"
             class="inline-flex items-center gap-2 text-sm text-emerald-400 hover:text-emerald-300"
@@ -32,7 +32,7 @@
             2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"
               />
             </svg>
-            View the GitHub repo
+            REDACTED
           </a>
         </div>
         <p class="mt-6 text-sm text-slate-500">
